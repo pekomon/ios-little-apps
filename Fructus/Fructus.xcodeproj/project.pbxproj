@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A20FEC3D29E69D050095ED1D /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20FEC3C29E69D050095ED1D /* OnboardingView.swift */; };
 		A261E15329E5647C005D0431 /* StartButtonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A261E15229E5647C005D0431 /* StartButtonView.swift */; };
 		A27BD48129E33EE600A82FAD /* FruitCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27BD48029E33EE600A82FAD /* FruitCardView.swift */; };
 		A2F3F75729DBF2F200E830EB /* FructusApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2F3F75629DBF2F200E830EB /* FructusApp.swift */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A20FEC3C29E69D050095ED1D /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		A261E15229E5647C005D0431 /* StartButtonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartButtonView.swift; sourceTree = "<group>"; };
 		A27BD48029E33EE600A82FAD /* FruitCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FruitCardView.swift; sourceTree = "<group>"; };
 		A2F3F75329DBF2F200E830EB /* Fructus.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Fructus.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -41,6 +43,7 @@
 			children = (
 				A2F3F75629DBF2F200E830EB /* FructusApp.swift */,
 				A2F3F75829DBF2F200E830EB /* ContentView.swift */,
+				A20FEC3C29E69D050095ED1D /* OnboardingView.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -162,6 +165,7 @@
 				A27BD48129E33EE600A82FAD /* FruitCardView.swift in Sources */,
 				A261E15329E5647C005D0431 /* StartButtonView.swift in Sources */,
 				A2F3F75929DBF2F200E830EB /* ContentView.swift in Sources */,
+				A20FEC3D29E69D050095ED1D /* OnboardingView.swift in Sources */,
 				A2F3F75729DBF2F200E830EB /* FructusApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
