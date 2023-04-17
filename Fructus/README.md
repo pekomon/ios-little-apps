@@ -14,7 +14,25 @@ Main points of this excercise:
 - App icon and image assets
 - Feature to reset app 
 
-## Ipad images:
+## iPhone images:
+
+### Onboarding view:
+
+![alt Onboardingview](https://github.com/Pekomon/ios-little-apps/blob/main/images/Fructus-iphone-onboarding.png?raw=true)
+
+### Main view:
+
+![alt Main list view](https://github.com/Pekomon/ios-little-apps/blob/main/images/Fructus-iphone-main.png?raw=true)
+
+### Details view:
+
+![alt Details list view](https://github.com/Pekomon/ios-little-apps/blob/main/images/Fructus-iphone-details.png?raw=true)
+
+### Settings view:
+
+![alt Settings view](https://github.com/Pekomon/ios-little-apps/blob/main/images/Fructus-iphone-settings.png?raw=true)
+
+## iPad images:
 
 ### Main view:
 
@@ -22,8 +40,8 @@ Main points of this excercise:
 
 ### Details view:
 
-![alt Main list view](https://github.com/Pekomon/ios-little-apps/blob/main/images/Fructus-ipad-detail.png?raw=true)
+![alt Details view](https://github.com/Pekomon/ios-little-apps/blob/main/images/Fructus-ipad-detail.png?raw=true)
 
 ### Settings view:
 
-![alt Main list view](https://github.com/Pekomon/ios-little-apps/blob/main/images/Fructus-ipad-settings.png?raw=true)
+![alt Settings view](https://github.com/Pekomon/ios-little-apps/blob/main/images/Fructus-ipad-settings.png?raw=true)
