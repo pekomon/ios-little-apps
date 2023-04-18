@@ -22,7 +22,10 @@ struct ContentView: View {
                         EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
                     )
                 ForEach(animals) { animal in
-                    AnimalListItemView(animal: animal)
+                    NavigationLink(destination: AnimalDetailView(animal: animal)) {
+                        AnimalListItemView(animal: animal)
+                    } //: LINK
+                    
                 }
             } //: LIST
             .listStyle(PlainListStyle())
