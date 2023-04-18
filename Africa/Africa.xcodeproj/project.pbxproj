@@ -42,6 +42,8 @@
 		A20FECC929EEC3260095ED1D /* ExternalWebLinkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20FECC829EEC3260095ED1D /* ExternalWebLinkView.swift */; };
 		A20FECCB29EED50B0095ED1D /* VideoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20FECCA29EED50B0095ED1D /* VideoModel.swift */; };
 		A20FECCD29EED5880095ED1D /* VideoListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20FECCC29EED5880095ED1D /* VideoListItemView.swift */; };
+		A20FECCF29EF0C7E0095ED1D /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20FECCE29EF0C7E0095ED1D /* VideoPlayerView.swift */; };
+		A20FECD229EF0DA10095ED1D /* VideoPlayerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20FECD129EF0DA10095ED1D /* VideoPlayerHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -82,6 +84,8 @@
 		A20FECC829EEC3260095ED1D /* ExternalWebLinkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExternalWebLinkView.swift; sourceTree = "<group>"; };
 		A20FECCA29EED50B0095ED1D /* VideoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoModel.swift; sourceTree = "<group>"; };
 		A20FECCC29EED5880095ED1D /* VideoListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoListItemView.swift; sourceTree = "<group>"; };
+		A20FECCE29EF0C7E0095ED1D /* VideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
+		A20FECD129EF0DA10095ED1D /* VideoPlayerHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerHelper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -114,6 +118,7 @@
 		A20FEC7929ED4EF20095ED1D /* Africa */ = {
 			isa = PBXGroup;
 			children = (
+				A20FECD029EF0D8C0095ED1D /* Utility */,
 				A20FECB729ED82090095ED1D /* Extension */,
 				A20FECB429ED68450095ED1D /* Model */,
 				A20FECB129ED66610095ED1D /* View */,
@@ -188,6 +193,7 @@
 				A20FECC629EEA8B10095ED1D /* InsetMapView.swift */,
 				A20FECC829EEC3260095ED1D /* ExternalWebLinkView.swift */,
 				A20FECCC29EED5880095ED1D /* VideoListItemView.swift */,
+				A20FECCE29EF0C7E0095ED1D /* VideoPlayerView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -208,6 +214,14 @@
 				A20FECB829ED822D0095ED1D /* CodableBundleExtension.swift */,
 			);
 			path = Extension;
+			sourceTree = "<group>";
+		};
+		A20FECD029EF0D8C0095ED1D /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+				A20FECD129EF0DA10095ED1D /* VideoPlayerHelper.swift */,
+			);
+			path = Utility;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -304,6 +318,7 @@
 				A20FECBD29ED8E210095ED1D /* AnimalModel.swift in Sources */,
 				A20FECAB29ED56F30095ED1D /* MapView.swift in Sources */,
 				A20FECC729EEA8B10095ED1D /* InsetMapView.swift in Sources */,
+				A20FECD229EF0DA10095ED1D /* VideoPlayerHelper.swift in Sources */,
 				A20FEC7B29ED4EF20095ED1D /* AfricaApp.swift in Sources */,
 				A20FECC929EEC3260095ED1D /* ExternalWebLinkView.swift in Sources */,
 				A20FECA929ED56DB0095ED1D /* VideoListView.swift in Sources */,
@@ -313,6 +328,7 @@
 				A20FECCD29EED5880095ED1D /* VideoListItemView.swift in Sources */,
 				A20FECB929ED822D0095ED1D /* CodableBundleExtension.swift in Sources */,
 				A20FECC129EE70BA0095ED1D /* HeadingView.swift in Sources */,
+				A20FECCF29EF0C7E0095ED1D /* VideoPlayerView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
