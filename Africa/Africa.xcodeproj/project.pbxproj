@@ -44,6 +44,7 @@
 		A20FECCD29EED5880095ED1D /* VideoListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20FECCC29EED5880095ED1D /* VideoListItemView.swift */; };
 		A20FECCF29EF0C7E0095ED1D /* VideoPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20FECCE29EF0C7E0095ED1D /* VideoPlayerView.swift */; };
 		A20FECD229EF0DA10095ED1D /* VideoPlayerHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20FECD129EF0DA10095ED1D /* VideoPlayerHelper.swift */; };
+		A20FECD429EFBACC0095ED1D /* LocationModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20FECD329EFBACC0095ED1D /* LocationModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -86,6 +87,7 @@
 		A20FECCC29EED5880095ED1D /* VideoListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoListItemView.swift; sourceTree = "<group>"; };
 		A20FECCE29EF0C7E0095ED1D /* VideoPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerView.swift; sourceTree = "<group>"; };
 		A20FECD129EF0DA10095ED1D /* VideoPlayerHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerHelper.swift; sourceTree = "<group>"; };
+		A20FECD329EFBACC0095ED1D /* LocationModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -204,6 +206,7 @@
 				A20FECB529ED68570095ED1D /* CoverImageModel.swift */,
 				A20FECBC29ED8E210095ED1D /* AnimalModel.swift */,
 				A20FECCA29EED50B0095ED1D /* VideoModel.swift */,
+				A20FECD329EFBACC0095ED1D /* LocationModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -324,6 +327,7 @@
 				A20FECA929ED56DB0095ED1D /* VideoListView.swift in Sources */,
 				A20FECCB29EED50B0095ED1D /* VideoModel.swift in Sources */,
 				A20FECAE29ED570F0095ED1D /* GalleryView.swift in Sources */,
+				A20FECD429EFBACC0095ED1D /* LocationModel.swift in Sources */,
 				A20FECC329EE78720095ED1D /* InsetGalleryView.swift in Sources */,
 				A20FECCD29EED5880095ED1D /* VideoListItemView.swift in Sources */,
 				A20FECB929ED822D0095ED1D /* CodableBundleExtension.swift in Sources */,
