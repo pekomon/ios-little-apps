@@ -54,6 +54,10 @@ struct ContentView: View {
                                 AnimalListItemView(animal: animal)
                             } //: LINK
                         } //: LOOP
+                        
+                        AboutView()
+                            .modifier(CenterModifier())
+                        
                     } //: LIST
                     .listStyle(PlainListStyle())
                 } else {
