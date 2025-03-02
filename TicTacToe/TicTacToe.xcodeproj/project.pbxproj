@@ -75,7 +75,10 @@
 		A25ACE632D749967001BC40B = {
 			isa = PBXGroup;
 			children = (
-				A25ACE6E2D749967001BC40B /* TicTacToe */,
+				A25ACE9F2D749D9F001BC40B /* Resources */,
+				A25ACE9E2D749D97001BC40B /* Views */,
+				A25ACE9D2D749D88001BC40B /* ViewModels */,
+				A25ACE9C2D749D76001BC40B /* Models */,
 				A25ACE7F2D749969001BC40B /* TicTacToeTests */,
 				A25ACE892D749969001BC40B /* TicTacToeUITests */,
 				A25ACE6D2D749967001BC40B /* Products */,
@@ -90,6 +93,35 @@
 				A25ACE862D749969001BC40B /* TicTacToeUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A25ACE9C2D749D76001BC40B /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A25ACE6E2D749967001BC40B /* TicTacToe */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A25ACE9D2D749D88001BC40B /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		A25ACE9E2D749D97001BC40B /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A25ACE9F2D749D9F001BC40B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
