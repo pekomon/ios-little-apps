@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct TicTacToeView: View {
     var body: some View {
         VStack {
             Image(systemName: "globe")
@@ -18,5 +18,5 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    TicTacToeView()
 }

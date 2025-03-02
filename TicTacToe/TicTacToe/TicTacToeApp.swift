@@ -1,9 +1,6 @@
 //
 //  TicTacToeApp.swift
-//  TicTacToe
-//
-//  Created by Pekka Rasanen on 2.3.2025.
-//
+//  
 
 import SwiftUI
 
@@ -11,7 +8,7 @@ import SwiftUI
 struct TicTacToeApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TicTacToeView()
         }
     }
 }
