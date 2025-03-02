@@ -1,0 +1,7 @@
+
+# Xcode temporary files
+DerivedData/
+xcuserdata/
+*.xcworkspace
+Pods/
+
