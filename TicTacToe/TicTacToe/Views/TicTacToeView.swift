@@ -26,7 +26,8 @@ struct TicTacToeView: View {
                         Text(viewModel.game.board[index].player?.symbol ?? "")
                             .font(.system(size: 50))
                             .frame(width: 80, height: 80)
-                            .background(Color.white)
+                            //.background(Color.white)
+                            .background(viewModel.winningCells.contains(index) ? Color.green.opacity(0.5) : Color.white)
                             .cornerRadius(20)
                             .shadow(radius: 5)
                     }

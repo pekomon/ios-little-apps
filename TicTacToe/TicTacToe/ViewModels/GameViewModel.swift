@@ -6,6 +6,7 @@ class GameViewModel: ObservableObject {
     @Published private(set) var game = GameModel()
     @Published var currentPlayer: Player = .x
     @Published var winner: Player?
+    @Published var winningCells: [Int] = []
     
     func makeMove(at index: Int) {
         guard game.board[index].player == nil, winner == nil else { return }
@@ -23,6 +24,7 @@ class GameViewModel: ObservableObject {
         game = GameModel()
         currentPlayer = .x
         winner = nil
+        winningCells = []
     }
     
     private func checkWin(for player: Player) -> Bool {
@@ -36,9 +38,14 @@ class GameViewModel: ObservableObject {
             [0, 4, 8],
             [2, 4, 6]
         ]
-        return winningCombinations.contains { combo in
-            combo.allSatisfy { game.board[$0].player == player }
+        
+        for combo in winningCombinations {
+            if combo.allSatisfy({ game.board[$0].player == player}) {
+                winningCells = combo
+                return true
+            }
         }
+        
+        return false
     }
-    
 }
