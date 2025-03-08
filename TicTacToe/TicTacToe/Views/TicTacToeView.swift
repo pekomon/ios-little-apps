@@ -48,10 +48,17 @@ struct TicTacToeView: View {
                 .foregroundColor(.white)
                 .cornerRadius(10)
         }
+        .alert("Game over", isPresented: $viewModel.showWinAlert) {
+            Button("OK") {
+                viewModel.restartGame()
+            }
+        } message: {
+            Text(viewModel.winnerMessage)
+        }
     }
 }
 
-private extension Player {
+extension Player {
     var symbol: String {
         switch self {
         case .x:

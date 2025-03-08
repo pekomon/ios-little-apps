@@ -7,6 +7,8 @@ class GameViewModel: ObservableObject {
     @Published var currentPlayer: Player = .x
     @Published var winner: Player?
     @Published var winningCells: [Int] = []
+    @Published var showWinAlert = false
+    @Published var winnerMessage = ""
     
     func makeMove(at index: Int) {
         guard game.board[index].player == nil, winner == nil else { return }
@@ -42,6 +44,8 @@ class GameViewModel: ObservableObject {
         for combo in winningCombinations {
             if combo.allSatisfy({ game.board[$0].player == player}) {
                 winningCells = combo
+                winnerMessage = "\(player.symbol) wins!"
+                showWinAlert = true
                 return true
             }
         }
