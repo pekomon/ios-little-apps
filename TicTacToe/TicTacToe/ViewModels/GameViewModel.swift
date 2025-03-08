@@ -3,12 +3,12 @@
 import SwiftUI
 
 class GameViewModel: ObservableObject {
-    @Published private set var game = GameModel()
+    @Published private(set) var game = GameModel()
     @Published var currentPlayer: Player = .x
     @Published var winner: Player?
     
-    func MakeMove(at index: Int) {
-        guard game.board[index] == nil, winner == nil else { return }
+    func makeMove(at index: Int) {
+        guard game.board[index].player == nil, winner == nil else { return }
         
         game.makeMove(at: index, player: currentPlayer)
         if checkWin(for: currentPlayer) {
