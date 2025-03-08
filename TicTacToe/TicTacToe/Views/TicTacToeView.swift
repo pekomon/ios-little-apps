@@ -22,8 +22,9 @@ struct TicTacToeView: View {
                         Text(viewModel.game.board[index].player?.symbol ?? "")
                             .font(.system(size: 50))
                             .frame(width: 80, height: 80)
-                            .background(Color.gray.opacity(0.2))
-                            .cornerRadius(10)
+                            .background(Color.white)
+                            .cornerRadius(20)
+                            .shadow(radius: 5)
                     }
                     .disabled(viewModel.game.board[index].player != nil || viewModel.winner != nil)
                 }
