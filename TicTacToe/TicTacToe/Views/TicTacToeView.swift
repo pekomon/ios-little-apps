@@ -18,7 +18,11 @@ struct TicTacToeView: View {
                 spacing: 10
             ) {
                 ForEach(0..<9) { index in
-                    Button(action: { viewModel.makeMove(at: index) }) {
+                    Button(action: {
+                        withAnimation(.spring) {
+                            viewModel.makeMove(at: index)
+                        }
+                    }) {
                         Text(viewModel.game.board[index].player?.symbol ?? "")
                             .font(.system(size: 50))
                             .frame(width: 80, height: 80)
