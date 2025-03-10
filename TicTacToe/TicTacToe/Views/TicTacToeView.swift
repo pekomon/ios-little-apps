@@ -8,12 +8,16 @@ import SwiftUI
 struct TicTacToeView: View {
     @StateObject private var viewModel = GameViewModel()
     @State private var showWinMessage = false
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         ZStack {
+            (colorScheme == .dark ? Color.black : Color.white)
+                .ignoresSafeArea()
             VStack {
                 Text("Tic Tac Toe")
                     .font(.largeTitle)
+                    .foregroundColor(colorScheme == .dark ? .white : .black)
                 
                 LazyVGrid(
                     columns: Array(repeating: GridItem(.flexible()), count: 3),
@@ -39,7 +43,7 @@ struct TicTacToeView: View {
                 
                 Button("Restart Game", action: viewModel.restartGame)
                     .padding()
-                    .background(Color.blue)
+                    .background(colorScheme == .dark ? .white : .black)
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
