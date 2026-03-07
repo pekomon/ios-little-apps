@@ -44,6 +44,7 @@ struct ContentView: View {
                         toggleTask(task)
                     }
                 }
+                .onDelete(perform: deleteTask)
             }
         }
         .padding()
@@ -57,11 +58,15 @@ struct ContentView: View {
         tasks.append(newTask)
         newTaskTitle = ""
     }
-    
+
     private func toggleTask(_ task: Task) {
         if let index = tasks.firstIndex(where: { $0.id == task.id}) {
             tasks[index].isCompleted.toggle()
         }
+    }
+    
+    private func deleteTask(at offsets: IndexSet) {
+        tasks.remove(atOffsets: offsets)
     }
 }
 
