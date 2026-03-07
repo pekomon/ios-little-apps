@@ -6,13 +6,11 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
-    @State private var tasks: [Task] = [
-        Task(title: "Do something"),
-        Task(title: "Go shopping", isCompleted: true),
-        Task(title: "Hello world!"),
-    ]
+    @Query var tasks: [Task]
+    @Environment(\.modelContext) private var modelContext
     @State private var newTaskTitle: String = ""
     
     var body: some View {
@@ -55,18 +53,18 @@ struct ContentView: View {
         guard !trimmedTitle.isEmpty else { return }
         
         let newTask = Task(title: trimmedTitle)
-        tasks.append(newTask)
+        modelContext.insert(newTask)
         newTaskTitle = ""
     }
 
     private func toggleTask(_ task: Task) {
-        if let index = tasks.firstIndex(where: { $0.id == task.id}) {
-            tasks[index].isCompleted.toggle()
-        }
+        task.isCompleted.toggle()
     }
     
     private func deleteTask(at offsets: IndexSet) {
-        tasks.remove(atOffsets: offsets)
+        for index in offsets {
+            modelContext.delete(tasks[index])
+        }
     }
 }
 
