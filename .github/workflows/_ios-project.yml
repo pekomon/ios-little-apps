@@ -1,0 +1,70 @@
+name: Reusable iOS Project CI
+
+on:
+  workflow_call:
+    inputs:
+      app_name:
+        required: true
+        type: string
+      project_path:
+        required: true
+        type: string
+      scheme:
+        required: true
+        type: string
+      run_tests:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: macos-15
+    timeout-minutes: 20
+
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Build ${{ inputs.app_name }}
+        run: >
+          xcodebuild
+          -project "${{ inputs.project_path }}"
+          -scheme "${{ inputs.scheme }}"
+          -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath "$RUNNER_TEMP/DerivedData"
+          CODE_SIGNING_ALLOWED=NO
+          build
+
+  test:
+    name: Test
+    if: ${{ inputs.run_tests }}
+    runs-on: macos-15
+    timeout-minutes: 25
+    needs: build
+
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Run tests for ${{ inputs.app_name }}
+        run: >
+          xcodebuild
+          -project "${{ inputs.project_path }}"
+          -scheme "${{ inputs.scheme }}"
+          -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16'
+          -derivedDataPath "$RUNNER_TEMP/DerivedData"
+          CODE_SIGNING_ALLOWED=NO
+          test

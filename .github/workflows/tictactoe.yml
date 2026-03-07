@@ -1,0 +1,22 @@
+name: TicTacToe CI
+
+on:
+  push:
+    paths:
+      - "TicTacToe/**"
+      - ".github/workflows/tictactoe.yml"
+      - ".github/workflows/_ios-project.yml"
+  pull_request:
+    paths:
+      - "TicTacToe/**"
+      - ".github/workflows/tictactoe.yml"
+      - ".github/workflows/_ios-project.yml"
+
+jobs:
+  ci:
+    uses: ./.github/workflows/_ios-project.yml
+    with:
+      app_name: TicTacToe
+      project_path: TicTacToe/TicTacToe.xcodeproj
+      scheme: TicTacToe
+      run_tests: true

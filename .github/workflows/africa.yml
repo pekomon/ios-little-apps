@@ -1,0 +1,21 @@
+name: Africa CI
+
+on:
+  push:
+    paths:
+      - "Africa/**"
+      - ".github/workflows/africa.yml"
+      - ".github/workflows/_ios-project.yml"
+  pull_request:
+    paths:
+      - "Africa/**"
+      - ".github/workflows/africa.yml"
+      - ".github/workflows/_ios-project.yml"
+
+jobs:
+  ci:
+    uses: ./.github/workflows/_ios-project.yml
+    with:
+      app_name: Africa
+      project_path: Africa/Africa.xcodeproj
+      scheme: Africa

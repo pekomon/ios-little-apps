@@ -1,0 +1,21 @@
+name: TaskTracker CI
+
+on:
+  push:
+    paths:
+      - "TaskTracker/**"
+      - ".github/workflows/tasktracker.yml"
+      - ".github/workflows/_ios-project.yml"
+  pull_request:
+    paths:
+      - "TaskTracker/**"
+      - ".github/workflows/tasktracker.yml"
+      - ".github/workflows/_ios-project.yml"
+
+jobs:
+  ci:
+    uses: ./.github/workflows/_ios-project.yml
+    with:
+      app_name: TaskTracker
+      project_path: TaskTracker/TaskTracker.xcodeproj
+      scheme: TaskTracker

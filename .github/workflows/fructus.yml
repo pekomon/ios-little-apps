@@ -1,0 +1,21 @@
+name: Fructus CI
+
+on:
+  push:
+    paths:
+      - "Fructus/**"
+      - ".github/workflows/fructus.yml"
+      - ".github/workflows/_ios-project.yml"
+  pull_request:
+    paths:
+      - "Fructus/**"
+      - ".github/workflows/fructus.yml"
+      - ".github/workflows/_ios-project.yml"
+
+jobs:
+  ci:
+    uses: ./.github/workflows/_ios-project.yml
+    with:
+      app_name: Fructus
+      project_path: Fructus/Fructus.xcodeproj
+      scheme: Fructus
