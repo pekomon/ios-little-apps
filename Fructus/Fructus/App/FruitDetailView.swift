@@ -2,7 +2,7 @@
 //  FruitDetailView.swift
 //  Fructus
 //
-//  Created by Pekka Rasanen on 12.4.2023.
+//  Created by Pekomon on 12.4.2023.
 //
 
 import SwiftUI

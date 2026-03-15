@@ -2,7 +2,7 @@
 //  AnimalGridItemView.swift
 //  Africa
 //
-//  Created by Pekka Rasanen on 20.4.2023.
+//  Created by Pekomon on 20.4.2023.
 //
 
 import SwiftUI

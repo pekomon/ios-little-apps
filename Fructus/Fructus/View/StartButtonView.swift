@@ -2,7 +2,7 @@
 //  StartButtonView.swift
 //  Fructus
 //
-//  Created by Pekka Rasanen on 11.4.2023.
+//  Created by Pekomon on 11.4.2023.
 //
 
 import SwiftUI

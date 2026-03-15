@@ -2,7 +2,7 @@
 //  LocationModel.swift
 //  Africa
 //
-//  Created by Pekka Rasanen on 19.4.2023.
+//  Created by Pekomon on 19.4.2023.
 //
 
 import Foundation

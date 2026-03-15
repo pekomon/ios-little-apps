@@ -37,10 +37,21 @@ Temporary Items
 ### Xcode ###
 ## User settings
 xcuserdata/
+*.xcuserstate
+*.moved-aside
 
 ## Xcode 8 and earlier
 *.xcscmblueprint
 *.xccheckout
+*.hmap
+
+## Build products
+DerivedData/
+build/
+.build/
+*.ipa
+*.dSYM
+*.dSYM.zip
 
 ### Xcode Patch ###
 *.xcodeproj/*
@@ -50,6 +61,20 @@ xcuserdata/
 !*.xcworkspace/contents.xcworkspacedata
 /*.gcno
 **/xcshareddata/WorkspaceSettings.xcsettings
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+
+### Swift Package Manager ###
+.swiftpm/
+
+### Dependency managers ###
+Pods/
+Carthage/Build/
+
+### fastlane ###
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
 
 # End of https://www.toptal.com/developers/gitignore/api/xcode,macos
-

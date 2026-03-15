@@ -2,7 +2,7 @@
 //  VideoPlayerHelper.swift
 //  Africa
 //
-//  Created by Pekka Rasanen on 18.4.2023.
+//  Created by Pekomon on 18.4.2023.
 //
 
 import Foundation

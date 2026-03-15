@@ -2,7 +2,7 @@
 //  TicTacToeTests.swift
 //  TicTacToeTests
 //
-//  Created by Pekka Rasanen on 2.3.2025.
+//  Created by Pekomon on 2.3.2025.
 //
 
 import Testing

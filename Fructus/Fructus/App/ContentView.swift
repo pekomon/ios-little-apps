@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  Fructus
 //
-//  Created by Pekka Rasanen on 4.4.2023.
+//  Created by Pekomon on 4.4.2023.
 //
 
 import SwiftUI

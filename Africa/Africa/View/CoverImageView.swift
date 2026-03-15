@@ -2,7 +2,7 @@
 //  CoverImageView.swift
 //  Africa
 //
-//  Created by Pekka Rasanen on 17.4.2023.
+//  Created by Pekomon on 17.4.2023.
 //
 
 import SwiftUI
