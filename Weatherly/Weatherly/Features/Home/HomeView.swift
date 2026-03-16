@@ -9,11 +9,45 @@
 import SwiftUI
 
 struct HomeView: View {
+    @State private var viewModel = HomeViewModel()
+    
     var body: some View {
         NavigationStack {
-            Text("Home")
+            content
                 .navigationTitle("Weather")
+                .task {
+                    if case .idle = viewModel.state {
+                        viewModel.loadMockWeather()
+                    }
+                }
         }
+    }
+    
+   @ViewBuilder
+    private var content: some View {
+        switch viewModel.state {
+        case .idle, .loading:
+            ProgressView("Loading...")
+            
+        case .failed(let message):
+            ContentUnavailableView(
+                "Something went wrong",
+                systemImage: "exclamationmark.triangle",
+                description: Text(message)
+            )
+        case .loaded(let weather):
+            VStack {
+                Text(weather.location.name)
+                    .font(Font.largeTitle)
+                Text("\(Int(weather.current.temperature))°")
+                    .font(Font.system(size: 56, weight: .bold))
+                Text(weather.current.condition.rawValue.capitalized)
+                    .foregroundStyle(.secondary)
+            }
+            .padding()
+        }
+        
+    
     }
 }
 
