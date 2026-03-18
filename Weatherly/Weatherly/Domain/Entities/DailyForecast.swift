@@ -14,6 +14,6 @@ struct DailyForecast: Identifiable, Equatable {
     let minTemperature: Double
     let maxTemperature: Double
     let precipitationChance: Double?
-    let condition: WeatherCondition
+    let condition: AppWeatherCondition
     let symbolName: String
 }

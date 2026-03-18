@@ -13,6 +13,6 @@ struct HourlyForecast: Identifiable, Equatable {
     let date: Date
     let temperature: Double
     let precipitationChance: Double?
-    let condition: WeatherCondition
+    let condition: AppWeatherCondition
     let symbolName: String
 }

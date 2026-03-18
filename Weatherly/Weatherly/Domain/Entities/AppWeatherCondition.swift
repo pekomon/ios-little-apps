@@ -1,14 +1,13 @@
 //
-//  WeatherCondition.swift
+//  AppWeatherCondition.swift
 //  Weatherly
 //
 //  Created by Pekomon on 15.3.2026.
 //
-	
 
 import Foundation
 
-enum WeatherCondition: String, Equatable {
+enum AppWeatherCondition: String, Equatable {
     case clear
     case partlyCloudy
     case cloudy

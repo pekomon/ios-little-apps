@@ -4,31 +4,30 @@
 //
 //  Created by Pekomon on 15.3.2026.
 //
-	
 
 import SwiftUI
 
 struct HomeView: View {
     @State private var viewModel = HomeViewModel()
-    
+
     var body: some View {
         NavigationStack {
             content
                 .navigationTitle("Weather")
                 .task {
                     if case .idle = viewModel.state {
-                        viewModel.loadMockWeather()
+                        await viewModel.loadWeather()
                     }
                 }
         }
     }
-    
-   @ViewBuilder
+
+    @ViewBuilder
     private var content: some View {
         switch viewModel.state {
         case .idle, .loading:
             ProgressView("Loading...")
-            
+
         case .failed(let message):
             ContentUnavailableView(
                 "Something went wrong",
@@ -46,8 +45,6 @@ struct HomeView: View {
             }
             .padding()
         }
-        
-    
     }
 }
 

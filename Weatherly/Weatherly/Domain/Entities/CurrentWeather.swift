@@ -15,6 +15,6 @@ struct CurrentWeather: Equatable {
     let windSpeed: Double
     let pressure: Double
     let visibility: Double?
-    let condition: WeatherCondition
+    let condition: AppWeatherCondition
     let symbolName: String
 }
