@@ -29,11 +29,18 @@ struct HomeView: View {
             ProgressView("Loading...")
 
         case .failed(let message):
-            ContentUnavailableView(
-                "Something went wrong",
-                systemImage: "exclamationmark.triangle",
-                description: Text(message)
-            )
+            ContentUnavailableView {
+                Label("Unable to Load Weather", systemImage: "location.slash")
+            } description: {
+                Text(message)
+            } actions: {
+                Button("Try Again") {
+                    Task {
+                        await viewModel.loadWeather()
+                    }
+                }
+            }
+            
         case .loaded(let weather):
             VStack {
                 Text(weather.location.name)

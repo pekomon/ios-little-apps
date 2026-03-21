@@ -7,40 +7,48 @@
 
 import Foundation
 import Observation
+import CoreLocation
 
 @Observable
 final class HomeViewModel {
     var state: HomeState = .idle
 
     private let weatherRepository: WeatherRepository
+    private let locationService: LocationService
 
-    init(weatherRepository: WeatherRepository = WeatherKitWeatherRepository()) {
+    init(
+        weatherRepository: WeatherRepository = WeatherKitWeatherRepository(),
+        locationService: LocationService = LocationService()
+    ) {
         self.weatherRepository = weatherRepository
+        self.locationService = locationService
     }
 
     func loadWeather() async {
         state = .loading
 
-        let helsinki = Location(
-            id: "helsinki-001",
-            name: "Helsinki",
-            country: "Finland",
-            latitude: 60.1699,
-            longitude: 24.9384
-        )
 
         do {
-            let weather = try await weatherRepository.fetchWeather(for: helsinki)
+            if locationService.authorizationStatus == .notDetermined {
+                locationService.requestWhenInUseAuthorization()
+                state = .failed("Please enable location services.")
+                return
+            }
+            
+            let currentLocation = try await locationService.requestCurrentLocation()
+            
+            let location = Location(
+                id: "current-location",
+                name: "Current Location",
+                country: nil,
+                latitude: currentLocation.coordinate.latitude,
+                longitude: currentLocation.coordinate.longitude
+            )
+            
+            let weather = try await weatherRepository.fetchWeather(for: location)
             state = .loaded(weather)
         } catch {
             state = .failed(error.localizedDescription)
         }
     }
-
-    /*
-    func loadMockWeather() {
-        state = .loading
-        state = .loaded(HomeMockData.weatherDetails)
-    }
-    */
 }
