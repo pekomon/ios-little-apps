@@ -12,6 +12,7 @@ import Observation
 @Observable
 final class LocationService: NSObject, CLLocationManagerDelegate {
     private let manager: CLLocationManager
+    private var authorizationContinuation: CheckedContinuation<CLAuthorizationStatus, Never>?
     private var locationContinuation: CheckedContinuation<CLLocation, Error>?
 
     var authorizationStatus: CLAuthorizationStatus
@@ -24,12 +25,23 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         self.manager.delegate = self
     }
 
-    func requestWhenInUseAuthorization() {
-        manager.requestWhenInUseAuthorization()
+    func requestWhenInUseAuthorization() async -> CLAuthorizationStatus {
+        let status = manager.authorizationStatus
+
+        guard status == .notDetermined else {
+            return status
+        }
+
+        return await withCheckedContinuation { continuation in
+            authorizationContinuation = continuation
+            manager.requestWhenInUseAuthorization()
+        }
     }
 
     func requestCurrentLocation() async throws -> CLLocation {
-        switch manager.authorizationStatus {
+        let authorizationStatus = await requestWhenInUseAuthorization()
+
+        switch authorizationStatus {
         case .notDetermined:
             throw LocationError.authorizationNotDetermined
         case .denied:
@@ -54,6 +66,13 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         authorizationStatus = manager.authorizationStatus
+
+        guard manager.authorizationStatus != .notDetermined else {
+            return
+        }
+
+        authorizationContinuation?.resume(returning: manager.authorizationStatus)
+        authorizationContinuation = nil
     }
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

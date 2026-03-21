@@ -26,17 +26,10 @@ final class HomeViewModel {
 
     func loadWeather() async {
         state = .loading
-
-
+        
         do {
-            if locationService.authorizationStatus == .notDetermined {
-                locationService.requestWhenInUseAuthorization()
-                state = .failed("Please enable location services.")
-                return
-            }
-            
             let currentLocation = try await locationService.requestCurrentLocation()
-            
+
             let location = Location(
                 id: "current-location",
                 name: "Current Location",
