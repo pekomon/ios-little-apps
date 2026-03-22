@@ -42,13 +42,13 @@ struct HomeView: View {
             }
             
         case .loaded(let weather):
-            VStack {
-                Text(weather.location.name)
-                    .font(Font.largeTitle)
-                Text("\(Int(weather.current.temperature))°")
-                    .font(Font.system(size: 56, weight: .bold))
-                Text(weather.current.condition.rawValue.capitalized)
-                    .foregroundStyle(.secondary)
+            ScrollView {
+                VStack(spacing: 16) {
+                    CurrentWeatherCard(weather: weather)
+                    WeatherMetricGrid(weather: weather)
+                    HourlyForecastSection(items: weather.hourlyForecast)
+                    DailyForecastSection(items: weather.dailyForecast)
+                }
             }
             .padding()
         }
