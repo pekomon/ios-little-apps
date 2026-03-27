@@ -17,30 +17,34 @@ struct WeatherMetricGrid: View {
     ]
 
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 12) {
-            MetricCard(
-                title: "Feels Like",
-                value: "\(Int(weather.current.feelsLike.rounded()))°",
-                systemImage: "thermometer"
-            )
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(title: "Today's Details", systemImage: "square.grid.2x2")
 
-            MetricCard(
-                title: "Humidity",
-                value: "\(Int(weather.current.humidity.rounded()))%",
-                systemImage: "humidity"
-            )
+            LazyVGrid(columns: columns, spacing: 12) {
+                MetricCard(
+                    title: "Feels Like",
+                    value: "\(Int(weather.current.feelsLike.rounded()))°",
+                    systemImage: "thermometer"
+                )
 
-            MetricCard(
-                title: "Wind",
-                value: "\(weather.current.windSpeed.formatted(.number.precision(.fractionLength(1)))) m/s",
-                systemImage: "wind"
-            )
+                MetricCard(
+                    title: "Humidity",
+                    value: "\(Int(weather.current.humidity.rounded()))%",
+                    systemImage: "humidity"
+                )
 
-            MetricCard(
-                title: "Pressure",
-                value: "\(Int(weather.current.pressure.rounded())) hPa",
-                systemImage: "gauge"
-            )
+                MetricCard(
+                    title: "Wind",
+                    value: "\(weather.current.windSpeed.formatted(.number.precision(.fractionLength(1)))) m/s",
+                    systemImage: "wind"
+                )
+
+                MetricCard(
+                    title: "Pressure",
+                    value: "\(Int(weather.current.pressure.rounded())) hPa",
+                    systemImage: "gauge"
+                )
+            }
         }
     }
 }
@@ -51,7 +55,7 @@ private struct MetricCard: View {
     let systemImage: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        VStack(alignment: .leading, spacing: 12) {
             Label(title, systemImage: systemImage)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -60,14 +64,25 @@ private struct MetricCard: View {
                 .font(.title3)
                 .fontWeight(.semibold)
         }
-        .frame(maxWidth: .infinity, minHeight: 96, alignment: .leading)
+        .frame(maxWidth: .infinity, minHeight: 100, alignment: .leading)
         .padding(16)
-        .background(.thinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .background(Color.white.opacity(0.10))
+        .overlay {
+            RoundedRectangle(cornerRadius: 18)
+                .stroke(Color.white.opacity(0.10), lineWidth: 1)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 }
 
 #Preview {
     WeatherMetricGrid(weather: HomeMockData.weatherDetails)
         .padding()
+        .background(
+            LinearGradient(
+                colors: [.blue.opacity(0.5), .indigo.opacity(0.6)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
 }

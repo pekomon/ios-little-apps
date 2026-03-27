@@ -13,8 +13,7 @@ struct HourlyForecastSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Hourly Forecast")
-                .font(.headline)
+            SectionHeader(title: "Hourly Forecast", systemImage: "clock")
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
@@ -31,25 +30,37 @@ private struct HourlyForecastItemView: View {
     let item: HourlyForecast
 
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 12) {
             Text(item.date, format: .dateTime.hour())
                 .font(.subheadline)
+                .foregroundStyle(.secondary)
 
             Image(systemName: item.symbolName)
                 .font(.title3)
                 .symbolRenderingMode(.multicolor)
 
             Text("\(Int(item.temperature.rounded()))°")
-                .fontWeight(.medium)
+                .fontWeight(.semibold)
         }
-        .frame(width: 72)
+        .frame(width: 76)
         .padding(.vertical, 16)
-        .background(.thinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .background(Color.white.opacity(0.10))
+        .overlay {
+            RoundedRectangle(cornerRadius: 18)
+                .stroke(Color.white.opacity(0.10), lineWidth: 1)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 }
 
 #Preview {
     HourlyForecastSection(items: HomeMockData.weatherDetails.hourlyForecast)
         .padding()
+        .background(
+            LinearGradient(
+                colors: [.blue.opacity(0.5), .indigo.opacity(0.6)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
 }

@@ -13,8 +13,7 @@ struct DailyForecastSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Daily Forecast")
-                .font(.headline)
+            SectionHeader(title: "Daily Forecast", systemImage: "calendar")
 
             VStack(spacing: 8) {
                 ForEach(Array(items.prefix(7))) { item in
@@ -46,12 +45,23 @@ private struct DailyForecastRow: View {
                 .fontWeight(.semibold)
         }
         .padding(16)
-        .background(.thinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .background(Color.white.opacity(0.10))
+        .overlay {
+            RoundedRectangle(cornerRadius: 18)
+                .stroke(Color.white.opacity(0.10), lineWidth: 1)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 }
 
 #Preview {
     DailyForecastSection(items: HomeMockData.weatherDetails.dailyForecast)
         .padding()
+        .background(
+            LinearGradient(
+                colors: [.blue.opacity(0.5), .indigo.opacity(0.6)],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
 }
