@@ -2,7 +2,7 @@
 //  SearchState.swift
 //  Weatherly
 //
-//  Created by Codex on 31.3.2026.
+//  Created by Pekomon on 31.3.2026.
 //
 
 import Foundation
