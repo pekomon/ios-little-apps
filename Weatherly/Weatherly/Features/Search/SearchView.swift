@@ -35,7 +35,23 @@ struct SearchView: View {
 
     @ViewBuilder
     private var content: some View {
-        if viewModel.state.isLoading {
+        let trimmedQuery = viewModel.state.query.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        if trimmedQuery.isEmpty {
+            ContentUnavailableView {
+                Label("Search for a City", systemImage: "magnifyingglass")
+            } description: {
+                Text("Enter a city name to find weather locations around the world.")
+            }
+        } else if trimmedQuery.count < 2 {
+            ContentUnavailableView {
+                Label("Keep Typing", systemImage: "text.cursor")
+            } description: {
+                Text("Type at least 2 characters to search for a location.")
+            }
+        } else if !viewModel.state.results.isEmpty {
+            resultsList
+        } else if viewModel.state.isLoading {
             VStack(spacing: 16) {
                 ProgressView()
                     .controlSize(.large)
@@ -50,35 +66,55 @@ struct SearchView: View {
             } description: {
                 Text(errorMessage)
             }
-        } else if viewModel.state.query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            ContentUnavailableView {
-                Label("Search for a City", systemImage: "magnifyingglass")
-            } description: {
-                Text("Enter a city name to look up weather locations.")
-            }
-        } else if viewModel.state.results.isEmpty {
+        } else {
             ContentUnavailableView {
                 Label("No Matching Locations", systemImage: "mappin.slash")
             } description: {
-                Text("Try a different city name or adjust your search.")
+                Text("Try another city name or a broader place search.")
             }
-        } else {
-            List(viewModel.state.results) { location in
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(location.name)
-                        .font(.headline)
-
-                    if let country = location.country, !country.isEmpty {
-                        Text(country)
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .padding(.vertical, 4)
-                .listRowBackground(Color(.secondarySystemGroupedBackground))
-            }
-            .scrollContentBackground(.hidden)
         }
+    }
+
+    private var resultsList: some View {
+        List(viewModel.state.results) { location in
+            SearchResultRow(location: location)
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                .listRowBackground(Color.clear)
+        }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .overlay(alignment: .top) {
+            if viewModel.state.isLoading {
+                ProgressView("Searching...")
+                    .controlSize(.small)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(.ultraThinMaterial)
+                    .clipShape(Capsule())
+                    .padding(.top, 12)
+            }
+        }
+    }
+}
+
+private struct SearchResultRow: View {
+    let location: Location
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(location.name)
+                .font(.headline)
+
+            if let country = location.country, !country.isEmpty {
+                Text(country)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(16)
+        .background(Color(.secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 }
 
