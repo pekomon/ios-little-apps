@@ -13,10 +13,16 @@ final class SearchViewModel {
     var state = SearchState()
 
     private let locationSearchRepository: LocationSearchRepository
+    private let recentSearchStore: SearchRecentSearchStore
     private var searchTask: Task<Void, Never>?
 
-    init(locationSearchRepository: LocationSearchRepository = MapKitLocationSearchRepository()) {
+    init(
+        locationSearchRepository: LocationSearchRepository = MapKitLocationSearchRepository(),
+        recentSearchStore: SearchRecentSearchStore = UserDefaultsSearchRecentSearchStore()
+    ) {
         self.locationSearchRepository = locationSearchRepository
+        self.recentSearchStore = recentSearchStore
+        state.recentSearches = recentSearchStore.loadRecentSearches()
     }
 
     func updateQuery(_ query: String) {
@@ -75,5 +81,15 @@ final class SearchViewModel {
         state.isLoading = false
         state.results = []
         state.errorMessage = nil
+    }
+
+    func saveRecentSearch(_ location: Location) {
+        recentSearchStore.saveRecentSearch(location)
+        state.recentSearches = recentSearchStore.loadRecentSearches()
+    }
+
+    func clearRecentSearches() {
+        recentSearchStore.clearRecentSearches()
+        state.recentSearches = []
     }
 }

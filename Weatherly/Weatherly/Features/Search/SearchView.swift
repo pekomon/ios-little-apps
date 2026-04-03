@@ -42,11 +42,7 @@ struct SearchView: View {
         let trimmedQuery = viewModel.state.query.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedQuery.isEmpty {
-            stateCard(
-                title: "Search for a City",
-                message: "Enter a city name to find weather locations around the world.",
-                systemImage: "magnifyingglass"
-            )
+            recentSearchesContent
         } else if trimmedQuery.count < 2 {
             stateCard(
                 title: "Keep Typing",
@@ -84,12 +80,7 @@ struct SearchView: View {
 
                 LazyVStack(spacing: 12) {
                     ForEach(viewModel.state.results) { location in
-                        Button {
-                            selectedLocation = location
-                        } label: {
-                            SearchResultRow(location: location)
-                        }
-                        .buttonStyle(.plain)
+                        locationButton(for: location)
                     }
                 }
             }
@@ -109,6 +100,49 @@ struct SearchView: View {
                     .padding(.top, 12)
             }
         }
+    }
+
+    @ViewBuilder
+    private var recentSearchesContent: some View {
+        if viewModel.state.recentSearches.isEmpty {
+            stateCard(
+                title: "Search for a City",
+                message: "Enter a city name to find weather locations around the world.",
+                systemImage: "magnifyingglass"
+            )
+        } else {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    recentSearchesHeader
+
+                    LazyVStack(spacing: 12) {
+                        ForEach(viewModel.state.recentSearches) { location in
+                            locationButton(for: location)
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
+                .padding(.bottom, 32)
+            }
+            .scrollIndicators(.hidden)
+        }
+    }
+
+    private var recentSearchesHeader: some View {
+        HStack(alignment: .center) {
+            Label("Recent Searches", systemImage: "clock.arrow.circlepath")
+                .font(.headline)
+
+            Spacer()
+
+            Button("Clear") {
+                viewModel.clearRecentSearches()
+            }
+            .font(.subheadline.weight(.medium))
+            .foregroundStyle(Color.blue)
+        }
+        .padding(.horizontal, 2)
     }
 
     private var backgroundGradient: some View {
@@ -147,6 +181,20 @@ struct SearchView: View {
     private var resultCountText: String {
         let count = viewModel.state.results.count
         return count == 1 ? "1 place" : "\(count) places"
+    }
+
+    private func locationButton(for location: Location) -> some View {
+        Button {
+            openWeather(for: location)
+        } label: {
+            SearchResultRow(location: location)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func openWeather(for location: Location) {
+        viewModel.saveRecentSearch(location)
+        selectedLocation = location
     }
 
     private func stateCard(

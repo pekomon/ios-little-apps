@@ -11,5 +11,6 @@ struct SearchState {
     var query: String = ""
     var isLoading = false
     var results: [Location] = []
+    var recentSearches: [Location] = []
     var errorMessage: String?
 }
