@@ -4,7 +4,6 @@
 //
 //  Created by Pekomon on 15.3.2026.
 //
-	
 
 import SwiftUI
 
@@ -14,12 +13,12 @@ struct SearchView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(.systemGroupedBackground)
-                    .ignoresSafeArea()
+                backgroundGradient
 
                 content
             }
             .navigationTitle("Search")
+            .navigationBarTitleDisplayMode(.large)
             .searchable(
                 text: Binding(
                     get: { viewModel.state.query },
@@ -38,83 +37,174 @@ struct SearchView: View {
         let trimmedQuery = viewModel.state.query.trimmingCharacters(in: .whitespacesAndNewlines)
 
         if trimmedQuery.isEmpty {
-            ContentUnavailableView {
-                Label("Search for a City", systemImage: "magnifyingglass")
-            } description: {
-                Text("Enter a city name to find weather locations around the world.")
-            }
+            stateCard(
+                title: "Search for a City",
+                message: "Enter a city name to find weather locations around the world.",
+                systemImage: "magnifyingglass"
+            )
         } else if trimmedQuery.count < 2 {
-            ContentUnavailableView {
-                Label("Keep Typing", systemImage: "text.cursor")
-            } description: {
-                Text("Type at least 2 characters to search for a location.")
-            }
+            stateCard(
+                title: "Keep Typing",
+                message: "Type at least 2 characters to search for a location.",
+                systemImage: "text.cursor"
+            )
         } else if !viewModel.state.results.isEmpty {
             resultsList
         } else if viewModel.state.isLoading {
-            VStack(spacing: 16) {
-                ProgressView()
-                    .controlSize(.large)
-
-                Text("Searching locations...")
-                    .foregroundStyle(.secondary)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            stateCard(
+                title: "Searching Locations",
+                message: "Looking up matching places for your weather search.",
+                systemImage: "location.magnifyingglass",
+                showsProgress: true
+            )
         } else if let errorMessage = viewModel.state.errorMessage {
-            ContentUnavailableView {
-                Label("Search Unavailable", systemImage: "exclamationmark.magnifyingglass")
-            } description: {
-                Text(errorMessage)
-            }
+            stateCard(
+                title: "Search Unavailable",
+                message: errorMessage,
+                systemImage: "exclamationmark.magnifyingglass"
+            )
         } else {
-            ContentUnavailableView {
-                Label("No Matching Locations", systemImage: "mappin.slash")
-            } description: {
-                Text("Try another city name or a broader place search.")
-            }
+            stateCard(
+                title: "No Matching Locations",
+                message: "Try another city name or a broader place search.",
+                systemImage: "mappin.slash"
+            )
         }
     }
 
     private var resultsList: some View {
-        List(viewModel.state.results) { location in
-            SearchResultRow(location: location)
-                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-                .listRowBackground(Color.clear)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
+                resultsHeader
+
+                LazyVStack(spacing: 12) {
+                    ForEach(viewModel.state.results) { location in
+                        SearchResultRow(location: location)
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 32)
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
+        .scrollIndicators(.hidden)
         .overlay(alignment: .top) {
             if viewModel.state.isLoading {
                 ProgressView("Searching...")
                     .controlSize(.small)
                     .padding(.horizontal, 14)
                     .padding(.vertical, 10)
-                    .background(.ultraThinMaterial)
+                    .background(.regularMaterial)
                     .clipShape(Capsule())
                     .padding(.top, 12)
             }
         }
     }
-}
 
-private struct SearchResultRow: View {
-    let location: Location
+    private var backgroundGradient: some View {
+        ZStack {
+            Color(.systemGroupedBackground)
+                .ignoresSafeArea()
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(location.name)
+            LinearGradient(
+                colors: [
+                    Color.blue.opacity(0.20),
+                    Color.indigo.opacity(0.14),
+                    Color.cyan.opacity(0.08),
+                    .clear
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+        }
+    }
+
+    private var resultsHeader: some View {
+        HStack(alignment: .center) {
+            Label("Results", systemImage: "mappin.and.ellipse")
                 .font(.headline)
 
-            if let country = location.country, !country.isEmpty {
-                Text(country)
+            Spacer()
+
+            Text(resultCountText)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        .padding(.horizontal, 2)
+    }
+
+    private var resultCountText: String {
+        let count = viewModel.state.results.count
+        return count == 1 ? "1 place" : "\(count) places"
+    }
+
+    private func stateCard(
+        title: String,
+        message: String,
+        systemImage: String,
+        showsProgress: Bool = false
+    ) -> some View {
+        VStack {
+            Spacer(minLength: 24)
+
+            SearchStateCard(
+                title: title,
+                message: message,
+                systemImage: systemImage,
+                showsProgress: showsProgress
+            )
+            .padding(.horizontal, 20)
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+}
+
+private struct SearchStateCard: View {
+    let title: String
+    let message: String
+    let systemImage: String
+    let showsProgress: Bool
+
+    var body: some View {
+        VStack(spacing: 18) {
+            ZStack {
+                Circle()
+                    .fill(Color.blue.opacity(0.12))
+                    .frame(width: 62, height: 62)
+
+                Image(systemName: systemImage)
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundStyle(Color.blue)
+            }
+
+            VStack(spacing: 8) {
+                Text(title)
+                    .font(.title3)
+                    .fontWeight(.semibold)
+
+                Text(message)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+
+            if showsProgress {
+                ProgressView()
+                    .controlSize(.regular)
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
-        .background(Color(.secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 18))
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 24)
+        .padding(.vertical, 28)
+        .background(.ultraThinMaterial)
+        .overlay {
+            RoundedRectangle(cornerRadius: 28)
+                .stroke(Color.white.opacity(0.18), lineWidth: 1)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 28))
     }
 }
 
