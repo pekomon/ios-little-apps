@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SearchView: View {
     @State private var viewModel = SearchViewModel()
+    @State private var selectedLocation: Location?
 
     var body: some View {
         NavigationStack {
@@ -29,6 +30,10 @@ struct SearchView: View {
             )
             .textInputAutocapitalization(.words)
             .autocorrectionDisabled()
+            .sheet(item: $selectedLocation) { location in
+                SearchLocationWeatherView(location: location)
+                    .presentationDragIndicator(.visible)
+            }
         }
     }
 
@@ -79,7 +84,12 @@ struct SearchView: View {
 
                 LazyVStack(spacing: 12) {
                     ForEach(viewModel.state.results) { location in
-                        SearchResultRow(location: location)
+                        Button {
+                            selectedLocation = location
+                        } label: {
+                            SearchResultRow(location: location)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
