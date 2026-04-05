@@ -9,6 +9,7 @@ import SwiftUI
 
 struct FavoritesView: View {
     @State private var viewModel: FavoritesViewModel
+    @State private var selectedLocation: Location?
 
     init(viewModel: FavoritesViewModel = FavoritesViewModel()) {
         _viewModel = State(initialValue: viewModel)
@@ -23,6 +24,10 @@ struct FavoritesView: View {
             }
             .navigationTitle("Favorites")
             .navigationBarTitleDisplayMode(.large)
+            .sheet(item: $selectedLocation) { location in
+                SearchLocationWeatherView(location: location)
+                    .presentationDragIndicator(.visible)
+            }
             .task {
                 if case .idle = viewModel.state {
                     viewModel.loadFavorites()
@@ -111,7 +116,12 @@ struct FavoritesView: View {
 
                 LazyVStack(spacing: 12) {
                     ForEach(locations) { location in
-                        FavoriteLocationRow(location: location)
+                        Button {
+                            selectedLocation = location
+                        } label: {
+                            FavoriteLocationRow(location: location)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
             }
