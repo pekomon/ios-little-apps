@@ -12,15 +12,20 @@ import Observation
 final class SearchLocationWeatherViewModel {
     let location: Location
     var state: SearchLocationWeatherState = .idle
+    var isFavorite = false
 
     private let weatherRepository: WeatherRepository
+    private let favoritesRepository: FavoritesRepository
 
     init(
         location: Location,
-        weatherRepository: WeatherRepository = WeatherKitWeatherRepository()
+        weatherRepository: WeatherRepository = WeatherKitWeatherRepository(),
+        favoritesRepository: FavoritesRepository = UserDefaultsFavoritesRepository()
     ) {
         self.location = location
         self.weatherRepository = weatherRepository
+        self.favoritesRepository = favoritesRepository
+        isFavorite = favoritesRepository.isFavorite(location)
     }
 
     func loadWeather() async {
@@ -32,5 +37,14 @@ final class SearchLocationWeatherViewModel {
         } catch {
             state = .failed(error.localizedDescription)
         }
+    }
+
+    func saveToFavorites() {
+        guard !isFavorite else {
+            return
+        }
+
+        favoritesRepository.saveFavorite(location)
+        isFavorite = true
     }
 }

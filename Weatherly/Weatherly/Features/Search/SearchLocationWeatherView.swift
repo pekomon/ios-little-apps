@@ -23,6 +23,18 @@ struct SearchLocationWeatherView: View {
             }
             .navigationTitle("Weather")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        viewModel.saveToFavorites()
+                    } label: {
+                        Image(systemName: viewModel.isFavorite ? "star.fill" : "star")
+                            .foregroundStyle(viewModel.isFavorite ? Color.yellow : Color.primary)
+                    }
+                    .disabled(viewModel.isFavorite)
+                    .accessibilityLabel(viewModel.isFavorite ? "Saved to Favorites" : "Save to Favorites")
+                }
+            }
             .task {
                 if case .idle = viewModel.state {
                     await viewModel.loadWeather()
