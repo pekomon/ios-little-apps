@@ -13,7 +13,7 @@ struct FavoriteLocationRow: View {
     var body: some View {
         HStack(alignment: .center, spacing: 14) {
             ZStack {
-                Circle()
+                RoundedRectangle(cornerRadius: 18)
                     .fill(
                         LinearGradient(
                             colors: [
@@ -24,10 +24,10 @@ struct FavoriteLocationRow: View {
                             endPoint: .bottomTrailing
                         )
                     )
-                    .frame(width: 42, height: 42)
+                    .frame(width: 48, height: 48)
 
                 Image(systemName: "star.fill")
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(Color.white)
             }
 
@@ -48,16 +48,27 @@ struct FavoriteLocationRow: View {
             }
 
             Spacer()
+
+            VStack(alignment: .trailing, spacing: 6) {
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+
+                Text("Weather")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-        .background(.ultraThinMaterial)
+        .padding(.vertical, 15)
+        .background(.regularMaterial)
         .overlay {
             RoundedRectangle(cornerRadius: 22)
                 .stroke(Color.white.opacity(0.18), lineWidth: 1)
         }
         .clipShape(RoundedRectangle(cornerRadius: 22))
+        .shadow(color: Color.black.opacity(0.04), radius: 10, y: 3)
     }
 }
 

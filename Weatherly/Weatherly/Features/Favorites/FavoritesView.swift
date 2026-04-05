@@ -49,14 +49,14 @@ struct FavoritesView: View {
     private var content: some View {
         switch viewModel.state {
         case .idle, .loading:
-            VStack(spacing: 16) {
+            stateCard(
+                title: "Loading Favorites",
+                message: "Gathering the places you’ve saved for quick weather checks.",
+                systemImage: "star.leadinghalf.filled"
+            ) {
                 ProgressView()
-                    .controlSize(.large)
-
-                Text("Loading favorites...")
-                    .foregroundStyle(.secondary)
+                    .controlSize(.regular)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
         case .empty:
             emptyState
@@ -67,50 +67,29 @@ struct FavoritesView: View {
     }
 
     private var emptyState: some View {
-        VStack {
-            Spacer(minLength: 24)
-
-            VStack(spacing: 18) {
-                ZStack {
-                    Circle()
-                        .fill(Color.yellow.opacity(0.16))
-                        .frame(width: 68, height: 68)
-
-                    Image(systemName: "star.bubble.fill")
-                        .font(.system(size: 28, weight: .semibold))
-                        .foregroundStyle(Color.orange)
-                }
-
-                VStack(spacing: 8) {
-                    Text("No Favorite Places Yet")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-
-                    Text("Save cities you want to revisit and they’ll appear here for quick access.")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 30)
-            .background(.ultraThinMaterial)
-            .overlay {
-                RoundedRectangle(cornerRadius: 28)
-                    .stroke(Color.white.opacity(0.18), lineWidth: 1)
-            }
-            .clipShape(RoundedRectangle(cornerRadius: 28))
-            .padding(.horizontal, 20)
-
-            Spacer()
+        stateCard(
+            title: "Build Your Favorites List",
+            message: "Save cities from Search and they’ll appear here for quick access whenever you want to check the forecast.",
+            systemImage: "star.circle.fill"
+        ) {
+            Label("Tip: open a city and tap the star", systemImage: "sparkles")
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(Color.orange)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(Color.orange.opacity(0.12))
+                .clipShape(Capsule())
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private func favoritesList(_ locations: [Location]) -> some View {
         List {
             Section {
+                favoritesSummaryCard(for: locations.count)
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 10, trailing: 16))
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+
                 ForEach(locations) { location in
                     Button {
                         selectedLocation = location
@@ -130,13 +109,11 @@ struct FavoritesView: View {
                     }
                 }
             } header: {
-                HStack(alignment: .center) {
+                VStack(alignment: .leading, spacing: 6) {
                     Label("Saved Locations", systemImage: "star.fill")
                         .font(.headline)
 
-                    Spacer()
-
-                    Text(locationCountText(for: locations.count))
+                    Text("Open any saved place to view weather details or manage it later.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
@@ -144,6 +121,7 @@ struct FavoritesView: View {
             }
         }
         .listStyle(.plain)
+        .listSectionSpacing(12)
         .scrollContentBackground(.hidden)
         .background(Color.clear)
     }
@@ -169,6 +147,98 @@ struct FavoritesView: View {
 
     private func locationCountText(for count: Int) -> String {
         count == 1 ? "1 place" : "\(count) places"
+    }
+
+    private func favoritesSummaryCard(for count: Int) -> some View {
+        HStack(alignment: .center, spacing: 14) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 18)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color.yellow.opacity(0.9),
+                                Color.orange.opacity(0.8)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 52, height: 52)
+
+                Image(systemName: "star.fill")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.white)
+            }
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(locationCountText(for: count))
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+
+                Text("Your saved cities stay here for quick weather check-ins.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 16)
+        .background(.regularMaterial)
+        .overlay {
+            RoundedRectangle(cornerRadius: 24)
+                .stroke(Color.white.opacity(0.16), lineWidth: 1)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 24))
+    }
+
+    private func stateCard<Accessory: View>(
+        title: String,
+        message: String,
+        systemImage: String,
+        @ViewBuilder accessory: () -> Accessory
+    ) -> some View {
+        VStack {
+            Spacer(minLength: 24)
+
+            VStack(spacing: 20) {
+                ZStack {
+                    Circle()
+                        .fill(Color.yellow.opacity(0.16))
+                        .frame(width: 72, height: 72)
+
+                    Image(systemName: systemImage)
+                        .font(.system(size: 29, weight: .semibold))
+                        .foregroundStyle(Color.orange)
+                }
+
+                VStack(spacing: 10) {
+                    Text(title)
+                        .font(.title3)
+                        .fontWeight(.semibold)
+
+                    Text(message)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+
+                accessory()
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 32)
+            .background(.ultraThinMaterial)
+            .overlay {
+                RoundedRectangle(cornerRadius: 28)
+                    .stroke(Color.white.opacity(0.18), lineWidth: 1)
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 28))
+            .padding(.horizontal, 20)
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
