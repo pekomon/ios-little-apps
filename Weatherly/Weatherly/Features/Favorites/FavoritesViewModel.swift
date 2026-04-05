@@ -18,10 +18,20 @@ final class FavoritesViewModel {
         self.favoritesRepository = favoritesRepository
     }
 
-    func loadFavorites() {
-        state = .loading
+    func loadFavorites(showLoading: Bool = true) {
+        if showLoading {
+            state = .loading
+        }
 
-        let favorites = favoritesRepository.fetchFavoriteLocations()
+        applyFavorites(favoritesRepository.fetchFavoriteLocations())
+    }
+
+    func removeFavorite(_ location: Location) {
+        favoritesRepository.removeFavorite(location)
+        applyFavorites(favoritesRepository.fetchFavoriteLocations())
+    }
+
+    private func applyFavorites(_ favorites: [Location]) {
         state = favorites.isEmpty ? .empty : .loaded(favorites)
     }
 }

@@ -24,7 +24,9 @@ struct FavoritesView: View {
             }
             .navigationTitle("Favorites")
             .navigationBarTitleDisplayMode(.large)
-            .sheet(item: $selectedLocation) { location in
+            .sheet(item: $selectedLocation, onDismiss: {
+                viewModel.loadFavorites(showLoading: false)
+            }) { location in
                 SearchLocationWeatherView(location: location)
                     .presentationDragIndicator(.visible)
             }
@@ -32,6 +34,13 @@ struct FavoritesView: View {
                 if case .idle = viewModel.state {
                     viewModel.loadFavorites()
                 }
+            }
+            .onAppear {
+                if case .idle = viewModel.state {
+                    return
+                }
+
+                viewModel.loadFavorites(showLoading: false)
             }
         }
     }
@@ -100,8 +109,27 @@ struct FavoritesView: View {
     }
 
     private func favoritesList(_ locations: [Location]) -> some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 18) {
+        List {
+            Section {
+                ForEach(locations) { location in
+                    Button {
+                        selectedLocation = location
+                    } label: {
+                        FavoriteLocationRow(location: location)
+                    }
+                    .buttonStyle(.plain)
+                    .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                    .listRowSeparator(.hidden)
+                    .listRowBackground(Color.clear)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            viewModel.removeFavorite(location)
+                        } label: {
+                            Label("Remove", systemImage: "trash")
+                        }
+                    }
+                }
+            } header: {
                 HStack(alignment: .center) {
                     Label("Saved Locations", systemImage: "star.fill")
                         .font(.headline)
@@ -112,24 +140,12 @@ struct FavoritesView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
-                .padding(.horizontal, 2)
-
-                LazyVStack(spacing: 12) {
-                    ForEach(locations) { location in
-                        Button {
-                            selectedLocation = location
-                        } label: {
-                            FavoriteLocationRow(location: location)
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
+                .textCase(nil)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 16)
-            .padding(.bottom, 32)
         }
-        .scrollIndicators(.hidden)
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background(Color.clear)
     }
 
     private var backgroundGradient: some View {

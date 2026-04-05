@@ -26,13 +26,12 @@ struct SearchLocationWeatherView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        viewModel.saveToFavorites()
+                        viewModel.toggleFavorite()
                     } label: {
                         Image(systemName: viewModel.isFavorite ? "star.fill" : "star")
                             .foregroundStyle(viewModel.isFavorite ? Color.yellow : Color.primary)
                     }
-                    .disabled(viewModel.isFavorite)
-                    .accessibilityLabel(viewModel.isFavorite ? "Saved to Favorites" : "Save to Favorites")
+                    .accessibilityLabel(viewModel.isFavorite ? "Remove from Favorites" : "Save to Favorites")
                 }
             }
             .task {

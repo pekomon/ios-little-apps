@@ -39,12 +39,13 @@ final class SearchLocationWeatherViewModel {
         }
     }
 
-    func saveToFavorites() {
-        guard !isFavorite else {
-            return
+    func toggleFavorite() {
+        if isFavorite {
+            favoritesRepository.removeFavorite(location)
+            isFavorite = false
+        } else {
+            favoritesRepository.saveFavorite(location)
+            isFavorite = true
         }
-
-        favoritesRepository.saveFavorite(location)
-        isFavorite = true
     }
 }
