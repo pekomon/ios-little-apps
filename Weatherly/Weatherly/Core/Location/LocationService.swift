@@ -25,6 +25,10 @@ final class LocationService: NSObject, CLLocationManagerDelegate {
         self.manager.delegate = self
     }
 
+    func refreshAuthorizationStatus() {
+        authorizationStatus = manager.authorizationStatus
+    }
+
     func requestWhenInUseAuthorization() async -> CLAuthorizationStatus {
         let status = manager.authorizationStatus
 

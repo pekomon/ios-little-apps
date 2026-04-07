@@ -7,29 +7,35 @@
 
 import Foundation
 import Observation
+import CoreLocation
 
 @Observable
 final class SettingsViewModel {
     private(set) var temperatureUnit: TemperatureUnit
     private(set) var windSpeedUnit: WindSpeedUnit
     private(set) var appearancePreference: AppAppearancePreference
+    private(set) var locationAuthorizationStatus: CLAuthorizationStatus
 
     let appName: String
     let appDescription: String
     let versionDescription: String?
 
     private let appSettingsRepository: AppSettingsRepository
+    private let locationService: LocationService
 
     init(
         appSettingsRepository: AppSettingsRepository = UserDefaultsAppSettingsRepository(),
+        locationService: LocationService = LocationService(),
         bundle: Bundle = .main
     ) {
         self.appSettingsRepository = appSettingsRepository
+        self.locationService = locationService
 
         let settings = appSettingsRepository.fetchSettings()
         temperatureUnit = settings.temperatureUnit
         windSpeedUnit = settings.windSpeedUnit
         appearancePreference = settings.appearancePreference
+        locationAuthorizationStatus = locationService.authorizationStatus
 
         appName = Self.resolveAppName(from: bundle)
         appDescription = "Weatherly keeps current conditions, forecasts, and favorite places close at hand in one calm weather experience."
@@ -61,6 +67,54 @@ final class SettingsViewModel {
 
         appearancePreference = preference
         persistSettings()
+    }
+
+    func refreshLocationAuthorizationStatus() {
+        locationService.refreshAuthorizationStatus()
+        locationAuthorizationStatus = locationService.authorizationStatus
+    }
+
+    var locationAuthorizationStatusText: String {
+        switch locationAuthorizationStatus {
+        case .notDetermined:
+            "Not Determined"
+        case .restricted:
+            "Restricted"
+        case .denied:
+            "Denied"
+        case .authorizedWhenInUse:
+            "Allowed While Using App"
+        case .authorizedAlways:
+            "Allowed All the Time"
+        @unknown default:
+            "Unknown"
+        }
+    }
+
+    var locationAuthorizationDescription: String {
+        switch locationAuthorizationStatus {
+        case .notDetermined:
+            "Weatherly uses your current location to load local weather on the Home tab when you choose to allow access."
+        case .restricted:
+            "Location access is restricted on this device, so Weatherly cannot use your current position for local weather."
+        case .denied:
+            "Location access is turned off for Weatherly. Enable it in the system Settings app to use current location weather."
+        case .authorizedWhenInUse, .authorizedAlways:
+            "Current location is available for local weather updates in Weatherly."
+        @unknown default:
+            "Location access status could not be determined."
+        }
+    }
+
+    var canOpenSystemLocationSettings: Bool {
+        switch locationAuthorizationStatus {
+        case .denied, .restricted:
+            true
+        case .notDetermined, .authorizedWhenInUse, .authorizedAlways:
+            false
+        @unknown default:
+            false
+        }
     }
 
     private func persistSettings() {

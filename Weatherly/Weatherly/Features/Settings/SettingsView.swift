@@ -6,8 +6,12 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct SettingsView: View {
+    @Environment(\.openURL) private var openURL
+    @Environment(\.scenePhase) private var scenePhase
+
     let viewModel: SettingsViewModel
 
     var body: some View {
@@ -18,12 +22,23 @@ struct SettingsView: View {
                 Form {
                     unitsSection
                     appearanceSection
+                    locationSection
                     aboutSection
                 }
                 .scrollContentBackground(.hidden)
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.large)
+            .onAppear {
+                viewModel.refreshLocationAuthorizationStatus()
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                guard newPhase == .active else {
+                    return
+                }
+
+                viewModel.refreshLocationAuthorizationStatus()
+            }
         }
     }
 
@@ -126,6 +141,27 @@ struct SettingsView: View {
         }
     }
 
+    private var locationSection: some View {
+        Section {
+            LabeledContent("Permission", value: viewModel.locationAuthorizationStatusText)
+
+            Text(viewModel.locationAuthorizationDescription)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .padding(.vertical, 4)
+
+            if viewModel.canOpenSystemLocationSettings {
+                Button {
+                    openAppSettings()
+                } label: {
+                    Label("Open App Settings", systemImage: "arrow.up.forward.app")
+                }
+            }
+        } header: {
+            Label("Location", systemImage: "location")
+        }
+    }
+
     private var backgroundGradient: some View {
         LinearGradient(
             colors: [
@@ -137,6 +173,14 @@ struct SettingsView: View {
             endPoint: .bottomTrailing
         )
         .ignoresSafeArea()
+    }
+
+    private func openAppSettings() {
+        guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else {
+            return
+        }
+
+        openURL(settingsURL)
     }
 }
 
