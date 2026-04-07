@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct RootView: View {
+    @State private var settingsViewModel = SettingsViewModel()
+
     var body: some View {
         TabView {
             HomeView()
@@ -22,10 +24,24 @@ struct RootView: View {
                 .tabItem {
                     Label("Favorites", systemImage: "star")
                 }
-            SettingsView()
+            SettingsView(viewModel: settingsViewModel)
                 .tabItem {
                     Label("Settings", systemImage: "gearshape")
                 }
+        }
+        .preferredColorScheme(settingsViewModel.appearancePreference.colorScheme)
+    }
+}
+
+private extension AppAppearancePreference {
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system:
+            nil
+        case .light:
+            .light
+        case .dark:
+            .dark
         }
     }
 }

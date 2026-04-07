@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @State private var viewModel = SettingsViewModel()
+    let viewModel: SettingsViewModel
 
     var body: some View {
         NavigationStack {
@@ -102,7 +102,7 @@ struct SettingsView: View {
         } header: {
             Label("Appearance", systemImage: "circle.lefthalf.filled")
         } footer: {
-            Text("Your preference is saved now and can be applied across the app in a later step.")
+            Text("Choose whether Weatherly follows the system appearance or always uses a light or dark look.")
         }
     }
 
@@ -176,5 +176,5 @@ private extension AppAppearancePreference {
 }
 
 #Preview {
-    SettingsView()
+    SettingsView(viewModel: SettingsViewModel())
 }
