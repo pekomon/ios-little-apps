@@ -9,9 +9,10 @@
 import SwiftUI
 
 struct CurrentWeatherCard: View {
-    
+    @Environment(SettingsViewModel.self) private var settingsViewModel
+
     let weather: WeatherDetails
-    
+
     var body: some View {
         VStack(spacing: 12) {
             VStack(spacing: 4) {
@@ -36,14 +37,14 @@ struct CurrentWeatherCard: View {
                 .symbolRenderingMode(.multicolor)
             
             VStack(spacing: 6) {
-                Text("\(Int(weather.current.temperature.rounded()))°")
+                Text(formatter.temperature(weather.current.temperature))
                     .font(.system(size: 64, weight: .bold))
 
                 Text(conditionText(weather.current.condition))
                     .font(.headline)
                     .foregroundStyle(.secondary)
 
-                Text("Feels like \(Int(weather.current.feelsLike.rounded()))°")
+                Text("Feels like \(formatter.temperature(weather.current.feelsLike))")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -66,6 +67,13 @@ struct CurrentWeatherCard: View {
                         .stroke(Color.white.opacity(0.15), lineWidth: 1)
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 28))
+    }
+
+    private var formatter: WeatherValueFormatter {
+        WeatherValueFormatter(
+            temperatureUnit: settingsViewModel.temperatureUnit,
+            windSpeedUnit: settingsViewModel.windSpeedUnit
+        )
     }
     
     private func conditionText(_ condition: AppWeatherCondition) -> String {
@@ -94,6 +102,7 @@ struct CurrentWeatherCard: View {
 
 #Preview {
     CurrentWeatherCard(weather: HomeMockData.weatherDetails)
+        .environment(SettingsViewModel())
         .padding()
         .background(
             LinearGradient(

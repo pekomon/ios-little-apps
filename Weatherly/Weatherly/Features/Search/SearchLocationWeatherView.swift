@@ -100,4 +100,5 @@ struct SearchLocationWeatherView: View {
 
 #Preview {
     SearchLocationWeatherView(location: HomeMockData.helsinki)
+        .environment(SettingsViewModel())
 }

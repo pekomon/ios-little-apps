@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct DailyForecastSection: View {
+    @Environment(SettingsViewModel.self) private var settingsViewModel
+
     let items: [DailyForecast]
 
     var body: some View {
@@ -17,7 +19,13 @@ struct DailyForecastSection: View {
 
             VStack(spacing: 8) {
                 ForEach(Array(items.prefix(7))) { item in
-                    DailyForecastRow(item: item)
+                    DailyForecastRow(
+                        item: item,
+                        formatter: WeatherValueFormatter(
+                            temperatureUnit: settingsViewModel.temperatureUnit,
+                            windSpeedUnit: settingsViewModel.windSpeedUnit
+                        )
+                    )
                 }
             }
         }
@@ -26,6 +34,7 @@ struct DailyForecastSection: View {
 
 private struct DailyForecastRow: View {
     let item: DailyForecast
+    let formatter: WeatherValueFormatter
 
     var body: some View {
         HStack(spacing: 12) {
@@ -38,10 +47,10 @@ private struct DailyForecastRow: View {
 
             Spacer()
 
-            Text("\(Int(item.minTemperature.rounded()))°")
+            Text(formatter.temperature(item.minTemperature))
                 .foregroundStyle(.secondary)
 
-            Text("\(Int(item.maxTemperature.rounded()))°")
+            Text(formatter.temperature(item.maxTemperature))
                 .fontWeight(.semibold)
         }
         .padding(16)
@@ -56,6 +65,7 @@ private struct DailyForecastRow: View {
 
 #Preview {
     DailyForecastSection(items: HomeMockData.weatherDetails.dailyForecast)
+        .environment(SettingsViewModel())
         .padding()
         .background(
             LinearGradient(

@@ -29,6 +29,7 @@ struct RootView: View {
                     Label("Settings", systemImage: "gearshape")
                 }
         }
+        .environment(settingsViewModel)
         .preferredColorScheme(settingsViewModel.appearancePreference.colorScheme)
     }
 }

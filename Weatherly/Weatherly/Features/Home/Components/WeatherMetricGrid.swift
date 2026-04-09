@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct WeatherMetricGrid: View {
+    @Environment(SettingsViewModel.self) private var settingsViewModel
+
     let weather: WeatherDetails
 
     private let columns = [
@@ -23,7 +25,7 @@ struct WeatherMetricGrid: View {
             LazyVGrid(columns: columns, spacing: 12) {
                 MetricCard(
                     title: "Feels Like",
-                    value: "\(Int(weather.current.feelsLike.rounded()))°",
+                    value: formatter.temperature(weather.current.feelsLike),
                     systemImage: "thermometer"
                 )
 
@@ -35,7 +37,7 @@ struct WeatherMetricGrid: View {
 
                 MetricCard(
                     title: "Wind",
-                    value: "\(weather.current.windSpeed.formatted(.number.precision(.fractionLength(1)))) m/s",
+                    value: formatter.windSpeed(weather.current.windSpeed),
                     systemImage: "wind"
                 )
 
@@ -46,6 +48,13 @@ struct WeatherMetricGrid: View {
                 )
             }
         }
+    }
+
+    private var formatter: WeatherValueFormatter {
+        WeatherValueFormatter(
+            temperatureUnit: settingsViewModel.temperatureUnit,
+            windSpeedUnit: settingsViewModel.windSpeedUnit
+        )
     }
 }
 
@@ -77,6 +86,7 @@ private struct MetricCard: View {
 
 #Preview {
     WeatherMetricGrid(weather: HomeMockData.weatherDetails)
+        .environment(SettingsViewModel())
         .padding()
         .background(
             LinearGradient(
