@@ -46,32 +46,41 @@ struct SearchLocationWeatherView: View {
     private var content: some View {
         switch viewModel.state {
         case .idle, .loading:
-            VStack(spacing: 16) {
-                ProgressView()
-                    .controlSize(.large)
-
-                Text("Loading weather...")
-                    .foregroundStyle(.secondary)
+            centeredStateCard {
+                AppStateCard(
+                    title: "Loading Forecast",
+                    message: "Fetching current conditions and forecast details for this location.",
+                    systemImage: "cloud.sun.fill",
+                    tint: .white
+                ) {
+                    ProgressView()
+                        .controlSize(.regular)
+                }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
         case .failed(let message):
-            ContentUnavailableView {
-                Label("Unable to Load Weather", systemImage: "cloud.slash")
-            } description: {
-                Text(message)
-            } actions: {
-                Button("Try Again") {
-                    Task {
-                        await viewModel.loadWeather()
+            centeredStateCard {
+                AppStateCard(
+                    title: "Unable to Load Forecast",
+                    message: message,
+                    systemImage: "cloud.slash",
+                    tint: .white
+                ) {
+                    Button {
+                        Task {
+                            await viewModel.loadWeather()
+                        }
+                    } label: {
+                        Label("Try Again", systemImage: "arrow.clockwise")
                     }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.white.opacity(0.18))
                 }
-                .buttonStyle(.borderedProminent)
             }
 
         case .loaded(let weather):
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: 18) {
                     CurrentWeatherCard(weather: weather)
                     WeatherMetricGrid(weather: weather)
                     HourlyForecastSection(items: weather.hourlyForecast)
@@ -82,6 +91,20 @@ struct SearchLocationWeatherView: View {
             }
             .scrollIndicators(.hidden)
         }
+    }
+
+    private func centeredStateCard<Content: View>(
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        VStack {
+            Spacer(minLength: 24)
+
+            content()
+                .padding(.horizontal, 20)
+
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var backgroundGradient: some View {

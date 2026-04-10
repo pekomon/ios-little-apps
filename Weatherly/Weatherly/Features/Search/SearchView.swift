@@ -206,63 +206,22 @@ struct SearchView: View {
         VStack {
             Spacer(minLength: 24)
 
-            SearchStateCard(
+            AppStateCard(
                 title: title,
                 message: message,
                 systemImage: systemImage,
-                showsProgress: showsProgress
-            )
+                tint: .blue
+            ) {
+                if showsProgress {
+                    ProgressView()
+                        .controlSize(.regular)
+                }
+            }
             .padding(.horizontal, 20)
 
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-}
-
-private struct SearchStateCard: View {
-    let title: String
-    let message: String
-    let systemImage: String
-    let showsProgress: Bool
-
-    var body: some View {
-        VStack(spacing: 18) {
-            ZStack {
-                Circle()
-                    .fill(Color.blue.opacity(0.12))
-                    .frame(width: 62, height: 62)
-
-                Image(systemName: systemImage)
-                    .font(.system(size: 24, weight: .semibold))
-                    .foregroundStyle(Color.blue)
-            }
-
-            VStack(spacing: 8) {
-                Text(title)
-                    .font(.title3)
-                    .fontWeight(.semibold)
-
-                Text(message)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-
-            if showsProgress {
-                ProgressView()
-                    .controlSize(.regular)
-            }
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal, 24)
-        .padding(.vertical, 28)
-        .background(.ultraThinMaterial)
-        .overlay {
-            RoundedRectangle(cornerRadius: 28)
-                .stroke(Color.white.opacity(0.18), lineWidth: 1)
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 28))
     }
 }
 

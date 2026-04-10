@@ -121,7 +121,7 @@ struct FavoritesView: View {
             }
         }
         .listStyle(.plain)
-        .listSectionSpacing(12)
+        .listSectionSpacing(14)
         .scrollContentBackground(.hidden)
         .background(Color.clear)
     }
@@ -201,39 +201,14 @@ struct FavoritesView: View {
         VStack {
             Spacer(minLength: 24)
 
-            VStack(spacing: 20) {
-                ZStack {
-                    Circle()
-                        .fill(Color.yellow.opacity(0.16))
-                        .frame(width: 72, height: 72)
-
-                    Image(systemName: systemImage)
-                        .font(.system(size: 29, weight: .semibold))
-                        .foregroundStyle(Color.orange)
-                }
-
-                VStack(spacing: 10) {
-                    Text(title)
-                        .font(.title3)
-                        .fontWeight(.semibold)
-
-                    Text(message)
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-
+            AppStateCard(
+                title: title,
+                message: message,
+                systemImage: systemImage,
+                tint: .orange
+            ) {
                 accessory()
             }
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 32)
-            .background(.ultraThinMaterial)
-            .overlay {
-                RoundedRectangle(cornerRadius: 28)
-                    .stroke(Color.white.opacity(0.18), lineWidth: 1)
-            }
-            .clipShape(RoundedRectangle(cornerRadius: 28))
             .padding(.horizontal, 20)
 
             Spacer()
