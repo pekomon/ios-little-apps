@@ -8,38 +8,44 @@
 import SwiftUI
 import WidgetKit
 
-private enum WeatherlyWidgetSampleEntry {
+struct WeatherlyWidgetEntry: TimelineEntry {
+    let date: Date
+    let snapshot: WidgetWeatherSnapshot
+}
+
+private extension WeatherlyWidgetEntry {
     static let placeholder = WeatherlyWidgetEntry(
-        date: .now,
-        cityName: "Helsinki",
-        conditionSymbolName: "cloud.sun.fill",
-        temperatureText: "12°",
-        summaryText: "Partly Cloudy",
-        highLowText: "H:15°  L:8°"
+        date: WidgetWeatherSnapshot.placeholder.updatedAt,
+        snapshot: .placeholder
     )
 }
 
-struct WeatherlyWidgetEntry: TimelineEntry {
-    let date: Date
-    let cityName: String
-    let conditionSymbolName: String
-    let temperatureText: String
-    let summaryText: String
-    let highLowText: String
+private extension WidgetWeatherSnapshot {
+    var temperatureText: String {
+        "\(Int(temperature.rounded()))°"
+    }
+
+    var highLowText: String? {
+        guard let today = dailyForecasts.first else {
+            return nil
+        }
+
+        return "H:\(Int(today.maxTemperature.rounded()))°  L:\(Int(today.minTemperature.rounded()))°"
+    }
 }
 
 struct WeatherlyWidgetProvider: TimelineProvider {
     func placeholder(in context: Context) -> WeatherlyWidgetEntry {
-        WeatherlyWidgetSampleEntry.placeholder
+        .placeholder
     }
 
     func getSnapshot(in context: Context, completion: @escaping (WeatherlyWidgetEntry) -> Void) {
-        completion(WeatherlyWidgetSampleEntry.placeholder)
+        completion(.placeholder)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<WeatherlyWidgetEntry>) -> Void) {
         let refreshDate = Calendar.current.date(byAdding: .minute, value: 30, to: .now) ?? .now
-        let timeline = Timeline(entries: [WeatherlyWidgetSampleEntry.placeholder], policy: .after(refreshDate))
+        let timeline = Timeline(entries: [WeatherlyWidgetEntry.placeholder], policy: .after(refreshDate))
         completion(timeline)
     }
 }
@@ -61,30 +67,32 @@ struct WeatherlyWidgetEntryView: View {
             VStack(alignment: .leading, spacing: 10) {
                 HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(entry.cityName)
+                        Text(entry.snapshot.locationName)
                             .font(.headline)
                             .fontWeight(.semibold)
 
-                        Text(entry.summaryText)
+                        Text(entry.snapshot.conditionText)
                             .font(.caption)
                             .foregroundStyle(.white.opacity(0.8))
                     }
 
                     Spacer(minLength: 8)
 
-                    Image(systemName: entry.conditionSymbolName)
+                    Image(systemName: entry.snapshot.symbolName)
                         .font(.title2)
                         .symbolRenderingMode(.hierarchical)
                 }
 
                 Spacer()
 
-                Text(entry.temperatureText)
+                Text(entry.snapshot.temperatureText)
                     .font(.system(size: 34, weight: .bold, design: .rounded))
 
-                Text(entry.highLowText)
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.85))
+                if let highLowText = entry.snapshot.highLowText {
+                    Text(highLowText)
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.85))
+                }
             }
             .foregroundStyle(.white)
             .padding()
@@ -118,5 +126,5 @@ struct WeatherlyWidgetBundle: WidgetBundle {
 #Preview(as: .systemSmall) {
     WeatherlyWidget()
 } timeline: {
-    WeatherlyWidgetSampleEntry.placeholder
+    WeatherlyWidgetEntry.placeholder
 }

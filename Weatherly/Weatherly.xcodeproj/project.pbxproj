@@ -99,6 +99,11 @@
 			path = WeatherlyUITests;
 			sourceTree = "<group>";
 		};
+		9EA7C71882EC419EB6D75CF6 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
+			sourceTree = "<group>";
+		};
 		F59E62E7783A40348188CD23 /* WeatherlyWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -145,6 +150,7 @@
 			isa = PBXGroup;
 			children = (
 				A20D4A272F6721D800D97A70 /* Weatherly */,
+				9EA7C71882EC419EB6D75CF6 /* Shared */,
 				F59E62E7783A40348188CD23 /* WeatherlyWidget */,
 				A20D4A352F6721DA00D97A70 /* WeatherlyTests */,
 				A20D4A3F2F6721DA00D97A70 /* WeatherlyUITests */,
@@ -182,6 +188,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				A20D4A272F6721D800D97A70 /* Weatherly */,
+				9EA7C71882EC419EB6D75CF6 /* Shared */,
 			);
 			name = Weatherly;
 			packageProductDependencies = (
@@ -249,6 +256,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				9EA7C71882EC419EB6D75CF6 /* Shared */,
 				F59E62E7783A40348188CD23 /* WeatherlyWidget */,
 			);
 			name = WeatherlyWidget;
