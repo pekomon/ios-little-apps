@@ -8,12 +8,18 @@
 import SwiftUI
 import WidgetKit
 
+private let snapshotStore = WidgetSnapshotStore()
+
 struct WeatherlyWidgetEntry: TimelineEntry {
     let date: Date
     let snapshot: WidgetWeatherSnapshot
 }
 
 private extension WeatherlyWidgetEntry {
+    init(snapshot: WidgetWeatherSnapshot) {
+        self.init(date: snapshot.updatedAt, snapshot: snapshot)
+    }
+
     static let placeholder = WeatherlyWidgetEntry(
         date: WidgetWeatherSnapshot.placeholder.updatedAt,
         snapshot: .placeholder
@@ -40,12 +46,14 @@ struct WeatherlyWidgetProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (WeatherlyWidgetEntry) -> Void) {
-        completion(.placeholder)
+        let entry = WeatherlyWidgetEntry(snapshot: snapshotStore.loadSnapshot() ?? .placeholder)
+        completion(entry)
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<WeatherlyWidgetEntry>) -> Void) {
+        let snapshot = snapshotStore.loadSnapshot() ?? .placeholder
         let refreshDate = Calendar.current.date(byAdding: .minute, value: 30, to: .now) ?? .now
-        let timeline = Timeline(entries: [WeatherlyWidgetEntry.placeholder], policy: .after(refreshDate))
+        let timeline = Timeline(entries: [WeatherlyWidgetEntry(snapshot: snapshot)], policy: .after(refreshDate))
         completion(timeline)
     }
 }
