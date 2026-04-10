@@ -25,6 +25,8 @@ struct SettingsView: View {
                     locationSection
                     aboutSection
                 }
+                .formStyle(.grouped)
+                .listSectionSpacing(18)
                 .scrollContentBackground(.hidden)
             }
             .navigationTitle("Settings")
@@ -44,10 +46,10 @@ struct SettingsView: View {
 
     private var unitsSection: some View {
         Section {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Temperature")
-                    .font(.subheadline.weight(.semibold))
-
+            SettingsPickerRow(
+                title: "Temperature Unit",
+                description: "Used for current conditions, feels-like temperature, and forecast values."
+            ) {
                 Picker(
                     "Temperature Unit",
                     selection: Binding(
@@ -63,12 +65,11 @@ struct SettingsView: View {
                 .pickerStyle(.segmented)
                 .labelsHidden()
             }
-            .padding(.vertical, 4)
 
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Wind Speed")
-                    .font(.subheadline.weight(.semibold))
-
+            SettingsPickerRow(
+                title: "Wind Speed Unit",
+                description: "Used anywhere wind conditions are shown."
+            ) {
                 Picker(
                     "Wind Speed Unit",
                     selection: Binding(
@@ -84,20 +85,19 @@ struct SettingsView: View {
                 .pickerStyle(.segmented)
                 .labelsHidden()
             }
-            .padding(.vertical, 4)
         } header: {
             Label("Units", systemImage: "thermometer.medium")
         } footer: {
-            Text("Choose how weather values should be shown throughout the app.")
+            Text("These preferences apply across Home, search results, and forecast views.")
         }
     }
 
     private var appearanceSection: some View {
         Section {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("App Appearance")
-                    .font(.subheadline.weight(.semibold))
-
+            SettingsPickerRow(
+                title: "App Appearance",
+                description: "Choose whether Weatherly follows the system style or keeps a consistent light or dark look."
+            ) {
                 Picker(
                     "App Appearance",
                     selection: Binding(
@@ -108,47 +108,72 @@ struct SettingsView: View {
                     ForEach(AppAppearancePreference.allCases, id: \.self) { preference in
                         Text(preference.settingsLabel)
                             .tag(preference)
-                    }
+                        }
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
             }
-            .padding(.vertical, 4)
         } header: {
-            Label("Appearance", systemImage: "circle.lefthalf.filled")
+            Label("Appearance", systemImage: "paintbrush.pointed")
         } footer: {
-            Text("Choose whether Weatherly follows the system appearance or always uses a light or dark look.")
+            Text("System matches your device setting automatically.")
         }
     }
 
     private var aboutSection: some View {
         Section {
-            VStack(alignment: .leading, spacing: 10) {
-                Text(viewModel.appName)
-                    .font(.headline)
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(alignment: .center, spacing: 14) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 16, style: .continuous)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.blue.opacity(0.95), Color.cyan.opacity(0.85)],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .frame(width: 52, height: 52)
+
+                        Image(systemName: "cloud.sun.fill")
+                            .font(.title2)
+                            .foregroundStyle(.white)
+                    }
+
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(viewModel.appName)
+                            .font(.headline)
+
+                        Text("A calm forecast companion")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                }
 
                 Text(viewModel.appDescription)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
-            .padding(.vertical, 4)
+            .padding(.vertical, 6)
 
             if let versionDescription = viewModel.versionDescription {
                 LabeledContent("Version", value: versionDescription)
             }
         } header: {
             Label("About", systemImage: "info.circle")
+        } footer: {
+            Text("Designed for quick local weather checks and easy access to saved places.")
         }
     }
 
     private var locationSection: some View {
         Section {
-            LabeledContent("Permission", value: viewModel.locationAuthorizationStatusText)
+            LabeledContent("Current Access", value: viewModel.locationAuthorizationStatusText)
 
             Text(viewModel.locationAuthorizationDescription)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-                .padding(.vertical, 4)
+                .padding(.vertical, 2)
 
             if viewModel.canOpenSystemLocationSettings {
                 Button {
@@ -158,7 +183,9 @@ struct SettingsView: View {
                 }
             }
         } header: {
-            Label("Location", systemImage: "location")
+            Label("Location", systemImage: "location.circle")
+        } footer: {
+            Text("Location is only used to show weather for your current position.")
         }
     }
 
@@ -181,6 +208,28 @@ struct SettingsView: View {
         }
 
         openURL(settingsURL)
+    }
+}
+
+private struct SettingsPickerRow<Content: View>: View {
+    let title: String
+    let description: String
+    @ViewBuilder let content: Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.subheadline.weight(.semibold))
+
+                Text(description)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+
+            content
+        }
+        .padding(.vertical, 6)
     }
 }
 

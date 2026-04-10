@@ -38,7 +38,7 @@ final class SettingsViewModel {
         locationAuthorizationStatus = locationService.authorizationStatus
 
         appName = Self.resolveAppName(from: bundle)
-        appDescription = "Weatherly keeps current conditions, forecasts, and favorite places close at hand in one calm weather experience."
+        appDescription = "Weatherly brings current conditions, upcoming hours, and saved places into a focused forecast experience that feels quick to read and easy to return to."
         versionDescription = Self.resolveVersionDescription(from: bundle)
     }
 
