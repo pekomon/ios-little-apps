@@ -9,6 +9,7 @@ import SwiftUI
 import WidgetKit
 
 private let snapshotStore = WidgetSnapshotStore()
+private let widgetHomeURL = URL(string: "weatherly://home?source=widget")
 
 struct WeatherlyWidgetEntry: TimelineEntry {
     let date: Date
@@ -93,6 +94,7 @@ struct WeatherlyWidgetEntryView: View {
                 endPoint: .bottomTrailing
             )
         }
+        .widgetURL(widgetHomeURL)
     }
 
     private var smallContent: some View {
