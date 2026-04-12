@@ -7,18 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		74663306F0BC42B5B798AC8C /* WeatherlyWidget.appex in Embed App Extensions */ = {
-			isa = PBXBuildFile;
-			fileRef = 4A49E7D94F1F4D858E44C505 /* WeatherlyWidget.appex */;
-			settings = {
-				ATTRIBUTES = (
-					RemoveHeadersOnCopy,
-				);
-			};
-		};
+		74663306F0BC42B5B798AC8C /* WeatherlyWidget.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 4A49E7D94F1F4D858E44C505 /* WeatherlyWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		47AE0A3DE369445E9279F3A1 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A20D4A1D2F6721D800D97A70 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 16F7989D221648919320E8BC;
+			remoteInfo = WeatherlyWidget;
+		};
 		A20D4A332F6721DA00D97A70 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = A20D4A1D2F6721D800D97A70 /* Project object */;
@@ -32,13 +31,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = A20D4A242F6721D800D97A70;
 			remoteInfo = Weatherly;
-		};
-		47AE0A3DE369445E9279F3A1 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = A20D4A1D2F6721D800D97A70 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 16F7989D221648919320E8BC;
-			remoteInfo = WeatherlyWidget;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -57,20 +49,13 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		4A49E7D94F1F4D858E44C505 /* WeatherlyWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WeatherlyWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20D4A252F6721D800D97A70 /* Weatherly.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Weatherly.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20D4A322F6721DA00D97A70 /* WeatherlyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WeatherlyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A20D4A3C2F6721DA00D97A70 /* WeatherlyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WeatherlyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		4A49E7D94F1F4D858E44C505 /* WeatherlyWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = WeatherlyWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A23910792F6EECFE00D896A1 /* Exceptions for "Weatherly" folder in "Weatherly" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = A20D4A242F6721D800D97A70 /* Weatherly */;
-		};
 		79C4B9C70D404591B8A5EEC0 /* Exceptions for "WeatherlyWidget" folder in "WeatherlyWidget" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -78,9 +63,21 @@
 			);
 			target = 16F7989D221648919320E8BC /* WeatherlyWidget */;
 		};
+		A23910792F6EECFE00D896A1 /* Exceptions for "Weatherly" folder in "Weatherly" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A20D4A242F6721D800D97A70 /* Weatherly */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		9EA7C71882EC419EB6D75CF6 /* Shared */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Shared;
+			sourceTree = "<group>";
+		};
 		A20D4A272F6721D800D97A70 /* Weatherly */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -97,11 +94,6 @@
 		A20D4A3F2F6721DA00D97A70 /* WeatherlyUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = WeatherlyUITests;
-			sourceTree = "<group>";
-		};
-		9EA7C71882EC419EB6D75CF6 /* Shared */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Shared;
 			sourceTree = "<group>";
 		};
 		F59E62E7783A40348188CD23 /* WeatherlyWidget */ = {
@@ -172,6 +164,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		16F7989D221648919320E8BC /* WeatherlyWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EB9C970E199D4FDAA3A6079E /* Build configuration list for PBXNativeTarget "WeatherlyWidget" */;
+			buildPhases = (
+				BA3819C498044CA38617B6D5 /* Sources */,
+				A7DEDE7CFB654AE4BDB9FDC5 /* Frameworks */,
+				428DBA36C9CD4159B7C407C0 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				9EA7C71882EC419EB6D75CF6 /* Shared */,
+				F59E62E7783A40348188CD23 /* WeatherlyWidget */,
+			);
+			name = WeatherlyWidget;
+			packageProductDependencies = (
+			);
+			productName = WeatherlyWidget;
+			productReference = 4A49E7D94F1F4D858E44C505 /* WeatherlyWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		A20D4A242F6721D800D97A70 /* Weatherly */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = A20D4A462F6721DA00D97A70 /* Build configuration list for PBXNativeTarget "Weatherly" */;
@@ -187,8 +202,8 @@
 				C613419B309F4F5CA328F2E5 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				A20D4A272F6721D800D97A70 /* Weatherly */,
 				9EA7C71882EC419EB6D75CF6 /* Shared */,
+				A20D4A272F6721D800D97A70 /* Weatherly */,
 			);
 			name = Weatherly;
 			packageProductDependencies = (
@@ -243,29 +258,6 @@
 			productReference = A20D4A3C2F6721DA00D97A70 /* WeatherlyUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
-		16F7989D221648919320E8BC /* WeatherlyWidget */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = EB9C970E199D4FDAA3A6079E /* Build configuration list for PBXNativeTarget "WeatherlyWidget" */;
-			buildPhases = (
-				BA3819C498044CA38617B6D5 /* Sources */,
-				A7DEDE7CFB654AE4BDB9FDC5 /* Frameworks */,
-				428DBA36C9CD4159B7C407C0 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				9EA7C71882EC419EB6D75CF6 /* Shared */,
-				F59E62E7783A40348188CD23 /* WeatherlyWidget */,
-			);
-			name = WeatherlyWidget;
-			packageProductDependencies = (
-			);
-			productName = WeatherlyWidget;
-			productReference = 4A49E7D94F1F4D858E44C505 /* WeatherlyWidget.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -276,6 +268,9 @@
 				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
+					16F7989D221648919320E8BC = {
+						CreatedOnToolsVersion = 26.2;
+					};
 					A20D4A242F6721D800D97A70 = {
 						CreatedOnToolsVersion = 26.2;
 					};
@@ -286,9 +281,6 @@
 					A20D4A3B2F6721DA00D97A70 = {
 						CreatedOnToolsVersion = 26.2;
 						TestTargetID = A20D4A242F6721D800D97A70;
-					};
-					16F7989D221648919320E8BC = {
-						CreatedOnToolsVersion = 26.2;
 					};
 				};
 			};
@@ -315,6 +307,13 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		428DBA36C9CD4159B7C407C0 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		A20D4A232F6721D800D97A70 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -330,13 +329,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A20D4A3A2F6721DA00D97A70 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		428DBA36C9CD4159B7C407C0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -395,6 +387,35 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		A038D8CFAE5E4B9EA41774E0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = WeatherlyWidget/WeatherlyWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = LN94FRW66K;
+				ENABLE_PREVIEWS = YES;
+				INFOPLIST_FILE = WeatherlyWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pekomon.weatherly.widget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
 		A20D4A442F6721DA00D97A70 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -533,7 +554,7 @@
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We use your location to show local weather";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -570,7 +591,7 @@
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We use your location to show local weather";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -673,35 +694,6 @@
 				TEST_TARGET_NAME = Weatherly;
 			};
 			name = Release;
-		};
-		A038D8CFAE5E4B9EA41774E0 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				CODE_SIGN_ENTITLEMENTS = WeatherlyWidget/WeatherlyWidget.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LN94FRW66K;
-				ENABLE_PREVIEWS = YES;
-				INFOPLIST_FILE = WeatherlyWidget/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pekomon.weatherly.widget;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
 		};
 		B33EA45B068245D5A5CBF8F4 /* Release */ = {
 			isa = XCBuildConfiguration;
