@@ -39,7 +39,8 @@ final class SearchLocationWeatherViewModel {
         }
     }
 
-    func toggleFavorite() {
+    @discardableResult
+    func toggleFavorite() -> Bool {
         if isFavorite {
             favoritesRepository.removeFavorite(location)
             isFavorite = false
@@ -47,5 +48,7 @@ final class SearchLocationWeatherViewModel {
             favoritesRepository.saveFavorite(location)
             isFavorite = true
         }
+
+        return isFavorite
     }
 }

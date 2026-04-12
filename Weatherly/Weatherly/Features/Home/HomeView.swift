@@ -52,6 +52,7 @@ struct HomeView: View {
                     tint: .white
                 ) {
                     Button {
+                        HapticFeedback.warning()
                         Task {
                             await viewModel.loadWeather()
                         }

@@ -26,7 +26,12 @@ struct SearchLocationWeatherView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        viewModel.toggleFavorite()
+                        let isNowFavorite = viewModel.toggleFavorite()
+                        if isNowFavorite {
+                            HapticFeedback.success()
+                        } else {
+                            HapticFeedback.warning()
+                        }
                     } label: {
                         Image(systemName: viewModel.isFavorite ? "star.fill" : "star")
                             .foregroundStyle(viewModel.isFavorite ? Color.yellow : Color.primary)
@@ -68,6 +73,7 @@ struct SearchLocationWeatherView: View {
                     tint: .white
                 ) {
                     Button {
+                        HapticFeedback.warning()
                         Task {
                             await viewModel.loadWeather()
                         }

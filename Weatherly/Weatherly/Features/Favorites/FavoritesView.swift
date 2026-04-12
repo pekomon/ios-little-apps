@@ -105,6 +105,7 @@ struct FavoritesView: View {
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
                             viewModel.removeFavorite(location)
+                            HapticFeedback.warning()
                         } label: {
                             Label("Remove \(location.name)", systemImage: "trash")
                         }
