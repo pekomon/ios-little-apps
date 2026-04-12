@@ -112,7 +112,7 @@ struct WeatherlyWidgetEntryView: View {
 }
 
 struct WeatherlyWidget: Widget {
-    let kind = "WeatherlyWidget"
+    let kind = WeatherlyWidgetConfiguration.kind
 
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: WeatherlyWidgetProvider()) { entry in

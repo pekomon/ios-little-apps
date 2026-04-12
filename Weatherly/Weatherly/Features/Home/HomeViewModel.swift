@@ -15,13 +15,16 @@ final class HomeViewModel {
 
     private let weatherRepository: WeatherRepository
     private let locationService: LocationService
+    private let widgetSnapshotWriter: WidgetSnapshotWriter
 
     init(
         weatherRepository: WeatherRepository = WeatherKitWeatherRepository(),
-        locationService: LocationService = LocationService()
+        locationService: LocationService = LocationService(),
+        widgetSnapshotWriter: WidgetSnapshotWriter = WidgetSnapshotWriter()
     ) {
         self.weatherRepository = weatherRepository
         self.locationService = locationService
+        self.widgetSnapshotWriter = widgetSnapshotWriter
     }
 
     func loadWeather() async {
@@ -39,6 +42,7 @@ final class HomeViewModel {
             )
             
             let weather = try await weatherRepository.fetchWeather(for: location)
+            widgetSnapshotWriter.writeSnapshot(from: weather)
             state = .loaded(weather)
         } catch {
             state = .failed(error.localizedDescription)

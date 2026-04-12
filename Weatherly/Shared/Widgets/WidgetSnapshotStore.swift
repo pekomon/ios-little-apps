@@ -7,6 +7,10 @@
 
 import Foundation
 
+enum WeatherlyWidgetConfiguration {
+    static let kind = "WeatherlyWidget"
+}
+
 enum WeatherlyWidgetAppGroup {
     static let identifier = "group.com.pekomon.weatherly"
 }
