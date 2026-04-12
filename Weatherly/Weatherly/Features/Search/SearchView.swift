@@ -141,6 +141,7 @@ struct SearchView: View {
             }
             .font(.subheadline.weight(.medium))
             .foregroundStyle(Color.blue)
+            .accessibilityLabel("Clear recent searches")
         }
         .padding(.horizontal, 2)
     }
@@ -190,6 +191,8 @@ struct SearchView: View {
             SearchResultRow(location: location)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Show weather for \(accessibilityLocationDescription(for: location))")
+        .accessibilityHint("Opens detailed weather forecast")
     }
 
     private func openWeather(for location: Location) {
@@ -222,6 +225,14 @@ struct SearchView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func accessibilityLocationDescription(for location: Location) -> String {
+        if let country = location.country, !country.isEmpty {
+            return "\(location.name), \(country)"
+        }
+
+        return location.name
     }
 }
 

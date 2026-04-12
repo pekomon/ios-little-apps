@@ -32,6 +32,7 @@ struct SearchLocationWeatherView: View {
                             .foregroundStyle(viewModel.isFavorite ? Color.yellow : Color.primary)
                     }
                     .accessibilityLabel(viewModel.isFavorite ? "Remove from Favorites" : "Save to Favorites")
+                    .accessibilityValue(viewModel.isFavorite ? "Saved" : "Not saved")
                 }
             }
             .task {

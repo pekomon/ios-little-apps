@@ -39,19 +39,26 @@ private struct DailyForecastRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Text(item.date, format: .dateTime.weekday(.abbreviated))
-                .frame(width: 48, alignment: .leading)
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+                .frame(minWidth: 56, alignment: .leading)
 
             Image(systemName: item.symbolName)
                 .frame(width: 24)
                 .symbolRenderingMode(.multicolor)
+                .accessibilityHidden(true)
 
             Spacer()
 
             Text(formatter.temperature(item.minTemperature))
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
 
             Text(formatter.temperature(item.maxTemperature))
                 .fontWeight(.semibold)
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
         }
         .padding(16)
         .background(Color.white.opacity(0.10))
@@ -60,6 +67,9 @@ private struct DailyForecastRow: View {
                 .stroke(Color.white.opacity(0.10), lineWidth: 1)
         }
         .clipShape(RoundedRectangle(cornerRadius: 18))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(item.date.formatted(.dateTime.weekday(.wide)))
+        .accessibilityValue("Low \(formatter.temperature(item.minTemperature)), high \(formatter.temperature(item.maxTemperature))")
     }
 }
 

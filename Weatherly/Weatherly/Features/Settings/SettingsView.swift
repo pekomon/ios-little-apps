@@ -138,6 +138,7 @@ struct SettingsView: View {
                         Image(systemName: "cloud.sun.fill")
                             .font(.title2)
                             .foregroundStyle(.white)
+                            .accessibilityHidden(true)
                     }
 
                     VStack(alignment: .leading, spacing: 3) {
@@ -149,6 +150,9 @@ struct SettingsView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(viewModel.appName)
+                .accessibilityValue("A calm forecast companion")
 
                 Text(viewModel.appDescription)
                     .font(.subheadline)

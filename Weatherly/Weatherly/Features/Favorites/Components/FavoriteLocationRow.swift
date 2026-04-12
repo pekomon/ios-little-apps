@@ -29,6 +29,7 @@ struct FavoriteLocationRow: View {
                 Image(systemName: "star.fill")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(Color.white)
+                    .accessibilityHidden(true)
             }
 
             VStack(alignment: .leading, spacing: 4) {
@@ -53,10 +54,12 @@ struct FavoriteLocationRow: View {
                 Image(systemName: "chevron.right")
                     .font(.caption.weight(.semibold))
                     .foregroundStyle(.tertiary)
+                    .accessibilityHidden(true)
 
                 Text("Weather")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -69,6 +72,16 @@ struct FavoriteLocationRow: View {
         }
         .clipShape(RoundedRectangle(cornerRadius: 22))
         .shadow(color: Color.black.opacity(0.04), radius: 10, y: 3)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLocationDescription)
+    }
+
+    private var accessibilityLocationDescription: String {
+        if let country = location.country, !country.isEmpty {
+            return "\(location.name), \(country)"
+        }
+
+        return location.name
     }
 }
 

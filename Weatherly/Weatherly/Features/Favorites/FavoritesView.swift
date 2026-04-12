@@ -97,6 +97,8 @@ struct FavoritesView: View {
                         FavoriteLocationRow(location: location)
                     }
                     .buttonStyle(.plain)
+                    .accessibilityLabel("Show weather for \(accessibilityLocationDescription(for: location))")
+                    .accessibilityHint("Opens detailed weather forecast")
                     .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
                     .listRowSeparator(.hidden)
                     .listRowBackground(Color.clear)
@@ -104,7 +106,7 @@ struct FavoritesView: View {
                         Button(role: .destructive) {
                             viewModel.removeFavorite(location)
                         } label: {
-                            Label("Remove", systemImage: "trash")
+                            Label("Remove \(location.name)", systemImage: "trash")
                         }
                     }
                 }
@@ -168,6 +170,7 @@ struct FavoritesView: View {
                 Image(systemName: "star.fill")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(.white)
+                    .accessibilityHidden(true)
             }
 
             VStack(alignment: .leading, spacing: 4) {
@@ -190,6 +193,9 @@ struct FavoritesView: View {
                 .stroke(Color.white.opacity(0.16), lineWidth: 1)
         }
         .clipShape(RoundedRectangle(cornerRadius: 24))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Saved locations summary")
+        .accessibilityValue("\(locationCountText(for: count)). Your saved cities stay here for quick weather check-ins.")
     }
 
     private func stateCard<Accessory: View>(
@@ -214,6 +220,14 @@ struct FavoritesView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func accessibilityLocationDescription(for location: Location) -> String {
+        if let country = location.country, !country.isEmpty {
+            return "\(location.name), \(country)"
+        }
+
+        return location.name
     }
 }
 

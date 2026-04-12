@@ -43,13 +43,18 @@ private struct HourlyForecastItemView: View {
             Text(item.date, format: .dateTime.hour())
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.9)
 
             Image(systemName: item.symbolName)
                 .font(.title3)
                 .symbolRenderingMode(.multicolor)
+                .accessibilityHidden(true)
 
             Text(formatter.temperature(item.temperature))
                 .fontWeight(.semibold)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
         .frame(width: 76)
         .padding(.vertical, 16)
@@ -59,6 +64,9 @@ private struct HourlyForecastItemView: View {
                 .stroke(Color.white.opacity(0.10), lineWidth: 1)
         }
         .clipShape(RoundedRectangle(cornerRadius: 18))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Forecast at \(item.date.formatted(date: .omitted, time: .shortened))")
+        .accessibilityValue(formatter.temperature(item.temperature))
     }
 }
 

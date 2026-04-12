@@ -19,11 +19,15 @@ struct CurrentWeatherCard: View {
                 Text(weather.location.name)
                     .font(.title2)
                     .fontWeight(.semibold)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
                 
                 if let country = weather.location.country, !country.isEmpty {
                     Text(country)
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.9)
                 } else {
                     Text("Current location")
                         .font(.subheadline)
@@ -35,10 +39,13 @@ struct CurrentWeatherCard: View {
             Image(systemName: weather.current.symbolName)
                 .font(.system(size: 64))
                 .symbolRenderingMode(.multicolor)
+                .accessibilityHidden(true)
             
             VStack(spacing: 6) {
                 Text(formatter.temperature(weather.current.temperature))
                     .font(.system(size: 64, weight: .bold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
 
                 Text(conditionText(weather.current.condition))
                     .font(.headline)
@@ -67,6 +74,9 @@ struct CurrentWeatherCard: View {
                         .stroke(Color.white.opacity(0.15), lineWidth: 1)
                 }
                 .clipShape(RoundedRectangle(cornerRadius: 28))
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("Current weather for \(accessibilityLocationDescription)")
+                .accessibilityValue("\(conditionText(weather.current.condition)), \(formatter.temperature(weather.current.temperature)). Feels like \(formatter.temperature(weather.current.feelsLike)).")
     }
 
     private var formatter: WeatherValueFormatter {
@@ -97,6 +107,14 @@ struct CurrentWeatherCard: View {
         case .unknown:
             return "Unknown"
         }
+    }
+
+    private var accessibilityLocationDescription: String {
+        if let country = weather.location.country, !country.isEmpty {
+            return "\(weather.location.name), \(country)"
+        }
+
+        return weather.location.name
     }
 }
 

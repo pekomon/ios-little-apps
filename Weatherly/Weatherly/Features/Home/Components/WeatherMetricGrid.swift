@@ -68,6 +68,7 @@ private struct MetricCard: View {
             Label(title, systemImage: systemImage)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
 
             Text(value)
                 .font(.title3)
@@ -81,6 +82,9 @@ private struct MetricCard: View {
                 .stroke(Color.white.opacity(0.10), lineWidth: 1)
         }
         .clipShape(RoundedRectangle(cornerRadius: 18))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title)
+        .accessibilityValue(value)
     }
 }
 

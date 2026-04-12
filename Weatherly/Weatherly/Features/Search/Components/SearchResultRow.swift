@@ -17,6 +17,7 @@ struct SearchResultRow: View {
                 .symbolRenderingMode(.palette)
                 .foregroundStyle(Color.white.opacity(0.95), Color.blue.opacity(0.75))
                 .frame(width: 36, height: 36)
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(location.name)
@@ -41,6 +42,16 @@ struct SearchResultRow: View {
                 .stroke(Color.white.opacity(0.18), lineWidth: 1)
         }
         .clipShape(RoundedRectangle(cornerRadius: 22))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityLocationDescription)
+    }
+
+    private var accessibilityLocationDescription: String {
+        if let country = location.country, !country.isEmpty {
+            return "\(location.name), \(country)"
+        }
+
+        return location.name
     }
 }
 

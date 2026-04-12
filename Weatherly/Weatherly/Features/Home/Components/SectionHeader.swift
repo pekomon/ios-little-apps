@@ -18,6 +18,7 @@ struct SectionHeader: View {
             if let systemImage {
                 Image(systemName: systemImage)
                     .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
             }
             
             Text(title)
