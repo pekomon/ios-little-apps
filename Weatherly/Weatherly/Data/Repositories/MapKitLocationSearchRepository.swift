@@ -8,8 +8,9 @@
 import Foundation
 import MapKit
 
-final class MapKitLocationSearchRepository: LocationSearchRepository {
-    private var currentRequest: MKGeocodingRequest?
+final class MapKitLocationSearchRepository: NSObject, LocationSearchRepository {
+    @MainActor private var completer: MKLocalSearchCompleter?
+    @MainActor private var continuation: CheckedContinuation<[MKLocalSearchCompletion], Error>?
 
     func searchLocations(matching query: String) async throws -> [Location] {
         let trimmedQuery = query.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -18,23 +19,60 @@ final class MapKitLocationSearchRepository: LocationSearchRepository {
             return []
         }
 
-        currentRequest?.cancel()
+        let completions = try await fetchCompletions(for: trimmedQuery)
+        let mapItems = try await resolveMapItems(from: completions)
+        return deduplicatedLocations(from: mapItems)
+    }
 
-        guard let request = MKGeocodingRequest(addressString: trimmedQuery) else {
-            throw LocationSearchError.invalidQuery
+    @MainActor
+    private func fetchCompletions(for query: String) async throws -> [MKLocalSearchCompletion] {
+        let completer = configuredCompleter()
+
+        if let continuation {
+            continuation.resume(throwing: CancellationError())
+            self.continuation = nil
         }
 
-        request.preferredLocale = .current
-        currentRequest = request
+        return try await withCheckedThrowingContinuation { continuation in
+            self.continuation = continuation
+            completer.queryFragment = query
+        }
+    }
 
-        defer {
-            if currentRequest === request {
-                currentRequest = nil
+    @MainActor
+    private func configuredCompleter() -> MKLocalSearchCompleter {
+        if let completer {
+            return completer
+        }
+
+        let completer = MKLocalSearchCompleter()
+        completer.delegate = self
+        completer.resultTypes = [.address]
+        completer.region = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(latitude: 20, longitude: 0),
+            span: MKCoordinateSpan(latitudeDelta: 140, longitudeDelta: 320)
+        )
+        self.completer = completer
+        return completer
+    }
+
+    private func resolveMapItems(from completions: [MKLocalSearchCompletion]) async throws -> [MKMapItem] {
+        var resolvedItems: [MKMapItem] = []
+
+        for completion in completions.prefix(8) {
+            try Task.checkCancellation()
+
+            let request = MKLocalSearch.Request(completion: completion)
+            request.resultTypes = [.address]
+            let search = MKLocalSearch(request: request)
+            let response = try await search.start()
+
+            if let mapItem = response.mapItems.first {
+                resolvedItems.append(mapItem)
             }
         }
 
-        let mapItems = try await request.mapItems
-        return deduplicatedLocations(from: mapItems)
+        return resolvedItems
     }
 
     private func deduplicatedLocations(from mapItems: [MKMapItem]) -> [Location] {
@@ -94,13 +132,19 @@ final class MapKitLocationSearchRepository: LocationSearchRepository {
     }
 }
 
-private enum LocationSearchError: LocalizedError {
-    case invalidQuery
+extension MapKitLocationSearchRepository: MKLocalSearchCompleterDelegate {
+    nonisolated func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
+        Task { @MainActor in
+            let results = Array(completer.results.prefix(8))
+            continuation?.resume(returning: results)
+            continuation = nil
+        }
+    }
 
-    var errorDescription: String? {
-        switch self {
-        case .invalidQuery:
-            return "The location search query is invalid."
+    nonisolated func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: any Error) {
+        Task { @MainActor in
+            continuation?.resume(throwing: error)
+            continuation = nil
         }
     }
 }
