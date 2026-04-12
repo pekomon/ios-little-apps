@@ -27,6 +27,12 @@ private extension WeatherlyWidgetEntry {
 }
 
 private extension WidgetWeatherSnapshot {
+    private static let relativeFormatter: RelativeDateTimeFormatter = {
+        let formatter = RelativeDateTimeFormatter()
+        formatter.unitsStyle = .abbreviated
+        return formatter
+    }()
+
     var temperatureText: String {
         "\(Int(temperature.rounded()))°"
     }
@@ -37,6 +43,11 @@ private extension WidgetWeatherSnapshot {
         }
 
         return "H:\(Int(today.maxTemperature.rounded()))°  L:\(Int(today.minTemperature.rounded()))°"
+    }
+
+    var updatedText: String {
+        let relative = Self.relativeFormatter.localizedString(for: updatedAt, relativeTo: .now)
+        return "Updated \(relative)"
     }
 }
 
@@ -101,6 +112,10 @@ struct WeatherlyWidgetEntryView: View {
                         .font(.caption)
                         .foregroundStyle(.white.opacity(0.85))
                 }
+
+                Text(entry.snapshot.updatedText)
+                    .font(.caption2)
+                    .foregroundStyle(.white.opacity(0.75))
             }
             .foregroundStyle(.white)
             .padding()
@@ -120,7 +135,7 @@ struct WeatherlyWidget: Widget {
         }
         .configurationDisplayName("Current Weather")
         .description("A compact weather snapshot from Weatherly.")
-        .supportedFamilies([.systemSmall])
+        .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
 
@@ -132,6 +147,12 @@ struct WeatherlyWidgetBundle: WidgetBundle {
 }
 
 #Preview(as: .systemSmall) {
+    WeatherlyWidget()
+} timeline: {
+    WeatherlyWidgetEntry.placeholder
+}
+
+#Preview(as: .systemMedium) {
     WeatherlyWidget()
 } timeline: {
     WeatherlyWidgetEntry.placeholder
