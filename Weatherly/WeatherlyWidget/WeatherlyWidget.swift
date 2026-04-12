@@ -70,6 +70,7 @@ struct WeatherlyWidgetProvider: TimelineProvider {
 }
 
 struct WeatherlyWidgetEntryView: View {
+    @Environment(\.widgetFamily) private var widgetFamily
     let entry: WeatherlyWidgetProvider.Entry
 
     var body: some View {
@@ -83,29 +84,78 @@ struct WeatherlyWidgetEntryView: View {
                 endPoint: .bottomTrailing
             )
 
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(alignment: .top) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(entry.snapshot.locationName)
-                            .font(.headline)
-                            .fontWeight(.semibold)
+            Group {
+                switch widgetFamily {
+                case .systemMedium:
+                    mediumContent
+                default:
+                    smallContent
+                }
+            }
+            .padding()
+        }
+        .containerBackground(for: .widget) {
+            Color.clear
+        }
+    }
 
-                        Text(entry.snapshot.conditionText)
-                            .font(.caption)
-                            .foregroundStyle(.white.opacity(0.8))
-                    }
+    private var smallContent: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(entry.snapshot.locationName)
+                        .font(.headline)
+                        .fontWeight(.semibold)
 
-                    Spacer(minLength: 8)
+                    Text(entry.snapshot.conditionText)
+                        .font(.caption)
+                        .foregroundStyle(.white.opacity(0.8))
+                }
+
+                Spacer(minLength: 8)
+
+                Image(systemName: entry.snapshot.symbolName)
+                    .font(.title2)
+                    .symbolRenderingMode(.hierarchical)
+            }
+
+            Spacer()
+
+            Text(entry.snapshot.temperatureText)
+                .font(.system(size: 34, weight: .bold, design: .rounded))
+
+            if let highLowText = entry.snapshot.highLowText {
+                Text(highLowText)
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.85))
+            }
+
+            Text(entry.snapshot.updatedText)
+                .font(.caption2)
+                .foregroundStyle(.white.opacity(0.75))
+        }
+        .foregroundStyle(.white)
+    }
+
+    private var mediumContent: some View {
+        HStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(entry.snapshot.locationName)
+                    .font(.headline)
+                    .fontWeight(.semibold)
+
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text(entry.snapshot.temperatureText)
+                        .font(.system(size: 40, weight: .bold, design: .rounded))
 
                     Image(systemName: entry.snapshot.symbolName)
                         .font(.title2)
                         .symbolRenderingMode(.hierarchical)
                 }
 
-                Spacer()
-
-                Text(entry.snapshot.temperatureText)
-                    .font(.system(size: 34, weight: .bold, design: .rounded))
+                Text(entry.snapshot.conditionText)
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.8))
 
                 if let highLowText = entry.snapshot.highLowText {
                     Text(highLowText)
@@ -113,16 +163,51 @@ struct WeatherlyWidgetEntryView: View {
                         .foregroundStyle(.white.opacity(0.85))
                 }
 
+                Spacer(minLength: 0)
+
                 Text(entry.snapshot.updatedText)
                     .font(.caption2)
                     .foregroundStyle(.white.opacity(0.75))
             }
             .foregroundStyle(.white)
-            .padding()
+
+            Spacer(minLength: 0)
+
+            VStack(alignment: .leading, spacing: 8) {
+                ForEach(Array(entry.snapshot.dailyForecasts.prefix(3))) { forecast in
+                    HStack(spacing: 8) {
+                        Text(forecast.dayLabel)
+                            .font(.caption)
+                            .fontWeight(.semibold)
+                            .frame(width: 26, alignment: .leading)
+
+                        Image(systemName: forecast.symbolName)
+                            .font(.caption)
+                            .frame(width: 14, alignment: .center)
+
+                        Text(forecast.temperatureRangeText)
+                            .font(.caption)
+                    }
+                    .foregroundStyle(.white.opacity(0.92))
+                }
+            }
         }
-        .containerBackground(for: .widget) {
-            Color.clear
-        }
+    }
+}
+
+private extension WidgetWeatherSnapshot.DailyForecast {
+    private static let weekdayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.setLocalizedDateFormatFromTemplate("EEE")
+        return formatter
+    }()
+
+    var dayLabel: String {
+        Self.weekdayFormatter.string(from: date)
+    }
+
+    var temperatureRangeText: String {
+        "\(Int(maxTemperature.rounded()))° / \(Int(minTemperature.rounded()))°"
     }
 }
 
