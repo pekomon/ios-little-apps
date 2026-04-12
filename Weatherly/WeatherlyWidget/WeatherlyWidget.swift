@@ -74,121 +74,132 @@ struct WeatherlyWidgetEntryView: View {
     let entry: WeatherlyWidgetProvider.Entry
 
     var body: some View {
-        ZStack {
+        Group {
+            switch widgetFamily {
+            case .systemMedium:
+                mediumContent
+            default:
+                smallContent
+            }
+        }
+        .padding(14)
+        .containerBackground(for: .widget) {
             LinearGradient(
                 colors: [
-                    Color(red: 0.16, green: 0.29, blue: 0.53),
-                    Color(red: 0.40, green: 0.65, blue: 0.93),
+                    Color(red: 0.14, green: 0.24, blue: 0.44),
+                    Color(red: 0.31, green: 0.54, blue: 0.83),
                 ],
                 startPoint: .topLeading,
                 endPoint: .bottomTrailing
             )
-
-            Group {
-                switch widgetFamily {
-                case .systemMedium:
-                    mediumContent
-                default:
-                    smallContent
-                }
-            }
-            .padding()
-        }
-        .containerBackground(for: .widget) {
-            Color.clear
         }
     }
 
     private var smallContent: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .top) {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(alignment: .center) {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(entry.snapshot.locationName)
-                        .font(.headline)
+                        .font(.system(.headline, design: .rounded))
                         .fontWeight(.semibold)
+                        .lineLimit(1)
 
                     Text(entry.snapshot.conditionText)
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.8))
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.82))
+                        .lineLimit(1)
                 }
 
-                Spacer(minLength: 8)
+                Spacer(minLength: 10)
 
                 Image(systemName: entry.snapshot.symbolName)
-                    .font(.title2)
+                    .font(.system(size: 21, weight: .semibold))
                     .symbolRenderingMode(.hierarchical)
             }
 
-            Spacer()
+            Spacer(minLength: 0)
 
             Text(entry.snapshot.temperatureText)
-                .font(.system(size: 34, weight: .bold, design: .rounded))
+                .font(.system(size: 42, weight: .bold, design: .rounded))
+                .monospacedDigit()
 
             if let highLowText = entry.snapshot.highLowText {
                 Text(highLowText)
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.85))
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.86))
             }
 
             Text(entry.snapshot.updatedText)
-                .font(.caption2)
-                .foregroundStyle(.white.opacity(0.75))
+                .font(.system(.caption2, design: .rounded))
+                .foregroundStyle(.white.opacity(0.72))
         }
         .foregroundStyle(.white)
     }
 
     private var mediumContent: some View {
-        HStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
+        HStack(spacing: 18) {
+            VStack(alignment: .leading, spacing: 10) {
                 Text(entry.snapshot.locationName)
-                    .font(.headline)
+                    .font(.system(.headline, design: .rounded))
                     .fontWeight(.semibold)
+                    .lineLimit(1)
 
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(entry.snapshot.temperatureText)
-                        .font(.system(size: 40, weight: .bold, design: .rounded))
+                        .font(.system(size: 46, weight: .bold, design: .rounded))
+                        .monospacedDigit()
 
                     Image(systemName: entry.snapshot.symbolName)
-                        .font(.title2)
+                        .font(.system(size: 22, weight: .semibold))
                         .symbolRenderingMode(.hierarchical)
                 }
 
                 Text(entry.snapshot.conditionText)
-                    .font(.caption)
-                    .foregroundStyle(.white.opacity(0.8))
+                    .font(.system(.caption, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.82))
+                    .lineLimit(1)
 
                 if let highLowText = entry.snapshot.highLowText {
                     Text(highLowText)
-                        .font(.caption)
-                        .foregroundStyle(.white.opacity(0.85))
+                        .font(.system(.caption, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.86))
                 }
 
                 Spacer(minLength: 0)
 
                 Text(entry.snapshot.updatedText)
-                    .font(.caption2)
-                    .foregroundStyle(.white.opacity(0.75))
+                    .font(.system(.caption2, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.72))
             }
             .foregroundStyle(.white)
 
-            Spacer(minLength: 0)
+            Spacer(minLength: 8)
 
             VStack(alignment: .leading, spacing: 8) {
+                Text("3-Day Outlook")
+                    .font(.system(.caption2, design: .rounded))
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white.opacity(0.72))
+
                 ForEach(Array(entry.snapshot.dailyForecasts.prefix(3))) { forecast in
-                    HStack(spacing: 8) {
+                    HStack(spacing: 10) {
                         Text(forecast.dayLabel)
-                            .font(.caption)
+                            .font(.system(.caption, design: .rounded))
                             .fontWeight(.semibold)
-                            .frame(width: 26, alignment: .leading)
+                            .frame(width: 30, alignment: .leading)
 
                         Image(systemName: forecast.symbolName)
-                            .font(.caption)
-                            .frame(width: 14, alignment: .center)
+                            .font(.system(size: 12, weight: .semibold))
+                            .frame(width: 16, alignment: .center)
 
                         Text(forecast.temperatureRangeText)
-                            .font(.caption)
+                            .font(.system(.caption, design: .rounded))
+                            .monospacedDigit()
                     }
-                    .foregroundStyle(.white.opacity(0.92))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(.white.opacity(0.14), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                    .foregroundStyle(.white.opacity(0.94))
                 }
             }
         }
@@ -209,6 +220,31 @@ private extension WidgetWeatherSnapshot.DailyForecast {
     var temperatureRangeText: String {
         "\(Int(maxTemperature.rounded()))° / \(Int(minTemperature.rounded()))°"
     }
+}
+
+private extension WidgetWeatherSnapshot {
+    static let previewRainy = WidgetWeatherSnapshot(
+        locationName: "Helsinki",
+        temperature: 9,
+        conditionText: "Rain Showers",
+        symbolName: "cloud.rain.fill",
+        updatedAt: .now.addingTimeInterval(-8 * 60),
+        dailyForecasts: [
+            .init(date: .now, minTemperature: 6, maxTemperature: 10, symbolName: "cloud.rain.fill"),
+            .init(
+                date: Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now,
+                minTemperature: 5,
+                maxTemperature: 11,
+                symbolName: "cloud.sun.rain.fill"
+            ),
+            .init(
+                date: Calendar.current.date(byAdding: .day, value: 2, to: .now) ?? .now,
+                minTemperature: 4,
+                maxTemperature: 9,
+                symbolName: "cloud.bolt.rain.fill"
+            ),
+        ]
+    )
 }
 
 struct WeatherlyWidget: Widget {
@@ -234,11 +270,13 @@ struct WeatherlyWidgetBundle: WidgetBundle {
 #Preview(as: .systemSmall) {
     WeatherlyWidget()
 } timeline: {
-    WeatherlyWidgetEntry.placeholder
+    WeatherlyWidgetEntry(snapshot: .placeholder)
+    WeatherlyWidgetEntry(snapshot: .previewRainy)
 }
 
 #Preview(as: .systemMedium) {
     WeatherlyWidget()
 } timeline: {
-    WeatherlyWidgetEntry.placeholder
+    WeatherlyWidgetEntry(snapshot: .placeholder)
+    WeatherlyWidgetEntry(snapshot: .previewRainy)
 }
