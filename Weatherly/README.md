@@ -54,13 +54,31 @@ This keeps UI logic close to each feature while preserving clean boundaries for 
 
 ## Screenshots
 
-Screenshots can be added under `Weatherly/docs/screenshots/` and linked here.
+Screenshots can be added under `Weatherly/docs/screenshots/` and linked here when available.
 
-- `[TODO] Home`
-- `[TODO] Search`
-- `[TODO] Favorites`
-- `[TODO] Settings`
-- `[TODO] Widget`
+Suggested showcase set:
+
+- `[TODO] Home screen`
+- `[TODO] Search screen`
+- `[TODO] Favorites screen`
+- `[TODO] Settings screen`
+- `[TODO] Widgets`
+
+Suggested file names:
+
+- `home.png`
+- `search.png`
+- `favorites.png`
+- `settings.png`
+- `widgets.png`
+
+### Screenshot Checklist
+
+- Use a single device frame and orientation across app screens
+- Capture realistic weather and location data (no placeholder nonsense)
+- Prefer clean states: loaded content, not transient loading/error views
+- Keep status bar and theme choices consistent between shots
+- Crop and export at web-friendly size for GitHub readability
 
 ## Technical Highlights
 
