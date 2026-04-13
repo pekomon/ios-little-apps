@@ -24,7 +24,11 @@ New SwiftUI app for learning step by step. Currently only the initial scaffold e
 
 Status: in progress
 
+### [Weatherly](./Weatherly/README.md)
+Showcase-focused weather app with Home, Search, Favorites, Settings, and widget support.
+
+Status: polished app project
+
 ## Purpose
 
 This repository is used for personal learning. Each subproject is small enough to live here instead of in its own repository.
-
