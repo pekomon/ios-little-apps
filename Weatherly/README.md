@@ -54,23 +54,29 @@ This keeps UI logic close to each feature while preserving clean boundaries for 
 
 ## Screenshots
 
-Screenshots can be added under `Weatherly/docs/screenshots/` and linked here when available.
+Captured on iPhone 17 Pro Simulator (iOS 17-style presentation) and stored under `Weatherly/docs/screenshots/`.
 
-Suggested showcase set:
+### Core Showcase Set
 
-- `[TODO] Home screen`
-- `[TODO] Search screen`
-- `[TODO] Favorites screen`
-- `[TODO] Settings screen`
-- `[TODO] Widgets`
+- Home screen  
+  ![Home screen](docs/screenshots/home.png)
+- Search screen  
+  ![Search screen](docs/screenshots/search.png)
+- Favorites screen  
+  ![Favorites screen](docs/screenshots/favorites.png)
+- Settings screen  
+  ![Settings screen](docs/screenshots/settings.png)
+- Widgets  
+  ![Widgets](docs/screenshots/widgets.png)
 
-Suggested file names:
+### Optional Extra Screens
 
-- `home.png`
-- `search.png`
-- `favorites.png`
-- `settings.png`
-- `widgets.png`
+- Search detail view  
+  ![Search detail](docs/screenshots/search-detail.png)
+- Favorites empty state  
+  ![Favorites empty state](docs/screenshots/favorites-empty.png)
+- Settings dark appearance  
+  ![Settings dark](docs/screenshots/settings-dark.png)
 
 ### Screenshot Checklist
 
