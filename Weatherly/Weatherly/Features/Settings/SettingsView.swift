@@ -88,7 +88,7 @@ struct SettingsView: View {
         } header: {
             Label("Units", systemImage: "thermometer.medium")
         } footer: {
-            Text("These preferences apply across Home, search results, and forecast views.")
+            Text("These preferences apply across Home, Search, and forecast views.")
         }
     }
 

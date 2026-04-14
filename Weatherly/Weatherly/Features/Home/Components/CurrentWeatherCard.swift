@@ -4,7 +4,6 @@
 //
 //  Created by Pekomon on 22.3.2026.
 //
-	
 
 import SwiftUI
 
@@ -21,7 +20,7 @@ struct CurrentWeatherCard: View {
                     .fontWeight(.semibold)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
-                
+
                 if let country = weather.location.country, !country.isEmpty {
                     Text(country)
                         .font(.subheadline)
@@ -34,13 +33,12 @@ struct CurrentWeatherCard: View {
                         .foregroundStyle(.secondary)
                 }
             }
-            
-            
+
             Image(systemName: weather.current.symbolName)
                 .font(.system(size: 64))
                 .symbolRenderingMode(.multicolor)
                 .accessibilityHidden(true)
-            
+
             VStack(spacing: 6) {
                 Text(formatter.temperature(weather.current.temperature))
                     .font(.system(size: 64, weight: .bold))
@@ -57,26 +55,26 @@ struct CurrentWeatherCard: View {
             }
         }
         .frame(maxWidth: .infinity)
-                .padding(.vertical, 28)
-                .padding(.horizontal, 24)
-                .background(
-                    LinearGradient(
-                        colors: [
-                            Color.white.opacity(0.18),
-                            Color.white.opacity(0.08)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .overlay {
-                    RoundedRectangle(cornerRadius: 28)
-                        .stroke(Color.white.opacity(0.15), lineWidth: 1)
-                }
-                .clipShape(RoundedRectangle(cornerRadius: 28))
-                .accessibilityElement(children: .ignore)
-                .accessibilityLabel("Current weather for \(accessibilityLocationDescription)")
-                .accessibilityValue("\(conditionText(weather.current.condition)), \(formatter.temperature(weather.current.temperature)). Feels like \(formatter.temperature(weather.current.feelsLike)).")
+        .padding(.vertical, 28)
+        .padding(.horizontal, 24)
+        .background(
+            LinearGradient(
+                colors: [
+                    Color.white.opacity(0.18),
+                    Color.white.opacity(0.08)
+                ],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .overlay {
+            RoundedRectangle(cornerRadius: 28)
+                .stroke(Color.white.opacity(0.15), lineWidth: 1)
+        }
+        .clipShape(RoundedRectangle(cornerRadius: 28))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Current weather for \(accessibilityLocationDescription)")
+        .accessibilityValue("\(conditionText(weather.current.condition)), \(formatter.temperature(weather.current.temperature)). Feels like \(formatter.temperature(weather.current.feelsLike)).")
     }
 
     private var formatter: WeatherValueFormatter {
@@ -85,7 +83,7 @@ struct CurrentWeatherCard: View {
             windSpeedUnit: settingsViewModel.windSpeedUnit
         )
     }
-    
+
     private func conditionText(_ condition: AppWeatherCondition) -> String {
         switch condition {
         case .clear:

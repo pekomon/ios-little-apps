@@ -29,18 +29,18 @@ final class HomeViewModel {
 
     func loadWeather() async {
         state = .loading
-        
+
         do {
             let currentLocation = try await locationService.requestCurrentLocation()
 
             let location = Location(
                 id: "current-location",
-                name: "Current Location",
+                name: "Current location",
                 country: nil,
                 latitude: currentLocation.coordinate.latitude,
                 longitude: currentLocation.coordinate.longitude
             )
-            
+
             let weather = try await weatherRepository.fetchWeather(for: location)
             widgetSnapshotWriter.writeSnapshot(from: weather)
             state = .loaded(weather)
