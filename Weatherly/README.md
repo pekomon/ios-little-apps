@@ -54,7 +54,7 @@ This keeps UI logic close to each feature while preserving clean boundaries for 
 
 ## Screenshots
 
-Captured on iPhone 17 Pro Simulator (iOS 17-style presentation) and stored under `Weatherly/docs/screenshots/`.
+Captured on iPhone 17 Pro Simulator and stored under `Weatherly/docs/screenshots/`.
 
 ### Core Showcase Set
 
@@ -81,7 +81,7 @@ Captured on iPhone 17 Pro Simulator (iOS 17-style presentation) and stored under
 ### Screenshot Checklist
 
 - Use a single device frame and orientation across app screens
-- Capture realistic weather and location data (no placeholder nonsense)
+- Capture realistic weather and location data
 - Prefer clean states: loaded content, not transient loading/error views
 - Keep status bar and theme choices consistent between shots
 - Crop and export at web-friendly size for GitHub readability

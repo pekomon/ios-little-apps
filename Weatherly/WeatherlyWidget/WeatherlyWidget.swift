@@ -256,8 +256,8 @@ struct WeatherlyWidget: Widget {
         StaticConfiguration(kind: kind, provider: WeatherlyWidgetProvider()) { entry in
             WeatherlyWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("Current Weather")
-        .description("A compact weather snapshot from Weatherly.")
+        .configurationDisplayName("Weatherly Forecast")
+        .description("A quick weather snapshot from Weatherly.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
