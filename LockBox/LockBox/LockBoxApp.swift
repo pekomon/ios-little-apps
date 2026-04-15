@@ -11,7 +11,7 @@ import SwiftUI
 struct LockBoxApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LockBoxRootView()
         }
     }
 }
