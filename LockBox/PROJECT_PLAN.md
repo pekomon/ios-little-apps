@@ -12,17 +12,17 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: fresh SwiftUI template with `LockBoxApp.swift` and `ContentView.swift`.
-- Build status: task 2 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: root app shell is in place and the domain layer now has initial vault entities.
+- Build status: task 3 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 3. Add vault domain models.
+- Active task: 4. Add vault repository protocol.
 
 # Phase Plan
 
 1. Foundation
    - [x] 1. Add project folder structure
    - [x] 2. Add root app shell
-   - [ ] 3. Add vault domain models
+   - [x] 3. Add vault domain models
    - [ ] 4. Add vault repository protocol
 2. Security core
    - [ ] 5. Add biometric auth service
@@ -46,22 +46,37 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Task
 
-- Task title: Add root app shell
-- Goal: Replace the template entry UI with a polished root shell under the `App` folder while keeping the app behavior simple and buildable.
+- Task title: Add vault domain models
+- Goal: Define the core vault entity types under `Domain` so later repository, storage, and feature work can depend on stable app-level models.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
-  - `LockBox/LockBox/LockBoxApp.swift`
-  - `LockBox/LockBox/ContentView.swift` or replacement files under `LockBox/LockBox/App`
+  - replacement files under `LockBox/LockBox/Domain/Entities`
 - Risks / notes:
-  - Keep scope limited to the shell only; do not introduce vault data or security flows before their roadmap steps.
-  - The app shell should establish a clean visual direction that can support the lock flow later.
+  - Keep models independent from storage or platform security APIs.
+  - Keep the model set small and flexible enough for notes, credentials, and other vault item types.
 - Outcome after completion:
-  - Replaced the SwiftUI template entry screen with a polished root shell under `App`.
-  - Wired the app entry point to the new shell without introducing domain, storage, or security behavior early.
+  - Added the first domain entity set for vault entries, metadata, and structured fields.
+  - Kept the types storage-agnostic so repository and persistence work can adopt them unchanged.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox root app shell`
+- Commit message used: `Add LockBox vault domain models`
 
 # Completed Tasks
+
+- Task title: Add vault domain models
+- Goal: Define the core vault entity types under `Domain` so later repository, storage, and feature work can depend on stable app-level models.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/Domain/Entities/VaultEntry.swift`
+  - `LockBox/LockBox/Domain/Entities/VaultEntryField.swift`
+  - `LockBox/LockBox/Domain/Entities/VaultEntryMetadata.swift`
+  - removed `LockBox/LockBox/Domain/Entities/EntitiesFolderMarker.swift`
+- Risks / notes:
+  - The current field model is intentionally general and may gain more specialized cases once editor and persistence requirements are clearer.
+- Outcome after completion:
+  - Added a `VaultEntry` aggregate with separate metadata, notes, and structured fields.
+  - Added domain enums for entry kinds and field kinds, including sensitivity metadata for later UI decisions.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Add LockBox vault domain models`
 
 - Task title: Add root app shell
 - Goal: Replace the template entry UI with a polished root shell under the `App` folder while keeping the app behavior simple and buildable.
@@ -94,7 +109,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 3. Add vault domain models
+- 4. Add vault repository protocol
 
 # Open Questions / Follow-ups
 
