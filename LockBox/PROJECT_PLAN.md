@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: root app shell, domain contracts, and a live biometric service are in place.
-- Build status: task 5 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: root app shell, domain contracts, and the lock-state core are in place.
+- Build status: task 6 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 6. Add app lock manager.
+- Active task: 7. Add lock screen flow.
 
 # Phase Plan
 
@@ -26,7 +26,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
    - [x] 4. Add vault repository protocol
 2. Security core
    - [x] 5. Add biometric auth service
-   - [ ] 6. Add app lock manager
+   - [x] 6. Add app lock manager
    - [ ] 7. Add lock screen flow
 3. Local vault data
    - [ ] 8. Add secure storage services
@@ -46,21 +46,34 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Task
 
-- Task title: Add biometric auth service
-- Goal: Define a reusable live biometric authentication service in `Core/Security` so later lock-state flows can ask for device biometrics without owning `LocalAuthentication` details directly.
+- Task title: Add app lock manager
+- Goal: Add an observable lock-state owner that coordinates biometric availability and unlock attempts without introducing the actual lock screen UI yet.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
-  - replacement files under `LockBox/LockBox/Core/Security`
+  - files under `LockBox/LockBox/Core/Security`
 - Risks / notes:
-  - Keep the service independent from UI and lock-flow state management.
-  - Prefer a small, app-friendly API over exposing raw `LAContext` details everywhere.
+  - Keep the manager separate from view code so the lock screen flow can adopt it cleanly in the next task.
+  - Do not prematurely add background relock behavior before its dedicated roadmap step.
 - Outcome after completion:
-  - Added a reusable live biometric authentication service backed by `LocalAuthentication`.
-  - Added app-level biometric availability and error types so later flows can avoid direct `LAError` handling.
+  - Added an observable app lock manager with locked, unlocking, and unlocked states.
+  - Wired biometric availability refresh and unlock attempts through the biometric auth service without introducing UI yet.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox biometric auth service`
+- Commit message used: `Add LockBox app lock manager`
 
 # Completed Tasks
+
+- Task title: Add app lock manager
+- Goal: Add an observable lock-state owner that coordinates biometric availability and unlock attempts without introducing the actual lock screen UI yet.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/Core/Security/AppLockManager.swift`
+- Risks / notes:
+  - The manager currently owns only in-memory lock state; background relock and scene lifecycle hooks still belong to later tasks.
+- Outcome after completion:
+  - Added `AppLockManager` as the observable coordinator for lock state and unlock attempts.
+  - Kept biometric policy and error handling delegated to `BiometricAuthService`.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Add LockBox app lock manager`
 
 - Task title: Add biometric auth service
 - Goal: Define a reusable live biometric authentication service in `Core/Security` so later lock-state flows can ask for device biometrics without owning `LocalAuthentication` details directly.
@@ -137,7 +150,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 6. Add app lock manager
+- 7. Add lock screen flow
 
 # Open Questions / Follow-ups
 
