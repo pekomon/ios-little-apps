@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: the app now has a visible lock flow on top of the shell and the security core is connected.
-- Build status: task 7 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: the app now has a visible lock flow, a secure storage service, and the next step is wiring the default repository.
+- Build status: task 8 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 8. Add secure storage services.
+- Active task: 9. Add default vault repository.
 
 # Phase Plan
 
@@ -29,7 +29,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
    - [x] 6. Add app lock manager
    - [x] 7. Add lock screen flow
 3. Local vault data
-   - [ ] 8. Add secure storage services
+   - [x] 8. Add secure storage services
    - [ ] 9. Add default vault repository
    - [ ] 10. Add local vault persistence
 4. Vault UX
@@ -46,23 +46,35 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Task
 
-- Task title: Add lock screen flow
-- Goal: Connect the app lock manager to the shell so the app launches into a real lock screen and can transition into unlocked content through the biometric flow.
+- Task title: Add secure storage services
+- Goal: Add the secure low-level storage service that later persistence and repository code can use for secrets without exposing raw Keychain APIs across the app.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
-  - files under `LockBox/LockBox/App`
-  - files under `LockBox/LockBox/Features/Lock`
-  - files under `LockBox/LockBox/Core/Security`
+  - files under `LockBox/LockBox/Data/Storage`
 - Risks / notes:
-  - Keep the lock flow simple and focused on launch-time unlock only.
-  - Do not add background relocking or repository-backed content yet.
+  - Keep the service focused on raw secure value storage, not vault-specific repository concerns.
+  - Favor a small wrapper around Keychain so future code is easy to stub or replace.
 - Outcome after completion:
-  - Added a dedicated lock screen overlay driven by `AppLockManager`.
-  - Wired the app shell so launch begins in the locked state and transitions into content after successful biometric unlock.
+  - Added a small secure value storage abstraction and a live Keychain-backed implementation.
+  - Wrapped common read, write, and delete flows without exposing Security APIs to higher layers.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox lock screen flow`
+- Commit message used: `Add LockBox secure storage services`
 
 # Completed Tasks
+
+- Task title: Add secure storage services
+- Goal: Add the secure low-level storage service that later persistence and repository code can use for secrets without exposing raw Keychain APIs across the app.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/Data/Storage/SecureValueStore.swift`
+  - removed `LockBox/LockBox/Data/Storage/StorageFolderMarker.swift`
+- Risks / notes:
+  - The service intentionally stores raw `Data`; vault-specific encoding remains the responsibility of repository and persistence layers.
+- Outcome after completion:
+  - Added `SecureValueStoring` and `KeychainSecureValueStore`.
+  - Added typed secure store keys and error mapping for common Keychain operations.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Add LockBox secure storage services`
 
 - Task title: Add lock screen flow
 - Goal: Connect the app lock manager to the shell so the app launches into a real lock screen and can transition into unlocked content through the biometric flow.
@@ -168,7 +180,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 8. Add secure storage services
+- 9. Add default vault repository
 
 # Open Questions / Follow-ups
 
