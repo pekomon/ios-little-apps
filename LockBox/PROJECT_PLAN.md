@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: root app shell, vault entities, and the repository contract are in place.
-- Build status: task 4 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: root app shell, domain contracts, and a live biometric service are in place.
+- Build status: task 5 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 5. Add biometric auth service.
+- Active task: 6. Add app lock manager.
 
 # Phase Plan
 
@@ -25,7 +25,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
    - [x] 3. Add vault domain models
    - [x] 4. Add vault repository protocol
 2. Security core
-   - [ ] 5. Add biometric auth service
+   - [x] 5. Add biometric auth service
    - [ ] 6. Add app lock manager
    - [ ] 7. Add lock screen flow
 3. Local vault data
@@ -46,21 +46,35 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Task
 
-- Task title: Add vault repository protocol
-- Goal: Define the domain-level repository contract that future data implementations will satisfy without coupling the feature layer to storage details.
+- Task title: Add biometric auth service
+- Goal: Define a reusable live biometric authentication service in `Core/Security` so later lock-state flows can ask for device biometrics without owning `LocalAuthentication` details directly.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
-  - replacement files under `LockBox/LockBox/Domain/Repositories`
+  - replacement files under `LockBox/LockBox/Core/Security`
 - Risks / notes:
-  - Keep the protocol focused on app needs, not persistence mechanics.
-  - Avoid introducing implementation details that belong in the later local data phase.
+  - Keep the service independent from UI and lock-flow state management.
+  - Prefer a small, app-friendly API over exposing raw `LAContext` details everywhere.
 - Outcome after completion:
-  - Added the domain-level vault repository contract for loading, fetching, saving, and deleting entries.
-  - Added a small repository error type for missing-entry lookups without baking in storage details.
+  - Added a reusable live biometric authentication service backed by `LocalAuthentication`.
+  - Added app-level biometric availability and error types so later flows can avoid direct `LAError` handling.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox vault repository protocol`
+- Commit message used: `Add LockBox biometric auth service`
 
 # Completed Tasks
+
+- Task title: Add biometric auth service
+- Goal: Define a reusable live biometric authentication service in `Core/Security` so later lock-state flows can ask for device biometrics without owning `LocalAuthentication` details directly.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/Core/Security/BiometricAuthService.swift`
+  - removed `LockBox/LockBox/Core/Security/SecurityFolderMarker.swift`
+- Risks / notes:
+  - The service currently exposes only the live implementation surface; preview or test doubles can be added later when lock-state logic starts depending on it.
+- Outcome after completion:
+  - Added `BiometricAuthService` with availability inspection and async authentication.
+  - Added app-level biometric kind, availability, and error abstractions around `LAContext`.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Add LockBox biometric auth service`
 
 - Task title: Add vault repository protocol
 - Goal: Define the domain-level repository contract that future data implementations will satisfy without coupling the feature layer to storage details.
@@ -123,7 +137,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 5. Add biometric auth service
+- 6. Add app lock manager
 
 # Open Questions / Follow-ups
 
