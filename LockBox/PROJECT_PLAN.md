@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: the app now has a visible lock flow, secure storage, and a default repository layer ready for local persistence.
-- Build status: task 9 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: the app now has a visible lock flow, secure storage, and local file persistence ready for a real vault UI.
+- Build status: task 10 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 10. Add local vault persistence.
+- Active task: 11. Add vault list feature.
 
 # Phase Plan
 
@@ -31,7 +31,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 3. Local vault data
    - [x] 8. Add secure storage services
    - [x] 9. Add default vault repository
-   - [ ] 10. Add local vault persistence
+   - [x] 10. Add local vault persistence
 4. Vault UX
    - [ ] 11. Add vault list feature
    - [ ] 12. Add entry editor feature
@@ -46,23 +46,34 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Task
 
-- Task title: Add default vault repository
-- Goal: Add the main repository implementation that translates between domain entities and the lower-level metadata and secure-storage services.
+- Task title: Add local vault persistence
+- Goal: Add the concrete file-backed metadata persistence implementation so the default repository can run against real local storage.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
-  - files under `LockBox/LockBox/Data/Repositories`
-  - files under `LockBox/LockBox/Data/Models`
   - files under `LockBox/LockBox/Data/Storage`
 - Risks / notes:
-  - Keep repository logic focused on composition and mapping, not concrete file-path or Keychain-query details.
-  - Preserve the metadata/secrets split so local persistence can stay simple in the next task.
+  - Keep persistence local-first and simple, using Foundation file APIs rather than introducing a larger storage framework.
+  - Limit this task to metadata persistence; secure secret payload storage remains in Keychain.
 - Outcome after completion:
-  - Added the main default repository implementation and split persisted metadata from secure payload data.
-  - Added repository-facing record types and a metadata-store protocol for the upcoming file-backed persistence layer.
+  - Added the file-backed metadata persistence implementation for local vault records.
+  - Added a small persistence location wrapper so repository code can stay ignorant of file layout details.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox default vault repository`
+- Commit message used: `Add LockBox local vault persistence`
 
 # Completed Tasks
+
+- Task title: Add local vault persistence
+- Goal: Add the concrete file-backed metadata persistence implementation so the default repository can run against real local storage.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/Data/Storage/JSONFileVaultEntryMetadataStore.swift`
+- Risks / notes:
+  - Only entry metadata is stored in the JSON file; secret payloads remain delegated to the secure value store.
+- Outcome after completion:
+  - Added `JSONFileVaultEntryMetadataStore` as the live Foundation-based metadata persistence service.
+  - Added `VaultPersistenceLocation` and local persistence error handling.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Add LockBox local vault persistence`
 
 - Task title: Add default vault repository
 - Goal: Add the main repository implementation that translates between domain entities and the lower-level metadata and secure-storage services.
@@ -199,7 +210,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 10. Add local vault persistence
+- 11. Add vault list feature
 
 # Open Questions / Follow-ups
 
