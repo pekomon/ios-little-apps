@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: the app now has a visible lock flow, a secure storage service, and the next step is wiring the default repository.
-- Build status: task 8 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: the app now has a visible lock flow, secure storage, and a default repository layer ready for local persistence.
+- Build status: task 9 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 9. Add default vault repository.
+- Active task: 10. Add local vault persistence.
 
 # Phase Plan
 
@@ -30,7 +30,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
    - [x] 7. Add lock screen flow
 3. Local vault data
    - [x] 8. Add secure storage services
-   - [ ] 9. Add default vault repository
+   - [x] 9. Add default vault repository
    - [ ] 10. Add local vault persistence
 4. Vault UX
    - [ ] 11. Add vault list feature
@@ -46,21 +46,40 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Task
 
-- Task title: Add secure storage services
-- Goal: Add the secure low-level storage service that later persistence and repository code can use for secrets without exposing raw Keychain APIs across the app.
+- Task title: Add default vault repository
+- Goal: Add the main repository implementation that translates between domain entities and the lower-level metadata and secure-storage services.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
+  - files under `LockBox/LockBox/Data/Repositories`
+  - files under `LockBox/LockBox/Data/Models`
   - files under `LockBox/LockBox/Data/Storage`
 - Risks / notes:
-  - Keep the service focused on raw secure value storage, not vault-specific repository concerns.
-  - Favor a small wrapper around Keychain so future code is easy to stub or replace.
+  - Keep repository logic focused on composition and mapping, not concrete file-path or Keychain-query details.
+  - Preserve the metadata/secrets split so local persistence can stay simple in the next task.
 - Outcome after completion:
-  - Added a small secure value storage abstraction and a live Keychain-backed implementation.
-  - Wrapped common read, write, and delete flows without exposing Security APIs to higher layers.
+  - Added the main default repository implementation and split persisted metadata from secure payload data.
+  - Added repository-facing record types and a metadata-store protocol for the upcoming file-backed persistence layer.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox secure storage services`
+- Commit message used: `Add LockBox default vault repository`
 
 # Completed Tasks
+
+- Task title: Add default vault repository
+- Goal: Add the main repository implementation that translates between domain entities and the lower-level metadata and secure-storage services.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/Data/Repositories/DefaultVaultRepository.swift`
+  - `LockBox/LockBox/Data/Models/VaultEntryRecord.swift`
+  - `LockBox/LockBox/Data/Storage/VaultEntryMetadataStore.swift`
+  - removed `LockBox/LockBox/Data/Repositories/DataRepositoriesFolderMarker.swift`
+  - removed `LockBox/LockBox/Data/Models/ModelsFolderMarker.swift`
+- Risks / notes:
+  - The repository still depends on an abstract metadata store; the concrete local file implementation lands in the next task.
+- Outcome after completion:
+  - Added `DefaultVaultRepository` with async CRUD operations built on the metadata store and secure value store.
+  - Added the record and payload types needed to persist entry metadata and secret content separately.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Add LockBox default vault repository`
 
 - Task title: Add secure storage services
 - Goal: Add the secure low-level storage service that later persistence and repository code can use for secrets without exposing raw Keychain APIs across the app.
@@ -180,7 +199,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 9. Add default vault repository
+- 10. Add local vault persistence
 
 # Open Questions / Follow-ups
 
