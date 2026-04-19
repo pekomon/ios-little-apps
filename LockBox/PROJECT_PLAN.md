@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: root app shell, domain contracts, and the lock-state core are in place.
-- Build status: task 6 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: the app now has a visible lock flow on top of the shell and the security core is connected.
+- Build status: task 7 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 7. Add lock screen flow.
+- Active task: 8. Add secure storage services.
 
 # Phase Plan
 
@@ -27,7 +27,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 2. Security core
    - [x] 5. Add biometric auth service
    - [x] 6. Add app lock manager
-   - [ ] 7. Add lock screen flow
+   - [x] 7. Add lock screen flow
 3. Local vault data
    - [ ] 8. Add secure storage services
    - [ ] 9. Add default vault repository
@@ -46,21 +46,39 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Task
 
-- Task title: Add app lock manager
-- Goal: Add an observable lock-state owner that coordinates biometric availability and unlock attempts without introducing the actual lock screen UI yet.
+- Task title: Add lock screen flow
+- Goal: Connect the app lock manager to the shell so the app launches into a real lock screen and can transition into unlocked content through the biometric flow.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
+  - files under `LockBox/LockBox/App`
+  - files under `LockBox/LockBox/Features/Lock`
   - files under `LockBox/LockBox/Core/Security`
 - Risks / notes:
-  - Keep the manager separate from view code so the lock screen flow can adopt it cleanly in the next task.
-  - Do not prematurely add background relock behavior before its dedicated roadmap step.
+  - Keep the lock flow simple and focused on launch-time unlock only.
+  - Do not add background relocking or repository-backed content yet.
 - Outcome after completion:
-  - Added an observable app lock manager with locked, unlocking, and unlocked states.
-  - Wired biometric availability refresh and unlock attempts through the biometric auth service without introducing UI yet.
+  - Added a dedicated lock screen overlay driven by `AppLockManager`.
+  - Wired the app shell so launch begins in the locked state and transitions into content after successful biometric unlock.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox app lock manager`
+- Commit message used: `Add LockBox lock screen flow`
 
 # Completed Tasks
+
+- Task title: Add lock screen flow
+- Goal: Connect the app lock manager to the shell so the app launches into a real lock screen and can transition into unlocked content through the biometric flow.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/App/LockBoxRootView.swift`
+  - `LockBox/LockBox/Features/Lock/LockScreenView.swift`
+  - `LockBox/LockBox/Core/Security/BiometricAuthService.swift`
+  - removed `LockBox/LockBox/Features/Lock/LockFeatureFolderMarker.swift`
+- Risks / notes:
+  - The lock flow currently focuses on launch-time unlock only; relocking on background and unlocked navigation belong to later tasks.
+- Outcome after completion:
+  - Added a simulator-visible lock screen with status, error, and biometric availability feedback.
+  - Blurred and protected the shell content until unlock succeeds.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Add LockBox lock screen flow`
 
 - Task title: Add app lock manager
 - Goal: Add an observable lock-state owner that coordinates biometric availability and unlock attempts without introducing the actual lock screen UI yet.
@@ -150,7 +168,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 7. Add lock screen flow
+- 8. Add secure storage services
 
 # Open Questions / Follow-ups
 

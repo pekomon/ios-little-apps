@@ -8,7 +8,28 @@
 import SwiftUI
 
 struct LockBoxRootView: View {
+    @State private var appLockManager = AppLockManager()
+
     var body: some View {
+        ZStack {
+            shellContent
+                .blur(radius: appLockManager.lockState == .unlocked ? 0 : 18)
+                .overlay {
+                    if appLockManager.lockState != .unlocked {
+                        Color.black.opacity(0.18)
+                            .ignoresSafeArea()
+                    }
+                }
+                .allowsHitTesting(appLockManager.lockState == .unlocked)
+
+            if appLockManager.lockState != .unlocked {
+                LockScreenView(appLockManager: appLockManager)
+            }
+        }
+        .animation(.easeInOut(duration: 0.25), value: appLockManager.lockState)
+    }
+
+    private var shellContent: some View {
         ZStack {
             LinearGradient(
                 colors: [
@@ -67,14 +88,14 @@ struct LockBoxRootView: View {
                 .font(.system(size: 30, weight: .bold, design: .rounded))
                 .foregroundStyle(Color(red: 0.11, green: 0.15, blue: 0.20))
 
-            Text("This shell sets the foundation for secure unlock, local storage, and intentional vault flows without introducing them yet.")
+            Text("The shell is now protected by a launch-time lock flow. Once unlocked, later tasks will replace this placeholder with real vault content.")
                 .font(.body)
                 .foregroundStyle(Color.black.opacity(0.72))
                 .fixedSize(horizontal: false, vertical: true)
 
             HStack(spacing: 12) {
                 shellBadge(title: "Local-first", systemImage: "iphone")
-                shellBadge(title: "Biometric-ready", systemImage: "faceid")
+                shellBadge(title: "Biometric lock", systemImage: "lock.shield")
                 shellBadge(title: "No cloud sync", systemImage: "wifi.slash")
             }
         }
@@ -89,8 +110,8 @@ struct LockBoxRootView: View {
                 .foregroundStyle(.white)
 
             VStack(alignment: .leading, spacing: 10) {
-                flowRow(index: "01", title: "Create vault", subtitle: "Set up a local encrypted storage space.")
-                flowRow(index: "02", title: "Enable unlock", subtitle: "Connect Face ID or device passcode.")
+                flowRow(index: "01", title: "Unlock vault", subtitle: "Authenticate with biometrics at launch.")
+                flowRow(index: "02", title: "Create vault", subtitle: "Set up a local encrypted storage space.")
                 flowRow(index: "03", title: "Add entries", subtitle: "Store secrets with a calm, focused editor.")
             }
 
@@ -120,9 +141,9 @@ struct LockBoxRootView: View {
 
     private var footer: some View {
         HStack {
-            Label("Shell only", systemImage: "square.dashed")
+            Label(appLockManager.lockState == .unlocked ? "Unlocked" : "Locked", systemImage: "lock.shield")
             Spacer()
-            Text("Security and data flows land in later phases")
+            Text("Lock flow is active")
         }
         .font(.footnote.weight(.medium))
         .foregroundStyle(.white.opacity(0.76))

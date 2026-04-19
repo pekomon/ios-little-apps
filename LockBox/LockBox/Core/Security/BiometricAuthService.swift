@@ -24,6 +24,19 @@ enum BiometricKind: String, Equatable {
     case faceID
     case touchID
     case opticID
+
+    var displayName: String {
+        switch self {
+        case .none:
+            return "Biometrics"
+        case .faceID:
+            return "Face ID"
+        case .touchID:
+            return "Touch ID"
+        case .opticID:
+            return "Optic ID"
+        }
+    }
 }
 
 enum BiometricAuthError: LocalizedError, Equatable {
@@ -157,21 +170,6 @@ private extension LABiometryType {
             return .opticID
         @unknown default:
             return .none
-        }
-    }
-}
-
-private extension BiometricKind {
-    var displayName: String {
-        switch self {
-        case .none:
-            return "Biometrics"
-        case .faceID:
-            return "Face ID"
-        case .touchID:
-            return "Touch ID"
-        case .opticID:
-            return "Optic ID"
         }
     }
 }
