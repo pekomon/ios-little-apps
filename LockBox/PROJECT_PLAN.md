@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: root app shell is in place and the domain layer now has initial vault entities.
-- Build status: task 3 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: root app shell, vault entities, and the repository contract are in place.
+- Build status: task 4 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 4. Add vault repository protocol.
+- Active task: 5. Add biometric auth service.
 
 # Phase Plan
 
@@ -23,7 +23,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
    - [x] 1. Add project folder structure
    - [x] 2. Add root app shell
    - [x] 3. Add vault domain models
-   - [ ] 4. Add vault repository protocol
+   - [x] 4. Add vault repository protocol
 2. Security core
    - [ ] 5. Add biometric auth service
    - [ ] 6. Add app lock manager
@@ -46,21 +46,35 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Task
 
-- Task title: Add vault domain models
-- Goal: Define the core vault entity types under `Domain` so later repository, storage, and feature work can depend on stable app-level models.
+- Task title: Add vault repository protocol
+- Goal: Define the domain-level repository contract that future data implementations will satisfy without coupling the feature layer to storage details.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
-  - replacement files under `LockBox/LockBox/Domain/Entities`
+  - replacement files under `LockBox/LockBox/Domain/Repositories`
 - Risks / notes:
-  - Keep models independent from storage or platform security APIs.
-  - Keep the model set small and flexible enough for notes, credentials, and other vault item types.
+  - Keep the protocol focused on app needs, not persistence mechanics.
+  - Avoid introducing implementation details that belong in the later local data phase.
 - Outcome after completion:
-  - Added the first domain entity set for vault entries, metadata, and structured fields.
-  - Kept the types storage-agnostic so repository and persistence work can adopt them unchanged.
+  - Added the domain-level vault repository contract for loading, fetching, saving, and deleting entries.
+  - Added a small repository error type for missing-entry lookups without baking in storage details.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox vault domain models`
+- Commit message used: `Add LockBox vault repository protocol`
 
 # Completed Tasks
+
+- Task title: Add vault repository protocol
+- Goal: Define the domain-level repository contract that future data implementations will satisfy without coupling the feature layer to storage details.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/Domain/Repositories/VaultRepository.swift`
+  - removed `LockBox/LockBox/Domain/Repositories/DomainRepositoriesFolderMarker.swift`
+- Risks / notes:
+  - The current protocol favors a small CRUD-oriented surface and may gain richer query capabilities later if feature work demands them.
+- Outcome after completion:
+  - Added the `VaultRepository` protocol with async CRUD-style entry operations.
+  - Added `VaultRepositoryError` for domain-level not-found handling.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Add LockBox vault repository protocol`
 
 - Task title: Add vault domain models
 - Goal: Define the core vault entity types under `Domain` so later repository, storage, and feature work can depend on stable app-level models.
@@ -109,7 +123,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 4. Add vault repository protocol
+- 5. Add biometric auth service
 
 # Open Questions / Follow-ups
 
