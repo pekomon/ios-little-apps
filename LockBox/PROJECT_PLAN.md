@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: the app now has a visible lock flow, secure storage, and local file persistence ready for a real vault UI.
-- Build status: task 10 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: the app now unlocks into a real vault list backed by local persistence and secure storage.
+- Build status: task 11 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 11. Add vault list feature.
+- Active task: 12. Add entry editor feature.
 
 # Phase Plan
 
@@ -33,7 +33,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
    - [x] 9. Add default vault repository
    - [x] 10. Add local vault persistence
 4. Vault UX
-   - [ ] 11. Add vault list feature
+   - [x] 11. Add vault list feature
    - [ ] 12. Add entry editor feature
    - [ ] 13. Add entry detail feature
    - [ ] 14. Add delete/edit flows
@@ -46,21 +46,38 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Task
 
-- Task title: Add local vault persistence
-- Goal: Add the concrete file-backed metadata persistence implementation so the default repository can run against real local storage.
+- Task title: Add vault list feature
+- Goal: Replace the unlocked placeholder shell with the first real vault screen backed by the live repository and local persistence stack.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
-  - files under `LockBox/LockBox/Data/Storage`
+  - files under `LockBox/LockBox/App`
+  - files under `LockBox/LockBox/Features/VaultList`
 - Risks / notes:
-  - Keep persistence local-first and simple, using Foundation file APIs rather than introducing a larger storage framework.
-  - Limit this task to metadata persistence; secure secret payload storage remains in Keychain.
+  - Keep the feature focused on viewing seeded entries only; editing and detail flows belong to later tasks.
+  - Ensure the first unlocked experience has immediate content to test, even on a fresh install.
 - Outcome after completion:
-  - Added the file-backed metadata persistence implementation for local vault records.
-  - Added a small persistence location wrapper so repository code can stay ignorant of file layout details.
+  - Added a real vault list screen and observable list model backed by the live repository.
+  - Seeded a few sample entries on first load so the unlocked app has immediate content to verify.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox local vault persistence`
+- Commit message used: `Add LockBox vault list feature`
 
 # Completed Tasks
+
+- Task title: Add vault list feature
+- Goal: Replace the unlocked placeholder shell with the first real vault screen backed by the live repository and local persistence stack.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/App/LockBoxRootView.swift`
+  - `LockBox/LockBox/Features/VaultList/VaultListView.swift`
+  - `LockBox/LockBox/Features/VaultList/VaultListViewModel.swift`
+  - removed `LockBox/LockBox/Features/VaultList/VaultListFeatureFolderMarker.swift`
+- Risks / notes:
+  - The feature currently seeds first-run sample entries for immediate usability; later tasks may replace or expand that onboarding behavior.
+- Outcome after completion:
+  - Added a real unlocked vault surface with entry counts, seeded entries, and redacted sensitive field values.
+  - Wired the UI to the live repository and local persistence stack.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Add LockBox vault list feature`
 
 - Task title: Add local vault persistence
 - Goal: Add the concrete file-backed metadata persistence implementation so the default repository can run against real local storage.
@@ -210,7 +227,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 11. Add vault list feature
+- 12. Add entry editor feature
 
 # Open Questions / Follow-ups
 

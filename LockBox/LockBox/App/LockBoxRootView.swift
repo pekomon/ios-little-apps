@@ -9,6 +9,15 @@ import SwiftUI
 
 struct LockBoxRootView: View {
     @State private var appLockManager = AppLockManager()
+    @State private var vaultListViewModel: VaultListViewModel
+
+    init() {
+        let repository = DefaultVaultRepository(
+            metadataStore: JSONFileVaultEntryMetadataStore(),
+            secureValueStore: KeychainSecureValueStore()
+        )
+        _vaultListViewModel = State(initialValue: VaultListViewModel(repository: repository))
+    }
 
     var body: some View {
         ZStack {
@@ -42,139 +51,18 @@ struct LockBoxRootView: View {
             )
             .ignoresSafeArea()
 
-            VStack(alignment: .leading, spacing: 24) {
-                header
-                heroCard
-                actionCard
-                Spacer(minLength: 0)
-                footer
-            }
-            .padding(.horizontal, 24)
-            .padding(.top, 32)
-            .padding(.bottom, 24)
-        }
-    }
+            VStack(spacing: 0) {
+                VaultListView(viewModel: vaultListViewModel)
 
-    private var header: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 12) {
-                Image(systemName: "lock.shield.fill")
-                    .font(.system(size: 24, weight: .semibold))
-                    .foregroundStyle(Color.white)
-                    .frame(width: 52, height: 52)
-                    .background(.white.opacity(0.14), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("LockBox")
-                        .font(.system(size: 28, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
-
-                    Text("Private by default")
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(.white.opacity(0.8))
-                }
-            }
-
-            Text("A local-first vault for notes, credentials, and small secrets you want kept on your device.")
-                .font(.body)
-                .foregroundStyle(.white.opacity(0.86))
-                .fixedSize(horizontal: false, vertical: true)
-        }
-    }
-
-    private var heroCard: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            Text("Your vault is empty")
-                .font(.system(size: 30, weight: .bold, design: .rounded))
-                .foregroundStyle(Color(red: 0.11, green: 0.15, blue: 0.20))
-
-            Text("The shell is now protected by a launch-time lock flow. Once unlocked, later tasks will replace this placeholder with real vault content.")
-                .font(.body)
-                .foregroundStyle(Color.black.opacity(0.72))
-                .fixedSize(horizontal: false, vertical: true)
-
-            HStack(spacing: 12) {
-                shellBadge(title: "Local-first", systemImage: "iphone")
-                shellBadge(title: "Biometric lock", systemImage: "lock.shield")
-                shellBadge(title: "No cloud sync", systemImage: "wifi.slash")
-            }
-        }
-        .padding(24)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 28, style: .continuous))
-    }
-
-    private var actionCard: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Planned first-run flow")
-                .font(.headline)
-                .foregroundStyle(.white)
-
-            VStack(alignment: .leading, spacing: 10) {
-                flowRow(index: "01", title: "Unlock vault", subtitle: "Authenticate with biometrics at launch.")
-                flowRow(index: "02", title: "Create vault", subtitle: "Set up a local encrypted storage space.")
-                flowRow(index: "03", title: "Add entries", subtitle: "Store secrets with a calm, focused editor.")
-            }
-
-            Button(action: {}) {
                 HStack {
-                    Text("Vault setup coming next")
+                    Label(appLockManager.lockState == .unlocked ? "Unlocked" : "Locked", systemImage: "lock.shield")
                     Spacer()
-                    Image(systemName: "arrow.right")
+                    Text("Local vault ready")
                 }
-                .font(.headline)
-                .foregroundStyle(Color(red: 0.11, green: 0.15, blue: 0.20))
-                .padding(.horizontal, 18)
-                .padding(.vertical, 16)
-                .frame(maxWidth: .infinity)
-                .background(Color.white, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-            }
-            .buttonStyle(.plain)
-            .accessibilityHint("Placeholder action for the future vault setup flow.")
-        }
-        .padding(24)
-        .background(.black.opacity(0.22), in: RoundedRectangle(cornerRadius: 28, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
-                .stroke(.white.opacity(0.1), lineWidth: 1)
-        )
-    }
-
-    private var footer: some View {
-        HStack {
-            Label(appLockManager.lockState == .unlocked ? "Unlocked" : "Locked", systemImage: "lock.shield")
-            Spacer()
-            Text("Lock flow is active")
-        }
-        .font(.footnote.weight(.medium))
-        .foregroundStyle(.white.opacity(0.76))
-    }
-
-    private func shellBadge(title: String, systemImage: String) -> some View {
-        Label(title, systemImage: systemImage)
-            .font(.footnote.weight(.semibold))
-            .foregroundStyle(Color(red: 0.11, green: 0.15, blue: 0.20))
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .background(Color.white.opacity(0.8), in: Capsule())
-    }
-
-    private func flowRow(index: String, title: String, subtitle: String) -> some View {
-        HStack(alignment: .top, spacing: 14) {
-            Text(index)
-                .font(.caption.weight(.bold))
-                .foregroundStyle(.white.opacity(0.9))
-                .frame(width: 34, height: 34)
-                .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.headline)
-                    .foregroundStyle(.white)
-
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.74))
-                    .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal, 24)
+                .padding(.bottom, 24)
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(.white.opacity(0.76))
             }
         }
     }
