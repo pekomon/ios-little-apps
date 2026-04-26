@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: the app now unlocks into a real vault list backed by local persistence and secure storage.
-- Build status: task 11 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: the app unlocks into a real vault list and can now create entries into the live repository and persistence stack.
+- Build status: task 12 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 12. Add entry editor feature.
+- Active task: 13. Add entry detail feature.
 
 # Phase Plan
 
@@ -34,7 +34,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
    - [x] 10. Add local vault persistence
 4. Vault UX
    - [x] 11. Add vault list feature
-   - [ ] 12. Add entry editor feature
+   - [x] 12. Add entry editor feature
    - [ ] 13. Add entry detail feature
    - [ ] 14. Add delete/edit flows
 5. Product polish
@@ -46,22 +46,39 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Task
 
-- Task title: Add vault list feature
-- Goal: Replace the unlocked placeholder shell with the first real vault screen backed by the live repository and local persistence stack.
+- Task title: Add entry editor feature
+- Goal: Add the first entry creation flow so new vault items can be saved from UI into the live repository and persistence stack.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
-  - files under `LockBox/LockBox/App`
+  - files under `LockBox/LockBox/Features/EntryEditor`
   - files under `LockBox/LockBox/Features/VaultList`
 - Risks / notes:
-  - Keep the feature focused on viewing seeded entries only; editing and detail flows belong to later tasks.
-  - Ensure the first unlocked experience has immediate content to test, even on a fresh install.
+  - Keep this task focused on entry creation only; detail and edit flows remain separate roadmap steps.
+  - Preserve the simple seeded list behavior while making real user-created entries possible.
 - Outcome after completion:
-  - Added a real vault list screen and observable list model backed by the live repository.
-  - Seeded a few sample entries on first load so the unlocked app has immediate content to verify.
+  - Added the first entry creation form and wired it to save into the live repository.
+  - Added a `New` action in the vault list that opens the editor and refreshes the list after save.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox vault list feature`
+- Commit message used: `Add LockBox entry editor feature`
 
 # Completed Tasks
+
+- Task title: Add entry editor feature
+- Goal: Add the first entry creation flow so new vault items can be saved from UI into the live repository and persistence stack.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/Features/EntryEditor/EntryEditorView.swift`
+  - `LockBox/LockBox/Features/EntryEditor/EntryEditorViewModel.swift`
+  - `LockBox/LockBox/Features/VaultList/VaultListView.swift`
+  - `LockBox/LockBox/Features/VaultList/VaultListViewModel.swift`
+  - removed `LockBox/LockBox/Features/EntryEditor/EntryEditorFeatureFolderMarker.swift`
+- Risks / notes:
+  - The editor currently supports creation only; edit and detail presentation still belong to later tasks.
+- Outcome after completion:
+  - Added a sheet-based entry editor with entry kind, fields, notes, and tags.
+  - Wired new entries into the live repository and refreshed the vault list after save.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Add LockBox entry editor feature`
 
 - Task title: Add vault list feature
 - Goal: Replace the unlocked placeholder shell with the first real vault screen backed by the live repository and local persistence stack.
@@ -227,7 +244,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 12. Add entry editor feature
+- 13. Add entry detail feature
 
 # Open Questions / Follow-ups
 

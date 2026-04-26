@@ -9,6 +9,7 @@ import SwiftUI
 
 struct VaultListView: View {
     @Bindable var viewModel: VaultListViewModel
+    @State private var entryEditorViewModel: EntryEditorViewModel?
 
     var body: some View {
         ScrollView {
@@ -24,18 +25,41 @@ struct VaultListView: View {
         .task {
             await viewModel.loadIfNeeded()
         }
+        .sheet(item: $entryEditorViewModel) { entryEditorViewModel in
+            EntryEditorView(viewModel: entryEditorViewModel) {
+                await viewModel.reload()
+            }
+        }
     }
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Vault")
-                .font(.system(size: 34, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Vault")
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
 
-            Text("Your local entries are unlocked and ready. This is the first real vault surface wired to live persistence.")
-                .font(.body)
-                .foregroundStyle(.white.opacity(0.8))
-                .fixedSize(horizontal: false, vertical: true)
+                    Text("Your local entries are unlocked and ready. Add new entries directly into the live vault.")
+                        .font(.body)
+                        .foregroundStyle(.white.opacity(0.8))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: 16)
+
+                Button {
+                    entryEditorViewModel = viewModel.makeEntryEditorViewModel()
+                } label: {
+                    Label("New", systemImage: "plus")
+                        .font(.headline)
+                        .foregroundStyle(Color(red: 0.11, green: 0.15, blue: 0.20))
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 12)
+                        .background(Color.white, in: Capsule())
+                }
+                .buttonStyle(.plain)
+            }
         }
     }
 

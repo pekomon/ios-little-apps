@@ -21,6 +21,10 @@ final class VaultListViewModel {
         self.repository = repository
     }
 
+    func makeEntryEditorViewModel() -> EntryEditorViewModel {
+        EntryEditorViewModel(repository: repository)
+    }
+
     func loadIfNeeded() async {
         guard !hasLoaded else { return }
         await reload()
