@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: the app unlocks into a real vault list and can now create entries into the live repository and persistence stack.
-- Build status: task 12 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: the app unlocks into a real vault list, supports entry creation, and now has read-only entry detail navigation.
+- Build status: task 13 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 13. Add entry detail feature.
+- Active task: 14. Add delete/edit flows.
 
 # Phase Plan
 
@@ -35,7 +35,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 4. Vault UX
    - [x] 11. Add vault list feature
    - [x] 12. Add entry editor feature
-   - [ ] 13. Add entry detail feature
+   - [x] 13. Add entry detail feature
    - [ ] 14. Add delete/edit flows
 5. Product polish
    - [ ] 15. Add app relock on background
@@ -46,22 +46,37 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Task
 
-- Task title: Add entry editor feature
-- Goal: Add the first entry creation flow so new vault items can be saved from UI into the live repository and persistence stack.
+- Task title: Add entry detail feature
+- Goal: Add a read-only detail screen for vault entries so users can open an item from the list and inspect all stored fields and notes.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
-  - files under `LockBox/LockBox/Features/EntryEditor`
+  - files under `LockBox/LockBox/Features/EntryDetail`
   - files under `LockBox/LockBox/Features/VaultList`
 - Risks / notes:
-  - Keep this task focused on entry creation only; detail and edit flows remain separate roadmap steps.
-  - Preserve the simple seeded list behavior while making real user-created entries possible.
+  - Keep this task focused on navigation and read-only presentation; editing and deletion still belong to the next roadmap step.
+  - Preserve current create-entry behavior while layering detail navigation on top.
 - Outcome after completion:
-  - Added the first entry creation form and wired it to save into the live repository.
-  - Added a `New` action in the vault list that opens the editor and refreshes the list after save.
+  - Added a read-only entry detail screen that shows metadata, all fields, and notes.
+  - Wired vault list cards into navigation so entries can be opened without mixing in edit/delete behavior yet.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox entry editor feature`
+- Commit message used: `Add LockBox entry detail feature`
 
 # Completed Tasks
+
+- Task title: Add entry detail feature
+- Goal: Add a read-only detail screen for vault entries so users can open an item from the list and inspect all stored fields and notes.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/Features/EntryDetail/EntryDetailView.swift`
+  - `LockBox/LockBox/Features/VaultList/VaultListView.swift`
+  - removed `LockBox/LockBox/Features/EntryDetail/EntryDetailFeatureFolderMarker.swift`
+- Risks / notes:
+  - Sensitive values are visible in the detail view by design here; masking or reveal controls can be refined in later polish or edit flows.
+- Outcome after completion:
+  - Added a read-only detail screen for vault entries.
+  - Wired list cards into navigation links so the vault now supports list -> detail flow.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Add LockBox entry detail feature`
 
 - Task title: Add entry editor feature
 - Goal: Add the first entry creation flow so new vault items can be saved from UI into the live repository and persistence stack.
@@ -244,7 +259,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 13. Add entry detail feature
+- 14. Add delete/edit flows
 
 # Open Questions / Follow-ups
 

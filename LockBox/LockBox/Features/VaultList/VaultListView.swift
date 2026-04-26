@@ -12,15 +12,17 @@ struct VaultListView: View {
     @State private var entryEditorViewModel: EntryEditorViewModel?
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                header
-                summaryCards
-                content
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    header
+                    summaryCards
+                    content
+                }
+                .padding(.horizontal, 24)
+                .padding(.top, 32)
+                .padding(.bottom, 24)
             }
-            .padding(.horizontal, 24)
-            .padding(.top, 32)
-            .padding(.bottom, 24)
         }
         .task {
             await viewModel.loadIfNeeded()
@@ -81,7 +83,12 @@ struct VaultListView: View {
         } else {
             LazyVStack(spacing: 14) {
                 ForEach(viewModel.entries) { entry in
-                    entryCard(entry)
+                    NavigationLink {
+                        EntryDetailView(entry: entry)
+                    } label: {
+                        entryCard(entry)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
@@ -154,9 +161,15 @@ struct VaultListView: View {
 
                 Spacer()
 
-                Text(entry.metadata.updatedAt.formatted(date: .abbreviated, time: .omitted))
-                    .font(.footnote.weight(.medium))
-                    .foregroundStyle(.black.opacity(0.45))
+                VStack(alignment: .trailing, spacing: 8) {
+                    Text(entry.metadata.updatedAt.formatted(date: .abbreviated, time: .omitted))
+                        .font(.footnote.weight(.medium))
+                        .foregroundStyle(.black.opacity(0.45))
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(.black.opacity(0.35))
+                }
             }
 
             if !entry.metadata.tags.isEmpty {
