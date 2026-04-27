@@ -7,6 +7,7 @@
 
 import Foundation
 import Observation
+import SwiftUI
 
 @MainActor
 @Observable
@@ -62,6 +63,21 @@ final class AppLockManager {
             lockState = .locked
             lastUnlockError = .unknown
             refreshBiometricAvailability()
+        }
+    }
+
+    func handleScenePhaseChange(_ scenePhase: ScenePhase) {
+        switch scenePhase {
+        case .active:
+            refreshBiometricAvailability()
+        case .background:
+            if lockState == .unlocked {
+                lock()
+            }
+        case .inactive:
+            break
+        @unknown default:
+            break
         }
     }
 }

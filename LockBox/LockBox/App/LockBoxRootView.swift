@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct LockBoxRootView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @State private var appLockManager = AppLockManager()
     @State private var vaultListViewModel: VaultListViewModel
 
@@ -36,6 +37,9 @@ struct LockBoxRootView: View {
             }
         }
         .animation(.easeInOut(duration: 0.25), value: appLockManager.lockState)
+        .onChange(of: scenePhase) { _, newPhase in
+            appLockManager.handleScenePhaseChange(newPhase)
+        }
     }
 
     private var shellContent: some View {

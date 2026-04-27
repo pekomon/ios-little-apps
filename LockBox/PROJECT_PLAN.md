@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: the app unlocks into a real vault list that now has cleaner header and footer layout on top of create, view, edit, and delete flows.
-- Build status: follow-up task 14.1 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: the app unlocks into a real vault list, supports entry CRUD, and now relocks automatically after the app backgrounds.
+- Build status: task 15 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 15. Add app relock on background.
+- Active task: 16. Polish vault UI.
 
 # Phase Plan
 
@@ -38,7 +38,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
    - [x] 13. Add entry detail feature
    - [x] 14. Add delete/edit flows
 5. Product polish
-   - [ ] 15. Add app relock on background
+   - [x] 15. Add app relock on background
    - [ ] 16. Polish vault UI
    - [ ] 17. Improve accessibility support
    - [ ] 18. Add haptic feedback
@@ -46,24 +46,39 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Task
 
-- Task title: Add delete/edit flows
-- Goal: Allow editing and deleting existing vault entries while keeping detail, list, and local persistence in sync after each mutation.
+- Task title: Add app relock on background
+- Goal: Relock the vault automatically when the app backgrounds so unlocked content is protected when the user leaves the app.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
-  - files under `LockBox/LockBox/Features/EntryDetail`
-  - files under `LockBox/LockBox/Features/EntryEditor`
-  - files under `LockBox/LockBox/Features/VaultList`
+  - `LockBox/LockBox/App/LockBoxRootView.swift`
+  - `LockBox/LockBox/Core/Security/AppLockManager.swift`
 - Risks / notes:
-  - Keep the edit flow aligned with the existing create flow so updates preserve stable entry identity and creation timestamps.
-  - Avoid reseeding demo entries when a user deletes their last item after the initial first-load experience.
+  - Avoid treating every temporary `.inactive` transition as a relock event because biometric prompts and system overlays can trigger it.
+  - Keep relock behavior centralized in the lock manager so later lifecycle refinements don’t spread through the view layer.
 - Outcome after completion:
-  - Added edit and delete actions from the entry detail screen, including destructive confirmation before removal.
-  - Reused the existing entry editor for update flows with prefilled values and stable metadata preservation.
-  - Kept the vault list refreshed after edit and delete mutations without reintroducing sample entries on later empty-state reloads.
+  - Added scene-phase handling so the app relocks when it moves to the background.
+  - Refreshed biometric availability when the app becomes active again.
+  - Kept the existing unlock flow intact without relocking on transient inactive states.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox delete and edit flows`
+- Commit message used: `Add LockBox app relock on background`
 
 # Completed Tasks
+
+- Task title: Add app relock on background
+- Goal: Relock the vault automatically when the app backgrounds so unlocked content is protected when the user leaves the app.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/App/LockBoxRootView.swift`
+  - `LockBox/LockBox/Core/Security/AppLockManager.swift`
+- Risks / notes:
+  - The app currently relocks on background only; finer-grained policies such as timeouts or screenshot hardening can be layered later if needed.
+  - Temporary inactive states are intentionally ignored to avoid interfering with biometric prompts and system overlays.
+- Outcome after completion:
+  - Added automatic relock when the app backgrounds.
+  - Refreshed biometric availability on return to the active scene.
+  - Preserved the existing launch and unlock flows while extending protection to lifecycle transitions.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Add LockBox app relock on background`
 
 - Task title: 14.1 Small layout cleanup
 - Goal: Tighten the unlocked vault screen layout after task-14 review feedback so the header, primary action, and footer feel intentional on device.
@@ -295,7 +310,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 15. Add app relock on background
+- 16. Polish vault UI
 
 # Open Questions / Follow-ups
 
