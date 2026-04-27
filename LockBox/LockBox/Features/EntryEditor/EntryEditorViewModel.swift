@@ -12,6 +12,7 @@ import Observation
 @Observable
 final class EntryEditorViewModel: Identifiable {
     private let repository: any VaultRepository
+    private let mode: Mode
     let id = UUID()
 
     var title = ""
@@ -26,6 +27,38 @@ final class EntryEditorViewModel: Identifiable {
 
     init(repository: any VaultRepository) {
         self.repository = repository
+        self.mode = .creating
+    }
+
+    init(repository: any VaultRepository, entry: VaultEntry) {
+        self.repository = repository
+        self.mode = .editing(id: entry.id, createdAt: entry.metadata.createdAt)
+
+        title = entry.metadata.title
+        kind = entry.metadata.kind
+        notes = entry.notes
+        tagsText = entry.metadata.tags.joined(separator: ", ")
+        primaryValue = entry.fields[safe: 0]?.value ?? ""
+        secondaryValue = entry.fields[safe: 1]?.value ?? ""
+        tertiaryValue = entry.fields[safe: 2]?.value ?? ""
+    }
+
+    var screenTitle: String {
+        switch mode {
+        case .creating:
+            return "New Entry"
+        case .editing:
+            return "Edit Entry"
+        }
+    }
+
+    var saveButtonTitle: String {
+        switch mode {
+        case .creating:
+            return "Save"
+        case .editing:
+            return "Update"
+        }
     }
 
     var primaryLabel: String {
@@ -62,15 +95,7 @@ final class EntryEditorViewModel: Identifiable {
         isSaving = true
         errorMessage = nil
 
-        let entry = VaultEntry(
-            metadata: VaultEntryMetadata(
-                kind: kind,
-                title: title.trimmingCharacters(in: .whitespacesAndNewlines),
-                tags: parsedTags
-            ),
-            fields: builtFields,
-            notes: notes.trimmingCharacters(in: .whitespacesAndNewlines)
-        )
+        let entry = buildEntry()
 
         do {
             try await repository.saveEntry(entry)
@@ -88,6 +113,36 @@ final class EntryEditorViewModel: Identifiable {
             .split(separator: ",")
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
+    }
+
+    private func buildEntry() -> VaultEntry {
+        let trimmedTitle = title.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedNotes = notes.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let metadata: VaultEntryMetadata
+        switch mode {
+        case .creating:
+            metadata = VaultEntryMetadata(
+                kind: kind,
+                title: trimmedTitle,
+                tags: parsedTags
+            )
+        case let .editing(id, createdAt):
+            metadata = VaultEntryMetadata(
+                id: id,
+                kind: kind,
+                title: trimmedTitle,
+                createdAt: createdAt,
+                updatedAt: .now,
+                tags: parsedTags
+            )
+        }
+
+        return VaultEntry(
+            metadata: metadata,
+            fields: builtFields,
+            notes: trimmedNotes
+        )
     }
 
     private var builtFields: [VaultEntryField] {
@@ -132,6 +187,13 @@ final class EntryEditorViewModel: Identifiable {
     }
 }
 
+private extension EntryEditorViewModel {
+    enum Mode {
+        case creating
+        case editing(id: UUID, createdAt: Date)
+    }
+}
+
 enum EntryEditorKeyboard {
     case `default`
     case email
@@ -151,5 +213,12 @@ private extension VaultEntryFieldKind {
         case .username, .password, .oneTimeCode, .text:
             return .default
         }
+    }
+}
+
+private extension Array {
+    subscript(safe index: Int) -> Element? {
+        guard indices.contains(index) else { return nil }
+        return self[index]
     }
 }

@@ -8,7 +8,19 @@
 import SwiftUI
 
 struct EntryDetailView: View {
-    let entry: VaultEntry
+    let viewModel: VaultListViewModel
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var entry: VaultEntry
+    @State private var entryEditorViewModel: EntryEditorViewModel?
+    @State private var isShowingDeleteConfirmation = false
+    @State private var isDeleting = false
+    @State private var errorMessage: String?
+
+    init(entry: VaultEntry, viewModel: VaultListViewModel) {
+        self.viewModel = viewModel
+        _entry = State(initialValue: entry)
+    }
 
     var body: some View {
         ScrollView {
@@ -27,6 +39,46 @@ struct EntryDetailView: View {
         }
         .navigationTitle(entry.metadata.title)
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Edit") {
+                    entryEditorViewModel = viewModel.makeEntryEditorViewModel(for: entry)
+                }
+            }
+        }
+        .safeAreaInset(edge: .bottom) {
+            deleteBar
+        }
+        .sheet(item: $entryEditorViewModel) { entryEditorViewModel in
+            EntryEditorView(viewModel: entryEditorViewModel) {
+                do {
+                    entry = try await viewModel.refreshEntry(id: entry.id)
+                } catch {
+                    errorMessage = error.localizedDescription
+                }
+            }
+        }
+        .confirmationDialog(
+            "Delete this entry?",
+            isPresented: $isShowingDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Delete Entry", role: .destructive) {
+                Task {
+                    await deleteEntry()
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This permanently removes the entry from local storage.")
+        }
+        .alert("Action Failed", isPresented: errorAlertIsPresented, actions: {
+            Button("OK") {
+                errorMessage = nil
+            }
+        }, message: {
+            Text(errorMessage ?? "")
+        })
         .background(
             LinearGradient(
                 colors: [
@@ -39,6 +91,32 @@ struct EntryDetailView: View {
             )
             .ignoresSafeArea()
         )
+    }
+
+    private var deleteBar: some View {
+        VStack(spacing: 0) {
+            Divider()
+                .overlay(.white.opacity(0.15))
+
+            Button(role: .destructive) {
+                isShowingDeleteConfirmation = true
+            } label: {
+                if isDeleting {
+                    ProgressView()
+                        .tint(.red)
+                        .frame(maxWidth: .infinity)
+                } else {
+                    Label("Delete Entry", systemImage: "trash")
+                        .font(.headline)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 18)
+            .background(.thinMaterial)
+            .disabled(isDeleting)
+        }
     }
 
     private var header: some View {
@@ -135,7 +213,31 @@ struct EntryDetailView: View {
     }
 
     private func displayValue(for field: VaultEntryField) -> String {
-        field.kind.isSensitive ? field.value : field.value
+        field.value
+    }
+
+    private func deleteEntry() async {
+        guard !isDeleting else { return }
+
+        isDeleting = true
+        do {
+            try await viewModel.deleteEntry(id: entry.id)
+            dismiss()
+        } catch {
+            errorMessage = error.localizedDescription
+        }
+        isDeleting = false
+    }
+
+    private var errorAlertIsPresented: Binding<Bool> {
+        Binding(
+            get: { errorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    errorMessage = nil
+                }
+            }
+        )
     }
 }
 
@@ -152,6 +254,12 @@ struct EntryDetailView: View {
                 VaultEntryField(label: "Password", value: "correct-horse-battery-staple", kind: .password)
             ],
             notes: "Primary personal mailbox."
+        ),
+        viewModel: VaultListViewModel(
+            repository: DefaultVaultRepository(
+                metadataStore: JSONFileVaultEntryMetadataStore(),
+                secureValueStore: KeychainSecureValueStore()
+            )
         )
     )
 }

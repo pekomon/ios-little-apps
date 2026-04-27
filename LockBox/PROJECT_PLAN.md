@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: the app unlocks into a real vault list, supports entry creation, and now has read-only entry detail navigation.
-- Build status: task 13 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: the app unlocks into a real vault list and now supports creating, viewing, editing, and deleting persisted entries.
+- Build status: task 14 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 14. Add delete/edit flows.
+- Active task: 15. Add app relock on background.
 
 # Phase Plan
 
@@ -36,7 +36,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
    - [x] 11. Add vault list feature
    - [x] 12. Add entry editor feature
    - [x] 13. Add entry detail feature
-   - [ ] 14. Add delete/edit flows
+   - [x] 14. Add delete/edit flows
 5. Product polish
    - [ ] 15. Add app relock on background
    - [ ] 16. Polish vault UI
@@ -46,22 +46,43 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Task
 
-- Task title: Add entry detail feature
-- Goal: Add a read-only detail screen for vault entries so users can open an item from the list and inspect all stored fields and notes.
+- Task title: Add delete/edit flows
+- Goal: Allow editing and deleting existing vault entries while keeping detail, list, and local persistence in sync after each mutation.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
   - files under `LockBox/LockBox/Features/EntryDetail`
+  - files under `LockBox/LockBox/Features/EntryEditor`
   - files under `LockBox/LockBox/Features/VaultList`
 - Risks / notes:
-  - Keep this task focused on navigation and read-only presentation; editing and deletion still belong to the next roadmap step.
-  - Preserve current create-entry behavior while layering detail navigation on top.
+  - Keep the edit flow aligned with the existing create flow so updates preserve stable entry identity and creation timestamps.
+  - Avoid reseeding demo entries when a user deletes their last item after the initial first-load experience.
 - Outcome after completion:
-  - Added a read-only entry detail screen that shows metadata, all fields, and notes.
-  - Wired vault list cards into navigation so entries can be opened without mixing in edit/delete behavior yet.
+  - Added edit and delete actions from the entry detail screen, including destructive confirmation before removal.
+  - Reused the existing entry editor for update flows with prefilled values and stable metadata preservation.
+  - Kept the vault list refreshed after edit and delete mutations without reintroducing sample entries on later empty-state reloads.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox entry detail feature`
+- Commit message used: `Add LockBox delete and edit flows`
 
 # Completed Tasks
+
+- Task title: Add delete/edit flows
+- Goal: Allow editing and deleting existing vault entries while keeping detail, list, and local persistence in sync after each mutation.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/Features/EntryDetail/EntryDetailView.swift`
+  - `LockBox/LockBox/Features/EntryEditor/EntryEditorView.swift`
+  - `LockBox/LockBox/Features/EntryEditor/EntryEditorViewModel.swift`
+  - `LockBox/LockBox/Features/VaultList/VaultListView.swift`
+  - `LockBox/LockBox/Features/VaultList/VaultListViewModel.swift`
+- Risks / notes:
+  - The detail screen now owns edit/delete actions directly; a later polish pass may refine affordances or add field-level reveal controls.
+  - Sample entries are now seeded only on the first load path so user-driven empty states stay empty after deletions.
+- Outcome after completion:
+  - Added edit and delete actions to the entry detail screen.
+  - Reused the existing editor to update entries while preserving IDs and original creation timestamps.
+  - Kept the list and persistence layer in sync after updates and deletions.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Add LockBox delete and edit flows`
 
 - Task title: Add entry detail feature
 - Goal: Add a read-only detail screen for vault entries so users can open an item from the list and inspect all stored fields and notes.
@@ -259,7 +280,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 14. Add delete/edit flows
+- 15. Add app relock on background
 
 # Open Questions / Follow-ups
 

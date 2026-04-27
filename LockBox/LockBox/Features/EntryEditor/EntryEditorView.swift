@@ -49,7 +49,7 @@ struct EntryEditorView: View {
                     }
                 }
             }
-            .navigationTitle("New Entry")
+            .navigationTitle(viewModel.screenTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -59,7 +59,7 @@ struct EntryEditorView: View {
                 }
 
                 ToolbarItem(placement: .confirmationAction) {
-                    Button(viewModel.isSaving ? "Saving..." : "Save") {
+                    Button(viewModel.isSaving ? "Saving..." : viewModel.saveButtonTitle) {
                         Task {
                             let didSave = await viewModel.save()
                             if didSave {

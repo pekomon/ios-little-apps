@@ -84,7 +84,7 @@ struct VaultListView: View {
             LazyVStack(spacing: 14) {
                 ForEach(viewModel.entries) { entry in
                     NavigationLink {
-                        EntryDetailView(entry: entry)
+                        EntryDetailView(entry: entry, viewModel: viewModel)
                     } label: {
                         entryCard(entry)
                     }

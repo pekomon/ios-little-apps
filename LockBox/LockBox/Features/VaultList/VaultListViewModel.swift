@@ -25,6 +25,10 @@ final class VaultListViewModel {
         EntryEditorViewModel(repository: repository)
     }
 
+    func makeEntryEditorViewModel(for entry: VaultEntry) -> EntryEditorViewModel {
+        EntryEditorViewModel(repository: repository, entry: entry)
+    }
+
     func loadIfNeeded() async {
         guard !hasLoaded else { return }
         await reload()
@@ -37,7 +41,7 @@ final class VaultListViewModel {
         do {
             var loadedEntries = try await repository.fetchEntries()
 
-            if loadedEntries.isEmpty {
+            if loadedEntries.isEmpty && !hasLoaded {
                 try await seedSampleEntries()
                 loadedEntries = try await repository.fetchEntries()
             }
@@ -49,6 +53,17 @@ final class VaultListViewModel {
         }
 
         isLoading = false
+    }
+
+    func refreshEntry(id: VaultEntry.ID) async throws -> VaultEntry {
+        let entry = try await repository.fetchEntry(id: id)
+        await reload()
+        return entry
+    }
+
+    func deleteEntry(id: VaultEntry.ID) async throws {
+        try await repository.deleteEntry(id: id)
+        await reload()
     }
 
     private func seedSampleEntries() async throws {
