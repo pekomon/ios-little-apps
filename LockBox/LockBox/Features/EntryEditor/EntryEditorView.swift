@@ -15,8 +15,21 @@ struct EntryEditorView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text(viewModel.screenTitle)
+                            .font(.title2.weight(.bold))
+
+                        Text("Entries stay on device. Give this record a clear title and only fill the fields that matter.")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 4)
+                }
+
                 Section("Entry") {
                     TextField("Title", text: $viewModel.title)
+                        .textInputAutocapitalization(.words)
 
                     Picker("Type", selection: $viewModel.kind) {
                         ForEach(VaultEntryKind.allCases, id: \.self) { kind in
@@ -37,8 +50,12 @@ struct EntryEditorView: View {
                         .lineLimit(4...8)
                 }
 
-                Section("Tags") {
+                Section {
                     TextField("Comma-separated tags", text: $viewModel.tagsText)
+                } header: {
+                    Text("Tags")
+                } footer: {
+                    Text("Use short tags like work, finance, or shared to make entries easier to scan later.")
                 }
 
                 if let errorMessage = viewModel.errorMessage {
@@ -51,6 +68,8 @@ struct EntryEditorView: View {
             }
             .navigationTitle(viewModel.screenTitle)
             .navigationBarTitleDisplayMode(.inline)
+            .scrollContentBackground(.hidden)
+            .background(Color(.systemGroupedBackground))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {

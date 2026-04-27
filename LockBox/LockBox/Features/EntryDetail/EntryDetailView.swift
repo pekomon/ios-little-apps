@@ -120,30 +120,41 @@ struct EntryDetailView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(entry.metadata.kind.rawValue.capitalized)
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(.white.opacity(0.78))
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Label(entry.metadata.kind.displayName, systemImage: entry.metadata.kind.symbolName)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.78))
 
-            Text(entry.metadata.title)
-                .font(.system(size: 32, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
+                    Text(entry.metadata.title)
+                        .font(.system(size: 32, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
 
-            if !entry.metadata.tags.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 8) {
-                        ForEach(entry.metadata.tags, id: \.self) { tag in
-                            Text(tag)
-                                .font(.caption.weight(.semibold))
-                                .foregroundStyle(Color(red: 0.11, green: 0.15, blue: 0.20))
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 6)
-                                .background(Color.white.opacity(0.82), in: Capsule())
-                        }
-                    }
+                    Text("Stored locally and protected by the app lock when you leave the vault.")
+                        .font(.footnote)
+                        .foregroundStyle(.white.opacity(0.78))
+                }
+
+                Spacer(minLength: 16)
+
+                VStack(alignment: .trailing, spacing: 8) {
+                    Text("Updated")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.white.opacity(0.66))
+                    Text(entry.metadata.updatedAt.formatted(date: .abbreviated, time: .shortened))
+                        .font(.footnote.weight(.medium))
+                        .foregroundStyle(.white)
+                        .multilineTextAlignment(.trailing)
                 }
             }
+
+            if !entry.metadata.tags.isEmpty {
+                tagRow(entry.metadata.tags)
+            }
         }
+        .padding(22)
+        .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 30, style: .continuous))
     }
 
     private var metadataCard: some View {
@@ -162,18 +173,33 @@ struct EntryDetailView: View {
             cardTitle("Fields")
 
             ForEach(entry.fields) { field in
-                VStack(alignment: .leading, spacing: 6) {
-                    Text(field.label)
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.black.opacity(0.55))
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Label(field.label, systemImage: field.kind.symbolName)
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.black.opacity(0.55))
+
+                        Spacer()
+
+                        if field.kind.isSensitive {
+                            Text("Sensitive")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.orange.opacity(0.88))
+                        }
+                    }
 
                     Text(displayValue(for: field))
-                        .font(.body)
+                        .font(field.kind.prefersMonospacedDisplay ? .body.monospaced() : .body)
                         .foregroundStyle(Color(red: 0.11, green: 0.15, blue: 0.20))
+                        .frame(maxWidth: .infinity, alignment: .leading)
                         .textSelection(.enabled)
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, 4)
+                .padding(.vertical, 6)
+
+                if field.id != entry.fields.last?.id {
+                    Divider()
+                        .overlay(.black.opacity(0.08))
+                }
             }
         }
         .padding(22)
@@ -216,6 +242,21 @@ struct EntryDetailView: View {
         field.value
     }
 
+    private func tagRow(_ tags: [String]) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(tags, id: \.self) { tag in
+                    Text(tag)
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(Color(red: 0.11, green: 0.15, blue: 0.20))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(Color.white.opacity(0.82), in: Capsule())
+                }
+            }
+        }
+    }
+
     private func deleteEntry() async {
         guard !isDeleting else { return }
 
@@ -238,6 +279,55 @@ struct EntryDetailView: View {
                 }
             }
         )
+    }
+}
+
+private extension VaultEntryKind {
+    var displayName: String {
+        rawValue.capitalized
+    }
+
+    var symbolName: String {
+        switch self {
+        case .login:
+            return "person.crop.circle.badge.key"
+        case .note:
+            return "note.text"
+        case .card:
+            return "creditcard"
+        case .identity:
+            return "person.text.rectangle"
+        }
+    }
+}
+
+private extension VaultEntryFieldKind {
+    var symbolName: String {
+        switch self {
+        case .username:
+            return "person"
+        case .password:
+            return "key"
+        case .oneTimeCode:
+            return "number"
+        case .url:
+            return "globe"
+        case .emailAddress:
+            return "envelope"
+        case .phoneNumber:
+            return "phone"
+        case .text:
+            return "text.alignleft"
+        }
+    }
+
+    var prefersMonospacedDisplay: Bool {
+        switch self {
+        case .password, .oneTimeCode, .phoneNumber:
+            return true
+        case .username, .url, .emailAddress, .text:
+            return false
+        }
     }
 }
 

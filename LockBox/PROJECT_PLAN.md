@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: the app unlocks into a real vault list, supports entry CRUD, and now relocks automatically after the app backgrounds.
-- Build status: task 15 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: the app unlocks into a polished local vault experience with cleaner hierarchy across the list, detail, and editor flows, while still supporting full CRUD and background relock.
+- Build status: task 16 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 16. Polish vault UI.
+- Active task: 17. Improve accessibility support.
 
 # Phase Plan
 
@@ -39,30 +39,48 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
    - [x] 14. Add delete/edit flows
 5. Product polish
    - [x] 15. Add app relock on background
-   - [ ] 16. Polish vault UI
+   - [x] 16. Polish vault UI
    - [ ] 17. Improve accessibility support
    - [ ] 18. Add haptic feedback
    - [ ] 19. Improve README / showcase presentation
 
 # Current Task
 
-- Task title: Add app relock on background
-- Goal: Relock the vault automatically when the app backgrounds so unlocked content is protected when the user leaves the app.
+- Task title: Polish vault UI
+- Goal: Improve the visual hierarchy and readability of the unlocked vault flows so list, detail, and editor screens feel cohesive and intentional.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
-  - `LockBox/LockBox/App/LockBoxRootView.swift`
-  - `LockBox/LockBox/Core/Security/AppLockManager.swift`
+  - `LockBox/LockBox/Features/VaultList/VaultListView.swift`
+  - `LockBox/LockBox/Features/EntryDetail/EntryDetailView.swift`
+  - `LockBox/LockBox/Features/EntryEditor/EntryEditorView.swift`
 - Risks / notes:
-  - Avoid treating every temporary `.inactive` transition as a relock event because biometric prompts and system overlays can trigger it.
-  - Keep relock behavior centralized in the lock manager so later lifecycle refinements don’t spread through the view layer.
+  - Keep the polish task presentational so it doesn’t destabilize the now-working CRUD and lock flows.
+  - Improve truncation and metadata presentation without hiding important information from the user.
 - Outcome after completion:
-  - Added scene-phase handling so the app relocks when it moves to the background.
-  - Refreshed biometric availability when the app becomes active again.
-  - Kept the existing unlock flow intact without relocking on transient inactive states.
+  - Tightened the vault list hierarchy with a clearer section structure, stronger cards, and a more useful empty state.
+  - Refined entry detail presentation with a proper hero card and more legible field rows.
+  - Improved the entry editor presentation with a clearer intro and more consistent form treatment.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox app relock on background`
+- Commit message used: `Polish LockBox vault UI`
 
 # Completed Tasks
+
+- Task title: Polish vault UI
+- Goal: Improve the visual hierarchy and readability of the unlocked vault flows so list, detail, and editor screens feel cohesive and intentional.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/Features/VaultList/VaultListView.swift`
+  - `LockBox/LockBox/Features/EntryDetail/EntryDetailView.swift`
+  - `LockBox/LockBox/Features/EntryEditor/EntryEditorView.swift`
+- Risks / notes:
+  - This pass stays presentational; accessibility semantics and haptics still belong to later dedicated tasks.
+  - Sensitive fields remain visible in detail view by design; this task focuses on readability rather than reveal controls.
+- Outcome after completion:
+  - Refined the list, detail, and editor surfaces into a more cohesive vault experience.
+  - Improved date, truncation, iconography, and empty-state treatment in the list.
+  - Improved hierarchy and field readability in the detail and editor flows.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Polish LockBox vault UI`
 
 - Task title: Add app relock on background
 - Goal: Relock the vault automatically when the app backgrounds so unlocked content is protected when the user leaves the app.
@@ -310,7 +328,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 16. Polish vault UI
+- 17. Improve accessibility support
 
 # Open Questions / Follow-ups
 

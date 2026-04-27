@@ -59,14 +59,27 @@ struct VaultListView: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("Vault")
-                .font(.system(size: 34, weight: .bold, design: .rounded))
-                .foregroundStyle(.white)
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text("Vault")
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
 
-            Text("Your local entries are unlocked and ready. Review, update, or remove items without leaving the live vault.")
-                .font(.body)
-                .foregroundStyle(.white.opacity(0.82))
-                .fixedSize(horizontal: false, vertical: true)
+                    Text("Your local entries are unlocked and ready. Review, update, or remove items without leaving the live vault.")
+                        .font(.body)
+                        .foregroundStyle(.white.opacity(0.82))
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+
+                Spacer(minLength: 16)
+
+                Label("Local only", systemImage: "externaldrive.badge.checkmark")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.82))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(.white.opacity(0.08), in: Capsule())
+            }
 
             summaryCards
         }
@@ -90,14 +103,21 @@ struct VaultListView: View {
         } else if viewModel.entries.isEmpty {
             emptyCard
         } else {
-            LazyVStack(spacing: 14) {
-                ForEach(viewModel.entries) { entry in
-                    NavigationLink {
-                        EntryDetailView(entry: entry, viewModel: viewModel)
-                    } label: {
-                        entryCard(entry)
+            VStack(alignment: .leading, spacing: 14) {
+                sectionHeader(
+                    title: "Recent entries",
+                    subtitle: "Sensitive values stay redacted in the list until you open an item."
+                )
+
+                LazyVStack(spacing: 14) {
+                    ForEach(viewModel.entries) { entry in
+                        NavigationLink {
+                            EntryDetailView(entry: entry, viewModel: viewModel)
+                        } label: {
+                            entryCard(entry)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
             }
         }
@@ -142,13 +162,25 @@ struct VaultListView: View {
     }
 
     private var emptyCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             Text("Your vault is empty")
                 .font(.headline)
                 .foregroundStyle(.white)
 
-            Text("The repository and persistence layers are active, but there are no entries yet.")
+            Text("Local storage is ready, but there are no entries yet. Start by adding a login, note, card, or identity record.")
                 .foregroundStyle(.white.opacity(0.8))
+
+            Button {
+                entryEditorViewModel = viewModel.makeEntryEditorViewModel()
+            } label: {
+                Label("Create your first entry", systemImage: "plus")
+                    .font(.headline)
+                    .foregroundStyle(Color(red: 0.11, green: 0.15, blue: 0.20))
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+            }
+            .buttonStyle(.plain)
         }
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -162,8 +194,9 @@ struct VaultListView: View {
                     Text(entry.metadata.title)
                         .font(.headline)
                         .foregroundStyle(Color(red: 0.11, green: 0.15, blue: 0.20))
+                        .lineLimit(2)
 
-                    Text(entry.metadata.kind.rawValue.capitalized)
+                    Label(entry.metadata.kind.displayName, systemImage: entry.metadata.kind.symbolName)
                         .font(.footnote.weight(.semibold))
                         .foregroundStyle(.black.opacity(0.55))
                 }
@@ -171,7 +204,7 @@ struct VaultListView: View {
                 Spacer()
 
                 VStack(alignment: .trailing, spacing: 8) {
-                    Text(entry.metadata.updatedAt.formatted(date: .abbreviated, time: .omitted))
+                    Text(entry.metadata.updatedAt.lockBoxListDate)
                         .font(.footnote.weight(.medium))
                         .foregroundStyle(.black.opacity(0.45))
 
@@ -191,11 +224,13 @@ struct VaultListView: View {
                         Text(field.label)
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(.black.opacity(0.55))
+                            .lineLimit(1)
                         Spacer()
                         Text(displayValue(for: field))
                             .font(.footnote.weight(.medium))
                             .foregroundStyle(Color(red: 0.11, green: 0.15, blue: 0.20))
                             .lineLimit(1)
+                            .truncationMode(field.kind.prefersMiddleTruncation ? .middle : .tail)
                     }
                 }
             }
@@ -205,10 +240,12 @@ struct VaultListView: View {
                     .font(.footnote)
                     .foregroundStyle(.black.opacity(0.65))
                     .lineLimit(2)
+                    .padding(.top, 2)
             }
         }
         .padding(22)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+        .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 6)
     }
 
     private func summaryCard(title: String, value: String, systemImage: String) -> some View {
@@ -241,6 +278,18 @@ struct VaultListView: View {
         }
     }
 
+    private func sectionHeader(title: String, subtitle: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.title3.weight(.bold))
+                .foregroundStyle(.white)
+
+            Text(subtitle)
+                .font(.footnote)
+                .foregroundStyle(.white.opacity(0.76))
+        }
+    }
+
     private var sensitiveEntryCount: Int {
         viewModel.entries.filter { entry in
             entry.fields.contains(where: \.kind.isSensitive)
@@ -249,6 +298,50 @@ struct VaultListView: View {
 
     private func displayValue(for field: VaultEntryField) -> String {
         field.kind.isSensitive ? "••••••••" : field.value
+    }
+}
+
+private extension VaultEntryKind {
+    var displayName: String {
+        rawValue.capitalized
+    }
+
+    var symbolName: String {
+        switch self {
+        case .login:
+            return "person.crop.circle.badge.key"
+        case .note:
+            return "note.text"
+        case .card:
+            return "creditcard"
+        case .identity:
+            return "person.text.rectangle"
+        }
+    }
+}
+
+private extension VaultEntryFieldKind {
+    var prefersMiddleTruncation: Bool {
+        switch self {
+        case .emailAddress, .url:
+            return true
+        case .username, .password, .oneTimeCode, .phoneNumber, .text:
+            return false
+        }
+    }
+}
+
+private extension Date {
+    var lockBoxListDate: String {
+        if Calendar.current.isDateInToday(self) {
+            return "Today"
+        }
+
+        if Calendar.current.isDateInYesterday(self) {
+            return "Yesterday"
+        }
+
+        return formatted(date: .abbreviated, time: .omitted)
     }
 }
 
