@@ -13,17 +13,40 @@ struct VaultListView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    header
-                    summaryCards
-                    content
+            ZStack {
+                LinearGradient(
+                    colors: [
+                        Color(red: 0.08, green: 0.11, blue: 0.16),
+                        Color(red: 0.12, green: 0.17, blue: 0.23),
+                        Color(red: 0.78, green: 0.71, blue: 0.56)
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .ignoresSafeArea()
+
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 18) {
+                        header
+                        content
+                    }
+                    .padding(.horizontal, 24)
+                    .padding(.top, 16)
+                    .padding(.bottom, 20)
                 }
-                .padding(.horizontal, 24)
-                .padding(.top, 32)
-                .padding(.bottom, 24)
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        entryEditorViewModel = viewModel.makeEntryEditorViewModel()
+                    } label: {
+                        Label("New", systemImage: "plus")
+                            .font(.headline)
+                    }
+                }
             }
         }
+        .toolbarBackground(.hidden, for: .navigationBar)
         .task {
             await viewModel.loadIfNeeded()
         }
@@ -35,34 +58,20 @@ struct VaultListView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .top) {
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Vault")
-                        .font(.system(size: 34, weight: .bold, design: .rounded))
-                        .foregroundStyle(.white)
+        VStack(alignment: .leading, spacing: 16) {
+            Text("Vault")
+                .font(.system(size: 34, weight: .bold, design: .rounded))
+                .foregroundStyle(.white)
 
-                    Text("Your local entries are unlocked and ready. Add new entries directly into the live vault.")
-                        .font(.body)
-                        .foregroundStyle(.white.opacity(0.8))
-                        .fixedSize(horizontal: false, vertical: true)
-                }
+            Text("Your local entries are unlocked and ready. Review, update, or remove items without leaving the live vault.")
+                .font(.body)
+                .foregroundStyle(.white.opacity(0.82))
+                .fixedSize(horizontal: false, vertical: true)
 
-                Spacer(minLength: 16)
-
-                Button {
-                    entryEditorViewModel = viewModel.makeEntryEditorViewModel()
-                } label: {
-                    Label("New", systemImage: "plus")
-                        .font(.headline)
-                        .foregroundStyle(Color(red: 0.11, green: 0.15, blue: 0.20))
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 12)
-                        .background(Color.white, in: Capsule())
-                }
-                .buttonStyle(.plain)
-            }
+            summaryCards
         }
+        .padding(22)
+        .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 30, style: .continuous))
     }
 
     private var summaryCards: some View {
@@ -214,7 +223,7 @@ struct VaultListView: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(18)
-        .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
     }
 
     private func tagRow(_ tags: [String]) -> some View {

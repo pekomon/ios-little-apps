@@ -60,9 +60,11 @@ struct LockBoxRootView: View {
                     Text("Local vault ready")
                 }
                 .padding(.horizontal, 24)
-                .padding(.bottom, 24)
+                .padding(.top, 10)
+                .padding(.bottom, 16)
                 .font(.footnote.weight(.medium))
                 .foregroundStyle(.white.opacity(0.76))
+                .background(.black.opacity(0.08))
             }
         }
     }

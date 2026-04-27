@@ -12,8 +12,8 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: the app unlocks into a real vault list and now supports creating, viewing, editing, and deleting persisted entries.
-- Build status: task 14 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: the app unlocks into a real vault list that now has cleaner header and footer layout on top of create, view, edit, and delete flows.
+- Build status: follow-up task 14.1 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
 - Active task: 15. Add app relock on background.
 
@@ -64,6 +64,21 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 - Commit message used: `Add LockBox delete and edit flows`
 
 # Completed Tasks
+
+- Task title: 14.1 Small layout cleanup
+- Goal: Tighten the unlocked vault screen layout after task-14 review feedback so the header, primary action, and footer feel intentional on device.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/App/LockBoxRootView.swift`
+  - `LockBox/LockBox/Features/VaultList/VaultListView.swift`
+- Risks / notes:
+  - This follow-up stays presentational only and should not be treated as part of lifecycle relock work.
+- Outcome after completion:
+  - Moved the primary `New` action into the navigation bar.
+  - Reworked the vault header into a compact visible surface and reduced excess top whitespace.
+  - Slimmed the footer bar so it supports the content instead of competing with it.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Refine LockBox vault list layout`
 
 - Task title: Add delete/edit flows
 - Goal: Allow editing and deleting existing vault entries while keeping detail, list, and local persistence in sync after each mutation.
