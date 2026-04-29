@@ -26,10 +26,13 @@ struct EntryEditorView: View {
                     }
                     .padding(.vertical, 4)
                 }
+                .accessibilityElement(children: .combine)
 
                 Section("Entry") {
                     TextField("Title", text: $viewModel.title)
                         .textInputAutocapitalization(.words)
+                        .accessibilityLabel("Entry title")
+                        .accessibilityHint("Provide a clear name for this vault entry.")
 
                     Picker("Type", selection: $viewModel.kind) {
                         ForEach(VaultEntryKind.allCases, id: \.self) { kind in
@@ -37,6 +40,7 @@ struct EntryEditorView: View {
                                 .tag(kind)
                         }
                     }
+                    .accessibilityHint("Chooses the kind of vault entry and updates the suggested fields.")
                 }
 
                 Section("Fields") {
@@ -48,10 +52,14 @@ struct EntryEditorView: View {
                 Section("Notes") {
                     TextField("Optional notes", text: $viewModel.notes, axis: .vertical)
                         .lineLimit(4...8)
+                        .accessibilityLabel("Notes")
+                        .accessibilityHint("Optional freeform notes for this entry.")
                 }
 
                 Section {
                     TextField("Comma-separated tags", text: $viewModel.tagsText)
+                        .accessibilityLabel("Tags")
+                        .accessibilityHint("Separate tags with commas.")
                 } header: {
                     Text("Tags")
                 } footer: {
@@ -99,6 +107,7 @@ struct EntryEditorView: View {
             .textInputAutocapitalization(keyboard == .default ? .sentences : .never)
             .autocorrectionDisabled(keyboard != .default)
             .keyboardType(keyboardType(for: keyboard))
+            .accessibilityLabel(title)
     }
 
     private func keyboardType(for keyboard: EntryEditorKeyboard) -> UIKeyboardType {

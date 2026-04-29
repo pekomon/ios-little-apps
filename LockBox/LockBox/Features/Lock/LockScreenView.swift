@@ -31,6 +31,7 @@ struct LockScreenView: View {
             .foregroundStyle(.white)
             .frame(width: 78, height: 78)
             .background(.white.opacity(0.14), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+            .accessibilityHidden(true)
     }
 
     private var titleBlock: some View {
@@ -62,6 +63,7 @@ struct LockScreenView: View {
         .padding(20)
         .frame(maxWidth: 420)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .accessibilityElement(children: .combine)
     }
 
     private var unlockButton: some View {
@@ -150,6 +152,7 @@ struct LockScreenView: View {
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(Color(red: 0.11, green: 0.15, blue: 0.20))
         }
+        .accessibilityElement(children: .combine)
     }
 }
 

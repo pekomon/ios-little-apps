@@ -79,12 +79,14 @@ struct VaultListView: View {
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
                     .background(.white.opacity(0.08), in: Capsule())
+                    .accessibilityLabel("Stored locally on this device")
             }
 
             summaryCards
         }
         .padding(22)
         .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 30, style: .continuous))
+        .accessibilityElement(children: .contain)
     }
 
     private var summaryCards: some View {
@@ -92,6 +94,7 @@ struct VaultListView: View {
             summaryCard(title: "Entries", value: "\(viewModel.entries.count)", systemImage: "tray.full.fill")
             summaryCard(title: "Sensitive", value: "\(sensitiveEntryCount)", systemImage: "lock.doc.fill")
         }
+        .accessibilityElement(children: .contain)
     }
 
     @ViewBuilder
@@ -127,12 +130,14 @@ struct VaultListView: View {
         HStack(spacing: 12) {
             ProgressView()
                 .tint(.white)
+                .accessibilityHidden(true)
             Text("Loading vault entries...")
                 .foregroundStyle(.white)
         }
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .accessibilityElement(children: .combine)
     }
 
     private func errorCard(message: String) -> some View {
@@ -159,6 +164,7 @@ struct VaultListView: View {
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.red.opacity(0.25), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .accessibilityElement(children: .contain)
     }
 
     private var emptyCard: some View {
@@ -181,10 +187,12 @@ struct VaultListView: View {
                     .background(Color.white, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
             }
             .buttonStyle(.plain)
+            .accessibilityHint("Opens the editor to add your first vault entry.")
         }
         .padding(22)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .accessibilityElement(children: .contain)
     }
 
     private func entryCard(_ entry: VaultEntry) -> some View {
@@ -211,6 +219,7 @@ struct VaultListView: View {
                     Image(systemName: "chevron.right")
                         .font(.caption.weight(.bold))
                         .foregroundStyle(.black.opacity(0.35))
+                        .accessibilityHidden(true)
                 }
             }
 
@@ -246,6 +255,10 @@ struct VaultListView: View {
         .padding(22)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
         .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 6)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(entryAccessibilityLabel(entry))
+        .accessibilityValue(entryAccessibilityValue(entry))
+        .accessibilityHint("Opens entry details.")
     }
 
     private func summaryCard(title: String, value: String, systemImage: String) -> some View {
@@ -261,6 +274,9 @@ struct VaultListView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(18)
         .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title)
+        .accessibilityValue(value)
     }
 
     private func tagRow(_ tags: [String]) -> some View {
@@ -298,6 +314,35 @@ struct VaultListView: View {
 
     private func displayValue(for field: VaultEntryField) -> String {
         field.kind.isSensitive ? "••••••••" : field.value
+    }
+
+    private func entryAccessibilityLabel(_ entry: VaultEntry) -> String {
+        "\(entry.metadata.title), \(entry.metadata.kind.displayName)"
+    }
+
+    private func entryAccessibilityValue(_ entry: VaultEntry) -> String {
+        var components = ["Updated \(entry.metadata.updatedAt.lockBoxListDate)"]
+
+        if !entry.metadata.tags.isEmpty {
+            components.append("Tags: \(entry.metadata.tags.joined(separator: ", "))")
+        }
+
+        let fieldSummary = entry.fields.prefix(3).map { field in
+            if field.kind.isSensitive {
+                return "\(field.label), hidden"
+            }
+            return "\(field.label), \(field.value)"
+        }
+
+        if !fieldSummary.isEmpty {
+            components.append(fieldSummary.joined(separator: ". "))
+        }
+
+        if !entry.notes.isEmpty {
+            components.append("Includes notes")
+        }
+
+        return components.joined(separator: ". ")
     }
 }
 

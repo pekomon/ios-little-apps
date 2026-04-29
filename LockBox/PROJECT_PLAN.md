@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: the app unlocks into a polished local vault experience with cleaner hierarchy across the list, detail, and editor flows, while still supporting full CRUD and background relock.
-- Build status: task 16 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: the app unlocks into a polished local vault experience that now has stronger VoiceOver grouping, labels, and hints across the lock, list, detail, and editor flows.
+- Build status: task 17 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 17. Improve accessibility support.
+- Active task: 18. Add haptic feedback.
 
 # Phase Plan
 
@@ -40,30 +40,49 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 5. Product polish
    - [x] 15. Add app relock on background
    - [x] 16. Polish vault UI
-   - [ ] 17. Improve accessibility support
+   - [x] 17. Improve accessibility support
    - [ ] 18. Add haptic feedback
    - [ ] 19. Improve README / showcase presentation
 
 # Current Task
 
-- Task title: Polish vault UI
-- Goal: Improve the visual hierarchy and readability of the unlocked vault flows so list, detail, and editor screens feel cohesive and intentional.
+- Task title: Improve accessibility support
+- Goal: Strengthen accessibility semantics across the app so VoiceOver users can understand structure, actions, and sensitive content more reliably.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
   - `LockBox/LockBox/Features/VaultList/VaultListView.swift`
   - `LockBox/LockBox/Features/EntryDetail/EntryDetailView.swift`
   - `LockBox/LockBox/Features/EntryEditor/EntryEditorView.swift`
+  - `LockBox/LockBox/Features/Lock/LockScreenView.swift`
 - Risks / notes:
-  - Keep the polish task presentational so it doesn’t destabilize the now-working CRUD and lock flows.
-  - Improve truncation and metadata presentation without hiding important information from the user.
+  - Improve screen-reader behavior without flattening the visual hierarchy or changing working CRUD and lock behavior.
+  - Decorative elements should be hidden from accessibility where they add noise rather than meaning.
 - Outcome after completion:
-  - Tightened the vault list hierarchy with a clearer section structure, stronger cards, and a more useful empty state.
-  - Refined entry detail presentation with a proper hero card and more legible field rows.
-  - Improved the entry editor presentation with a clearer intro and more consistent form treatment.
+  - Added clearer VoiceOver grouping, labels, values, and hints across the vault list, detail, editor, and lock flows.
+  - Reduced decorative accessibility noise by hiding non-informational glyphs and dividers.
+  - Improved screen-reader summaries for entry cards and sensitive-field presentation.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Polish LockBox vault UI`
+- Commit message used: `Improve LockBox accessibility support`
 
 # Completed Tasks
+
+- Task title: Improve accessibility support
+- Goal: Strengthen accessibility semantics across the app so VoiceOver users can understand structure, actions, and sensitive content more reliably.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/Features/VaultList/VaultListView.swift`
+  - `LockBox/LockBox/Features/EntryDetail/EntryDetailView.swift`
+  - `LockBox/LockBox/Features/EntryEditor/EntryEditorView.swift`
+  - `LockBox/LockBox/Features/Lock/LockScreenView.swift`
+- Risks / notes:
+  - This pass focuses on semantics and hints; larger dynamic-type layout validation can still be refined later if needed.
+  - Sensitive values remain available in the detail screen by design, but screen-reader cues now identify those fields explicitly.
+- Outcome after completion:
+  - Improved VoiceOver grouping and action hints across the main app flows.
+  - Added stronger accessibility summaries for list cards and form fields.
+  - Reduced decorative accessibility noise in the lock and detail presentations.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Improve LockBox accessibility support`
 
 - Task title: Polish vault UI
 - Goal: Improve the visual hierarchy and readability of the unlocked vault flows so list, detail, and editor screens feel cohesive and intentional.
@@ -328,7 +347,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 17. Improve accessibility support
+- 18. Add haptic feedback
 
 # Open Questions / Follow-ups
 

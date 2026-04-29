@@ -97,6 +97,7 @@ struct EntryDetailView: View {
         VStack(spacing: 0) {
             Divider()
                 .overlay(.white.opacity(0.15))
+                .accessibilityHidden(true)
 
             Button(role: .destructive) {
                 isShowingDeleteConfirmation = true
@@ -116,6 +117,7 @@ struct EntryDetailView: View {
             .padding(.vertical, 18)
             .background(.thinMaterial)
             .disabled(isDeleting)
+            .accessibilityHint("Permanently removes this entry from local storage.")
         }
     }
 
@@ -155,6 +157,7 @@ struct EntryDetailView: View {
         }
         .padding(22)
         .background(.white.opacity(0.10), in: RoundedRectangle(cornerRadius: 30, style: .continuous))
+        .accessibilityElement(children: .contain)
     }
 
     private var metadataCard: some View {
@@ -166,6 +169,7 @@ struct EntryDetailView: View {
         }
         .padding(22)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+        .accessibilityElement(children: .combine)
     }
 
     private var fieldsCard: some View {
@@ -195,15 +199,21 @@ struct EntryDetailView: View {
                         .textSelection(.enabled)
                 }
                 .padding(.vertical, 6)
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(field.label)
+                .accessibilityValue(field.value)
+                .accessibilityHint(field.kind.isSensitive ? "Sensitive field." : "")
 
                 if field.id != entry.fields.last?.id {
                     Divider()
                         .overlay(.black.opacity(0.08))
+                        .accessibilityHidden(true)
                 }
             }
         }
         .padding(22)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+        .accessibilityElement(children: .contain)
     }
 
     private var notesCard: some View {
@@ -218,6 +228,7 @@ struct EntryDetailView: View {
         }
         .padding(22)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+        .accessibilityElement(children: .combine)
     }
 
     private func cardTitle(_ title: String) -> some View {
