@@ -12,6 +12,7 @@ import Observation
 @Observable
 final class EntryEditorViewModel: Identifiable {
     private let repository: any VaultRepository
+    private let hapticFeedbackService: any HapticFeedbackServicing
     private let mode: Mode
     let id = UUID()
 
@@ -25,13 +26,22 @@ final class EntryEditorViewModel: Identifiable {
     var isSaving = false
     var errorMessage: String?
 
-    init(repository: any VaultRepository) {
+    init(
+        repository: any VaultRepository,
+        hapticFeedbackService: any HapticFeedbackServicing = HapticFeedbackService()
+    ) {
         self.repository = repository
+        self.hapticFeedbackService = hapticFeedbackService
         self.mode = .creating
     }
 
-    init(repository: any VaultRepository, entry: VaultEntry) {
+    init(
+        repository: any VaultRepository,
+        hapticFeedbackService: any HapticFeedbackServicing = HapticFeedbackService(),
+        entry: VaultEntry
+    ) {
         self.repository = repository
+        self.hapticFeedbackService = hapticFeedbackService
         self.mode = .editing(id: entry.id, createdAt: entry.metadata.createdAt)
 
         title = entry.metadata.title
@@ -100,10 +110,12 @@ final class EntryEditorViewModel: Identifiable {
         do {
             try await repository.saveEntry(entry)
             isSaving = false
+            hapticFeedbackService.notify(.success)
             return true
         } catch {
             errorMessage = error.localizedDescription
             isSaving = false
+            hapticFeedbackService.notify(.error)
             return false
         }
     }

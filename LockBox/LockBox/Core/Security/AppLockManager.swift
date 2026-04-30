@@ -13,13 +13,18 @@ import SwiftUI
 @Observable
 final class AppLockManager {
     private let biometricAuthService: any BiometricAuthServicing
+    private let hapticFeedbackService: any HapticFeedbackServicing
 
     private(set) var lockState: AppLockState = .locked
     private(set) var biometricAvailability: BiometricAuthAvailability
     private(set) var lastUnlockError: BiometricAuthError?
 
-    init(biometricAuthService: any BiometricAuthServicing = BiometricAuthService()) {
+    init(
+        biometricAuthService: any BiometricAuthServicing = BiometricAuthService(),
+        hapticFeedbackService: any HapticFeedbackServicing = HapticFeedbackService()
+    ) {
         self.biometricAuthService = biometricAuthService
+        self.hapticFeedbackService = hapticFeedbackService
         self.biometricAvailability = biometricAuthService.availability()
     }
 
@@ -47,6 +52,7 @@ final class AppLockManager {
                 biometricAvailability.biometry,
                 reason: biometricAvailability.unavailableReason
             )
+            hapticFeedbackService.notify(.error)
             return
         }
 
@@ -55,14 +61,17 @@ final class AppLockManager {
         do {
             try await biometricAuthService.authenticate(reason: "Unlock your LockBox vault.")
             lockState = .unlocked
+            hapticFeedbackService.notify(.success)
         } catch let error as BiometricAuthError {
             lockState = .locked
             lastUnlockError = error
             refreshBiometricAvailability()
+            hapticFeedbackService.notify(hapticNotification(for: error))
         } catch {
             lockState = .locked
             lastUnlockError = .unknown
             refreshBiometricAvailability()
+            hapticFeedbackService.notify(.error)
         }
     }
 
@@ -78,6 +87,15 @@ final class AppLockManager {
             break
         @unknown default:
             break
+        }
+    }
+
+    private func hapticNotification(for error: BiometricAuthError) -> HapticNotificationKind {
+        switch error {
+        case .userCancelled, .userFallback, .systemCancelled:
+            return .warning
+        case .unavailable, .authenticationFailed, .notEnrolled, .lockout, .unknown:
+            return .error
         }
     }
 }

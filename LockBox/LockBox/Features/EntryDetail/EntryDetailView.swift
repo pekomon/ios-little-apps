@@ -9,6 +9,7 @@ import SwiftUI
 
 struct EntryDetailView: View {
     let viewModel: VaultListViewModel
+    private let hapticFeedbackService: any HapticFeedbackServicing
 
     @Environment(\.dismiss) private var dismiss
     @State private var entry: VaultEntry
@@ -17,8 +18,13 @@ struct EntryDetailView: View {
     @State private var isDeleting = false
     @State private var errorMessage: String?
 
-    init(entry: VaultEntry, viewModel: VaultListViewModel) {
+    init(
+        entry: VaultEntry,
+        viewModel: VaultListViewModel,
+        hapticFeedbackService: any HapticFeedbackServicing = HapticFeedbackService()
+    ) {
         self.viewModel = viewModel
+        self.hapticFeedbackService = hapticFeedbackService
         _entry = State(initialValue: entry)
     }
 
@@ -274,9 +280,11 @@ struct EntryDetailView: View {
         isDeleting = true
         do {
             try await viewModel.deleteEntry(id: entry.id)
+            hapticFeedbackService.notify(.success)
             dismiss()
         } catch {
             errorMessage = error.localizedDescription
+            hapticFeedbackService.notify(.error)
         }
         isDeleting = false
     }

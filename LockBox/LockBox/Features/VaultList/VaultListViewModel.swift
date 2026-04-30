@@ -12,21 +12,33 @@ import Observation
 @Observable
 final class VaultListViewModel {
     private let repository: any VaultRepository
+    private let hapticFeedbackService: any HapticFeedbackServicing
     private(set) var entries: [VaultEntry] = []
     private(set) var isLoading = false
     private(set) var errorMessage: String?
     private var hasLoaded = false
 
-    init(repository: any VaultRepository) {
+    init(
+        repository: any VaultRepository,
+        hapticFeedbackService: any HapticFeedbackServicing = HapticFeedbackService()
+    ) {
         self.repository = repository
+        self.hapticFeedbackService = hapticFeedbackService
     }
 
     func makeEntryEditorViewModel() -> EntryEditorViewModel {
-        EntryEditorViewModel(repository: repository)
+        EntryEditorViewModel(
+            repository: repository,
+            hapticFeedbackService: hapticFeedbackService
+        )
     }
 
     func makeEntryEditorViewModel(for entry: VaultEntry) -> EntryEditorViewModel {
-        EntryEditorViewModel(repository: repository, entry: entry)
+        EntryEditorViewModel(
+            repository: repository,
+            hapticFeedbackService: hapticFeedbackService,
+            entry: entry
+        )
     }
 
     func loadIfNeeded() async {

@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: the app unlocks into a polished local vault experience that now has stronger VoiceOver grouping, labels, and hints across the lock, list, detail, and editor flows.
-- Build status: task 17 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: the app unlocks into a polished local vault experience that now includes haptic confirmation for key unlock and mutation actions.
+- Build status: task 18 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 18. Add haptic feedback.
+- Active task: 19. Add app icon.
 
 # Phase Plan
 
@@ -41,30 +41,51 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
    - [x] 15. Add app relock on background
    - [x] 16. Polish vault UI
    - [x] 17. Improve accessibility support
-   - [ ] 18. Add haptic feedback
-   - [ ] 19. Improve README / showcase presentation
+   - [x] 18. Add haptic feedback
+   - [ ] 19. Add app icon
+   - [ ] 20. Improve README / showcase presentation
 
 # Current Task
 
-- Task title: Improve accessibility support
-- Goal: Strengthen accessibility semantics across the app so VoiceOver users can understand structure, actions, and sensitive content more reliably.
+- Task title: Add haptic feedback
+- Goal: Add lightweight tactile feedback to the app's key interactions so unlock, save, and delete actions feel responsive without adding visual clutter.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
-  - `LockBox/LockBox/Features/VaultList/VaultListView.swift`
+  - files under `LockBox/LockBox/Core/Feedback`
+  - `LockBox/LockBox/Core/Security/AppLockManager.swift`
+  - `LockBox/LockBox/Features/EntryEditor/EntryEditorViewModel.swift`
+  - `LockBox/LockBox/Features/VaultList/VaultListViewModel.swift`
   - `LockBox/LockBox/Features/EntryDetail/EntryDetailView.swift`
-  - `LockBox/LockBox/Features/EntryEditor/EntryEditorView.swift`
-  - `LockBox/LockBox/Features/Lock/LockScreenView.swift`
 - Risks / notes:
-  - Improve screen-reader behavior without flattening the visual hierarchy or changing working CRUD and lock behavior.
-  - Decorative elements should be hidden from accessibility where they add noise rather than meaning.
+  - Keep haptics subtle and event-driven so they reinforce outcomes without firing excessively during routine navigation.
+  - Centralize UIKit feedback generators so future interaction tuning doesn't spread low-level haptic code through multiple views.
 - Outcome after completion:
-  - Added clearer VoiceOver grouping, labels, values, and hints across the vault list, detail, editor, and lock flows.
-  - Reduced decorative accessibility noise by hiding non-informational glyphs and dividers.
-  - Improved screen-reader summaries for entry cards and sensitive-field presentation.
+  - Added a reusable haptic feedback service under `Core`.
+  - Added success and error feedback for unlock, save/update, and delete flows.
+  - Kept feedback wiring concentrated in existing state owners and mutation paths instead of scattering it through the UI.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Improve LockBox accessibility support`
+- Commit message used: `Add LockBox haptic feedback`
 
 # Completed Tasks
+
+- Task title: Add haptic feedback
+- Goal: Add lightweight tactile feedback to the app's key interactions so unlock, save, and delete actions feel responsive without adding visual clutter.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/Core/Feedback/HapticFeedbackService.swift`
+  - `LockBox/LockBox/Core/Security/AppLockManager.swift`
+  - `LockBox/LockBox/Features/EntryEditor/EntryEditorViewModel.swift`
+  - `LockBox/LockBox/Features/VaultList/VaultListViewModel.swift`
+  - `LockBox/LockBox/Features/EntryDetail/EntryDetailView.swift`
+- Risks / notes:
+  - Simulator support for haptics is limited, so the primary verification remains build integrity plus device-side feel checks later if desired.
+  - The current pass focuses on outcome feedback rather than every tap target to avoid overusing haptics.
+- Outcome after completion:
+  - Added a shared haptic feedback service.
+  - Added haptic confirmation for unlock, save/update, and delete outcomes.
+  - Kept feedback wiring centralized in state and mutation paths.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Add LockBox haptic feedback`
 
 - Task title: Improve accessibility support
 - Goal: Strengthen accessibility semantics across the app so VoiceOver users can understand structure, actions, and sensitive content more reliably.
@@ -347,7 +368,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 18. Add haptic feedback
+- 19. Add app icon
 
 # Open Questions / Follow-ups
 
