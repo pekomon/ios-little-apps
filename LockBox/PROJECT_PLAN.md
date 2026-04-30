@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: the app unlocks into a polished local vault experience that now includes haptic confirmation for key unlock and mutation actions.
-- Build status: task 18 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: the app now has a minimal LockBox app icon aligned with the gold-blue palette used across the product, alongside the existing polished vault and haptic flows.
+- Build status: task 19 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 19. Add app icon.
+- Active task: 20. Improve README / showcase presentation.
 
 # Phase Plan
 
@@ -42,31 +42,44 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
    - [x] 16. Polish vault UI
    - [x] 17. Improve accessibility support
    - [x] 18. Add haptic feedback
-   - [ ] 19. Add app icon
+   - [x] 19. Add app icon
    - [ ] 20. Improve README / showcase presentation
 
 # Current Task
 
-- Task title: Add haptic feedback
-- Goal: Add lightweight tactile feedback to the app's key interactions so unlock, save, and delete actions feel responsive without adding visual clutter.
+- Task title: Add app icon
+- Goal: Add a minimal security-focused app icon that matches LockBox's current gold-blue visual language and is ready for the asset catalog.
 - Files expected to change:
   - `LockBox/PROJECT_PLAN.md`
-  - files under `LockBox/LockBox/Core/Feedback`
-  - `LockBox/LockBox/Core/Security/AppLockManager.swift`
-  - `LockBox/LockBox/Features/EntryEditor/EntryEditorViewModel.swift`
-  - `LockBox/LockBox/Features/VaultList/VaultListViewModel.swift`
-  - `LockBox/LockBox/Features/EntryDetail/EntryDetailView.swift`
+  - files under `LockBox/LockBox/Assets.xcassets/AppIcon.appiconset`
 - Risks / notes:
-  - Keep haptics subtle and event-driven so they reinforce outcomes without firing excessively during routine navigation.
-  - Centralize UIKit feedback generators so future interaction tuning doesn't spread low-level haptic code through multiple views.
+  - Keep the icon minimal and readable at small sizes rather than overfitting it to showcase mockups.
+  - Provide the light, dark, and tinted icon assets expected by the current Xcode asset structure.
 - Outcome after completion:
-  - Added a reusable haptic feedback service under `Core`.
-  - Added success and error feedback for unlock, save/update, and delete flows.
-  - Kept feedback wiring concentrated in existing state owners and mutation paths instead of scattering it through the UI.
+  - Added new app icon bitmaps for the standard, dark, and tinted appearances.
+  - Updated the asset catalog metadata to reference the new icon files.
+  - Kept the icon aligned with the app’s minimal security-focused gold-blue palette.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox haptic feedback`
+- Commit message used: `Add LockBox app icon`
 
 # Completed Tasks
+
+- Task title: Add app icon
+- Goal: Add a minimal security-focused app icon that matches LockBox's current gold-blue visual language and is ready for the asset catalog.
+- Files changed:
+  - `LockBox/PROJECT_PLAN.md`
+  - `LockBox/LockBox/Assets.xcassets/AppIcon.appiconset/Contents.json`
+  - `LockBox/LockBox/Assets.xcassets/AppIcon.appiconset/icon-standard.png`
+  - `LockBox/LockBox/Assets.xcassets/AppIcon.appiconset/icon-dark.png`
+  - `LockBox/LockBox/Assets.xcassets/AppIcon.appiconset/icon-tinted.png`
+- Risks / notes:
+  - The icon was generated locally from a deterministic graphics script because a dedicated image-generation tool was not available in this session.
+  - Final feel should still be checked on-device and on the home screen, since icon presentation changes subtly across contexts.
+- Outcome after completion:
+  - Added a new minimal lock-themed app icon in the app’s gold-blue palette.
+  - Supplied standard, dark, and tinted icon variants to match the current asset catalog structure.
+  - Verified the project still builds successfully for iOS Simulator.
+- Commit message used: `Add LockBox app icon`
 
 - Task title: Add haptic feedback
 - Goal: Add lightweight tactile feedback to the app's key interactions so unlock, save, and delete actions feel responsive without adding visual clutter.
@@ -368,7 +381,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Next Recommended Task
 
-- 19. Add app icon
+- 20. Improve README / showcase presentation
 
 # Open Questions / Follow-ups
 
