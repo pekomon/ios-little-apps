@@ -309,7 +309,7 @@ private extension VaultEntryKind {
     var symbolName: String {
         switch self {
         case .login:
-            return "person.crop.circle.badge.key"
+            return "person.fill"
         case .note:
             return "note.text"
         case .card:
