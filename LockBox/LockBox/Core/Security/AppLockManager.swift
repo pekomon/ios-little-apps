@@ -19,9 +19,16 @@ final class AppLockManager {
     private(set) var biometricAvailability: BiometricAuthAvailability
     private(set) var lastUnlockError: BiometricAuthError?
 
+    convenience init() {
+        self.init(
+            biometricAuthService: BiometricAuthService(),
+            hapticFeedbackService: HapticFeedbackService()
+        )
+    }
+
     init(
-        biometricAuthService: any BiometricAuthServicing = BiometricAuthService(),
-        hapticFeedbackService: any HapticFeedbackServicing = HapticFeedbackService()
+        biometricAuthService: any BiometricAuthServicing,
+        hapticFeedbackService: any HapticFeedbackServicing
     ) {
         self.biometricAuthService = biometricAuthService
         self.hapticFeedbackService = hapticFeedbackService

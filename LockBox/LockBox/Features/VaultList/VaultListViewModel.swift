@@ -18,9 +18,16 @@ final class VaultListViewModel {
     private(set) var errorMessage: String?
     private var hasLoaded = false
 
+    convenience init(repository: any VaultRepository) {
+        self.init(
+            repository: repository,
+            hapticFeedbackService: HapticFeedbackService()
+        )
+    }
+
     init(
         repository: any VaultRepository,
-        hapticFeedbackService: any HapticFeedbackServicing = HapticFeedbackService()
+        hapticFeedbackService: any HapticFeedbackServicing
     ) {
         self.repository = repository
         self.hapticFeedbackService = hapticFeedbackService

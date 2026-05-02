@@ -26,18 +26,33 @@ final class EntryEditorViewModel: Identifiable {
     var isSaving = false
     var errorMessage: String?
 
+    convenience init(repository: any VaultRepository) {
+        self.init(
+            repository: repository,
+            hapticFeedbackService: HapticFeedbackService()
+        )
+    }
+
     init(
         repository: any VaultRepository,
-        hapticFeedbackService: any HapticFeedbackServicing = HapticFeedbackService()
+        hapticFeedbackService: any HapticFeedbackServicing
     ) {
         self.repository = repository
         self.hapticFeedbackService = hapticFeedbackService
         self.mode = .creating
     }
 
+    convenience init(repository: any VaultRepository, entry: VaultEntry) {
+        self.init(
+            repository: repository,
+            hapticFeedbackService: HapticFeedbackService(),
+            entry: entry
+        )
+    }
+
     init(
         repository: any VaultRepository,
-        hapticFeedbackService: any HapticFeedbackServicing = HapticFeedbackService(),
+        hapticFeedbackService: any HapticFeedbackServicing,
         entry: VaultEntry
     ) {
         self.repository = repository
