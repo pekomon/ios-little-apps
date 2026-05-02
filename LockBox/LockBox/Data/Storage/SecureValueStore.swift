@@ -18,7 +18,7 @@ struct SecureValueKey: Hashable, Sendable {
     let service: String
     let account: String
 
-    init(service: String = "com.example.pekomon.LockBox", account: String) {
+    init(service: String = "com.pekomon.LockBox", account: String) {
         self.service = service
         self.account = account
     }
