@@ -12,10 +12,10 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
 
 # Current Status
 
-- Existing project state: the app now has a minimal LockBox app icon aligned with the gold-blue palette used across the product, alongside the existing polished vault and haptic flows.
-- Build status: task 19 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
+- Existing project state: the app now ships as a complete local-first vault with biometric unlock, persistence, editing flows, haptics, accessibility support, and a matching app icon.
+- Build status: task 20 verified with `xcodebuild -project LockBox/LockBox.xcodeproj -scheme LockBox -destination 'generic/platform=iOS Simulator' build`.
 - Active phase: Phase 1 - Foundation.
-- Active task: 20. Improve README / showcase presentation.
+- Active task: none. Planned work is complete.
 
 # Phase Plan
 
@@ -43,26 +43,41 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
    - [x] 17. Improve accessibility support
    - [x] 18. Add haptic feedback
    - [x] 19. Add app icon
-   - [ ] 20. Improve README / showcase presentation
+   - [x] 20. Improve README / showcase presentation
 
 # Current Task
 
-- Task title: Add app icon
-- Goal: Add a minimal security-focused app icon that matches LockBox's current gold-blue visual language and is ready for the asset catalog.
+- Task title: Improve README / showcase presentation
+- Goal: Add a polished project README and final presentation pass so LockBox reads clearly as a showcase app from the repository alone.
 - Files expected to change:
+  - `LockBox/README.md`
   - `LockBox/PROJECT_PLAN.md`
-  - files under `LockBox/LockBox/Assets.xcassets/AppIcon.appiconset`
 - Risks / notes:
-  - Keep the icon minimal and readable at small sizes rather than overfitting it to showcase mockups.
-  - Provide the light, dark, and tinted icon assets expected by the current Xcode asset structure.
+  - Avoid overselling screenshots or assets that do not exist in the repository.
+  - Keep setup and testing instructions aligned with the actual shipped app behavior.
 - Outcome after completion:
-  - Added new app icon bitmaps for the standard, dark, and tinted appearances.
-  - Updated the asset catalog metadata to reference the new icon files.
-  - Kept the icon aligned with the app’s minimal security-focused gold-blue palette.
+  - Added a dedicated LockBox README with feature summary, architecture overview, run instructions, and manual test guidance.
+  - Aligned the presentation text with the final shipped app behavior, including biometric unlock and empty-vault startup.
+  - Recorded the project as fully complete in the plan document.
   - Verified the app builds successfully for iOS Simulator.
-- Commit message used: `Add LockBox app icon`
+- Commit message used: `Improve LockBox README and showcase presentation`
 
 # Completed Tasks
+
+- Task title: Improve README / showcase presentation
+- Goal: Add a polished project README and final presentation pass so LockBox reads clearly as a showcase app from the repository alone.
+- Files changed:
+  - `LockBox/README.md`
+  - `LockBox/PROJECT_PLAN.md`
+- Risks / notes:
+  - The repository still does not include dedicated screenshots, so the presentation focuses on accurate text and the existing icon asset.
+  - Setup and testing guidance intentionally reflect the real shipped behaviors rather than earlier seeded-demo flows.
+- Outcome after completion:
+  - Added a dedicated LockBox README with features, architecture, setup, and test guidance.
+  - Documented the current local-first storage model and biometric lock flow.
+  - Marked the planned work complete in the project plan.
+  - Verified the app builds successfully for iOS Simulator.
+- Commit message used: `Improve LockBox README and showcase presentation`
 
 - Task title: Add app icon
 - Goal: Add a minimal security-focused app icon that matches LockBox's current gold-blue visual language and is ready for the asset catalog.
@@ -226,7 +241,7 @@ LockBox is a showcase-quality iOS app built with SwiftUI. It is a privacy-first 
   - `LockBox/LockBox/Features/VaultList/VaultListViewModel.swift`
   - removed `LockBox/LockBox/Features/VaultList/VaultListFeatureFolderMarker.swift`
 - Risks / notes:
-  - The feature currently seeds first-run sample entries for immediate usability; later tasks may replace or expand that onboarding behavior.
+  - The feature originally seeded first-run sample entries for immediate usability; later cleanup removed that behavior so real vaults start empty.
 - Outcome after completion:
   - Added a real unlocked vault surface with entry counts, seeded entries, and redacted sensitive field values.
   - Wired the UI to the live repository and local persistence stack.
