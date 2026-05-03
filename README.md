@@ -4,6 +4,16 @@ Small iOS / SwiftUI learning projects collected in one repository.
 
 ## Projects
 
+### [Weatherly](./Weatherly/README.md)
+Showcase-focused weather app with Home, Search, Favorites, Settings, and widget support.
+
+Status: polished app project
+
+### [LockBox](./LockBox/README.md)
+Privacy-first local vault with biometric unlock, Keychain-backed secrets, and polished SwiftUI CRUD flows.
+
+Status: polished app project
+
 ### [Africa](./Africa/README.md)
 Safari-style SwiftUI app for browsing African animals, videos, locations, and galleries.
 
@@ -23,11 +33,6 @@ Status: finished small app / UI practice project
 New SwiftUI app for learning step by step. Currently only the initial scaffold exists.
 
 Status: in progress
-
-### [Weatherly](./Weatherly/README.md)
-Showcase-focused weather app with Home, Search, Favorites, Settings, and widget support.
-
-Status: polished app project
 
 ## Purpose
 
