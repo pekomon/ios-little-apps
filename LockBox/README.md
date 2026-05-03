@@ -12,6 +12,16 @@ LockBox is a privacy-first iOS vault built with SwiftUI. It stores entry metadat
 - Sensitive values stay redacted in the list view and live in secure storage
 - Accessibility and haptic feedback support across the main interactions
 
+## Screenshots
+
+| Lock Screen | Vault List |
+| --- | --- |
+| ![Lock screen](Docs/Screenshots/lock-screen.png) | ![Vault list](Docs/Screenshots/vault-list.png) |
+
+| Entry Detail | Entry Editor |
+| --- | --- |
+| ![Entry detail](Docs/Screenshots/entry-detail.png) | ![Entry editor](Docs/Screenshots/entry-editor.png) |
+
 ## Built With
 
 - SwiftUI app lifecycle
