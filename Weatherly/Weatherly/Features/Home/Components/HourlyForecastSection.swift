@@ -19,7 +19,7 @@ struct HourlyForecastSection: View {
 
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 12) {
-                    ForEach(Array(items.prefix(12))) { item in
+                    ForEach(displayItems) { item in
                         HourlyForecastItemView(
                             item: item,
                             formatter: WeatherValueFormatter(
@@ -31,6 +31,15 @@ struct HourlyForecastSection: View {
                 }
             }
         }
+    }
+
+    private var displayItems: [HourlyForecast] {
+        let sortedItems = items.sorted { $0.date < $1.date }
+        let calendar = Calendar.autoupdatingCurrent
+        let currentHourStart = calendar.dateInterval(of: .hour, for: Date())?.start ?? Date()
+        let upcomingItems = sortedItems.filter { $0.date >= currentHourStart }
+
+        return Array((upcomingItems.isEmpty ? sortedItems : upcomingItems).prefix(12))
     }
 }
 
