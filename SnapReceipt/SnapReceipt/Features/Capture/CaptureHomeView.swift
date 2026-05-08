@@ -62,11 +62,13 @@ struct CaptureHomeView: View {
         }
         .sheet(isPresented: $isShowingCamera) {
             CameraImagePicker { image in
-                viewModel.updateImportedAsset(
-                    image: image,
-                    source: .camera,
-                    fileName: "Live Capture"
-                )
+                Task {
+                    await viewModel.updateImportedAsset(
+                        image: image,
+                        source: .camera,
+                        fileName: "Live Capture"
+                    )
+                }
             }
         }
         .photosPicker(
@@ -179,10 +181,12 @@ struct CaptureHomeView: View {
                 }
                 .buttonStyle(.bordered)
 
-                Text("OCR comes next in task 6.")
+                Text("OCR runs immediately on imported images.")
                     .font(.caption.weight(.medium))
                     .foregroundStyle(.secondary)
             }
+
+            ocrStatusSection
         }
         .padding(20)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
@@ -223,15 +227,53 @@ struct CaptureHomeView: View {
 
     private var processPreview: some View {
         VStack(alignment: .leading, spacing: 14) {
-            sectionHeader(title: "What happens next", subtitle: "Task 5 stops at image acquisition. OCR and parsing land after this.")
+            sectionHeader(title: "What happens next", subtitle: "OCR is live now. Field parsing still lands in the next task.")
 
             VStack(spacing: 12) {
                 processRow(step: "1", title: "Pick a receipt image", detail: "Use the camera, photo library, or Files to bring a receipt into the app.")
-                processRow(step: "2", title: "Verify the preview", detail: "Make sure the full receipt is visible and legible before extraction starts.")
-                processRow(step: "3", title: "Run OCR later", detail: "The next task will turn the imported image into raw text for field parsing.")
+                processRow(step: "2", title: "Extract raw text", detail: "Vision OCR reads the receipt image and returns line-by-line text.")
+                processRow(step: "3", title: "Parse key fields next", detail: "The next task will turn raw OCR text into merchant, date, total, and currency suggestions.")
             }
             .padding(20)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+        }
+    }
+
+    @ViewBuilder
+    private var ocrStatusSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Recognized Text")
+                .font(.headline)
+
+            if viewModel.isRecognizingText {
+                HStack(spacing: 10) {
+                    ProgressView()
+                    Text("Scanning receipt text...")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                }
+            } else if let ocrErrorMessage = viewModel.ocrErrorMessage {
+                Label(ocrErrorMessage, systemImage: "exclamationmark.triangle")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            } else if let ocrResult = viewModel.ocrResult, !ocrResult.rawText.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("\(ocrResult.lines.count) lines found")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+
+                    Text(ocrResult.rawText)
+                        .font(.system(.footnote, design: .monospaced))
+                        .foregroundStyle(.primary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(14)
+                        .background(.black.opacity(0.06), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+                }
+            } else {
+                Text("Import a clear receipt image to see the raw OCR output here.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 

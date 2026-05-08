@@ -14,15 +14,26 @@ import UIKit
 @MainActor
 @Observable
 final class CaptureHomeViewModel {
-    var importedAsset: ImportedReceiptAsset?
+    private let ocrService: any ReceiptOCRServicing
 
-    func updateImportedAsset(image: UIImage, source: ReceiptImportSource, fileName: String) {
+    var importedAsset: ImportedReceiptAsset?
+    var ocrResult: ReceiptOCRResult?
+    var isRecognizingText = false
+    var ocrErrorMessage: String?
+
+    init(ocrService: (any ReceiptOCRServicing)? = nil) {
+        self.ocrService = ocrService ?? VisionReceiptOCRService()
+    }
+
+    func updateImportedAsset(image: UIImage, source: ReceiptImportSource, fileName: String) async {
         importedAsset = ImportedReceiptAsset(
+            uiImage: image,
             previewImage: Image(uiImage: image),
             pixelSize: image.size,
             fileName: fileName,
             source: source
         )
+        await recognizeText(in: image)
     }
 
     func importPhotoLibraryItem(_ item: PhotosPickerItem) async {
@@ -35,9 +46,11 @@ final class CaptureHomeViewModel {
             }
 
             let fileName = item.supportedContentTypes.first?.preferredFilenameExtension.map { "Photo.\($0)" } ?? "Photo Import"
-            updateImportedAsset(image: image, source: .photoLibrary, fileName: fileName)
+            await updateImportedAsset(image: image, source: .photoLibrary, fileName: fileName)
         } catch {
             importedAsset = nil
+            ocrResult = nil
+            ocrErrorMessage = nil
         }
     }
 
@@ -57,14 +70,32 @@ final class CaptureHomeViewModel {
                 return
             }
 
-            updateImportedAsset(image: image, source: .files, fileName: fileURL.lastPathComponent)
+            await updateImportedAsset(image: image, source: .files, fileName: fileURL.lastPathComponent)
         } catch {
             importedAsset = nil
+            ocrResult = nil
+            ocrErrorMessage = nil
         }
+    }
+
+    private func recognizeText(in image: UIImage) async {
+        isRecognizingText = true
+        ocrErrorMessage = nil
+
+        do {
+            let result = try await ocrService.recognizeText(in: image)
+            ocrResult = result
+        } catch {
+            ocrResult = nil
+            ocrErrorMessage = error.localizedDescription
+        }
+
+        isRecognizingText = false
     }
 }
 
 struct ImportedReceiptAsset {
+    let uiImage: UIImage
     let previewImage: Image
     let pixelSize: CGSize
     let fileName: String
