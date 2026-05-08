@@ -186,6 +186,7 @@ struct CaptureHomeView: View {
                     .foregroundStyle(.secondary)
             }
 
+            parsedDetailsSection
             ocrStatusSection
         }
         .padding(20)
@@ -232,10 +233,38 @@ struct CaptureHomeView: View {
             VStack(spacing: 12) {
                 processRow(step: "1", title: "Pick a receipt image", detail: "Use the camera, photo library, or Files to bring a receipt into the app.")
                 processRow(step: "2", title: "Extract raw text", detail: "Vision OCR reads the receipt image and returns line-by-line text.")
-                processRow(step: "3", title: "Parse key fields next", detail: "The next task will turn raw OCR text into merchant, date, total, and currency suggestions.")
+                processRow(step: "3", title: "Parse key fields", detail: "SnapReceipt now suggests merchant, date, total, and currency from the OCR output.")
             }
             .padding(20)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+        }
+    }
+
+    @ViewBuilder
+    private var parsedDetailsSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Parsed Suggestions")
+                .font(.headline)
+
+            if let parsedDetails = viewModel.parsedDetails {
+                VStack(spacing: 10) {
+                    parsedDetailRow(title: "Merchant", value: parsedDetails.merchantName ?? "No match")
+                    parsedDetailRow(title: "Date", value: parsedDetails.purchaseDate.map(Self.captureDateFormatter.string) ?? "No match")
+
+                    if let totalAmount = parsedDetails.totalAmount {
+                        let currencyPrefix = parsedDetails.currencyCode.map { "\($0) " } ?? ""
+                        parsedDetailRow(title: "Total", value: "\(currencyPrefix)\(Self.amountFormatter.string(for: totalAmount) ?? "\(totalAmount)")")
+                    } else {
+                        parsedDetailRow(title: "Total", value: "No match")
+                    }
+
+                    parsedDetailRow(title: "Currency", value: parsedDetails.currencyCode ?? "No match")
+                }
+            } else {
+                Text("OCR results will be parsed into structured suggestions here.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 
@@ -341,6 +370,21 @@ struct CaptureHomeView: View {
         }
     }
 
+    private func parsedDetailRow(title: String, value: String) -> some View {
+        HStack(alignment: .firstTextBaseline, spacing: 16) {
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .frame(width: 82, alignment: .leading)
+
+            Text(value)
+                .font(.subheadline)
+                .foregroundStyle(.primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(.vertical, 2)
+    }
+
     private func sectionHeader(title: String, subtitle: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(title)
@@ -371,6 +415,21 @@ struct CaptureHomeView: View {
             endPoint: .bottomTrailing
         )
     }
+
+    private static let captureDateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .none
+        return formatter
+    }()
+
+    private static let amountFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        return formatter
+    }()
 }
 
 #Preview {

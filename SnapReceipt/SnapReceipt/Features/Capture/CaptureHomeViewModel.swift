@@ -15,14 +15,20 @@ import UIKit
 @Observable
 final class CaptureHomeViewModel {
     private let ocrService: any ReceiptOCRServicing
+    private let parsingService: any ReceiptParsingServicing
 
     var importedAsset: ImportedReceiptAsset?
     var ocrResult: ReceiptOCRResult?
+    var parsedDetails: ParsedReceiptDetails?
     var isRecognizingText = false
     var ocrErrorMessage: String?
 
-    init(ocrService: (any ReceiptOCRServicing)? = nil) {
+    init(
+        ocrService: (any ReceiptOCRServicing)? = nil,
+        parsingService: (any ReceiptParsingServicing)? = nil
+    ) {
         self.ocrService = ocrService ?? VisionReceiptOCRService()
+        self.parsingService = parsingService ?? ReceiptParsingService()
     }
 
     func updateImportedAsset(image: UIImage, source: ReceiptImportSource, fileName: String) async {
@@ -50,6 +56,7 @@ final class CaptureHomeViewModel {
         } catch {
             importedAsset = nil
             ocrResult = nil
+            parsedDetails = nil
             ocrErrorMessage = nil
         }
     }
@@ -74,6 +81,7 @@ final class CaptureHomeViewModel {
         } catch {
             importedAsset = nil
             ocrResult = nil
+            parsedDetails = nil
             ocrErrorMessage = nil
         }
     }
@@ -85,8 +93,10 @@ final class CaptureHomeViewModel {
         do {
             let result = try await ocrService.recognizeText(in: image)
             ocrResult = result
+            parsedDetails = parsingService.parseReceiptDetails(from: result)
         } catch {
             ocrResult = nil
+            parsedDetails = nil
             ocrErrorMessage = error.localizedDescription
         }
 
