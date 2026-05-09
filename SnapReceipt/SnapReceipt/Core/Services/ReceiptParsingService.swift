@@ -8,7 +8,7 @@
 import Foundation
 
 protocol ReceiptParsingServicing: Sendable {
-    func parseReceiptDetails(from ocrResult: ReceiptOCRResult) -> ParsedReceiptDetails
+    nonisolated func parseReceiptDetails(from ocrResult: ReceiptOCRResult) -> ParsedReceiptDetails
 }
 
 struct ReceiptParsingService: ReceiptParsingServicing, Sendable {
@@ -26,7 +26,7 @@ struct ReceiptParsingService: ReceiptParsingServicing, Sendable {
         )
     }
 
-    private func merchantName(from lines: [String]) -> String? {
+    nonisolated private func merchantName(from lines: [String]) -> String? {
         lines
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .first { line in
@@ -39,12 +39,12 @@ struct ReceiptParsingService: ReceiptParsingServicing, Sendable {
             }
     }
 
-    private func purchaseDate(from text: String) -> Date? {
+    nonisolated private func purchaseDate(from text: String) -> Date? {
         let range = NSRange(text.startIndex..<text.endIndex, in: text)
         return Self.dateDetector?.matches(in: text, options: [], range: range).first?.date
     }
 
-    private func totalAmount(from lines: [String]) -> Decimal? {
+    nonisolated private func totalAmount(from lines: [String]) -> Decimal? {
         let candidateLines = lines.reversed().filter { line in
             let lowered = line.lowercased()
             return lowered.contains("total") || lowered.contains("sum") || lowered.contains("amount") || lowered.contains("visa") == false
@@ -65,7 +65,7 @@ struct ReceiptParsingService: ReceiptParsingServicing, Sendable {
         return nil
     }
 
-    private func currencyCode(from lines: [String]) -> String? {
+    nonisolated private func currencyCode(from lines: [String]) -> String? {
         for line in lines {
             let lowered = line.lowercased()
             if lowered.contains("eur") || line.contains("€") {
@@ -91,7 +91,7 @@ struct ReceiptParsingService: ReceiptParsingServicing, Sendable {
         return nil
     }
 
-    private func decimalAmount(from line: String) -> Decimal? {
+    nonisolated private func decimalAmount(from line: String) -> Decimal? {
         guard let match = line.firstMatch(of: Self.amountPattern) else {
             return nil
         }
