@@ -55,4 +55,15 @@ enum ReceiptSource: String, Hashable, Codable, CaseIterable, Sendable {
     case camera
     case photoLibrary
     case fileImport
+
+    var displayName: String {
+        switch self {
+        case .camera:
+            "Camera Capture"
+        case .photoLibrary:
+            "Photo Library"
+        case .fileImport:
+            "Files Import"
+        }
+    }
 }

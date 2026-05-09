@@ -14,6 +14,7 @@ import UIKit
 @MainActor
 @Observable
 final class CaptureHomeViewModel {
+    private let receiptsStore: ReceiptsStore
     private let ocrService: any ReceiptOCRServicing
     private let parsingService: any ReceiptParsingServicing
 
@@ -21,12 +22,17 @@ final class CaptureHomeViewModel {
     var ocrResult: ReceiptOCRResult?
     var parsedDetails: ParsedReceiptDetails?
     var isRecognizingText = false
+    var isSavingReceipt = false
     var ocrErrorMessage: String?
+    var saveErrorMessage: String?
+    var saveSuccessMessage: String?
 
     init(
+        receiptsStore: ReceiptsStore,
         ocrService: (any ReceiptOCRServicing)? = nil,
         parsingService: (any ReceiptParsingServicing)? = nil
     ) {
+        self.receiptsStore = receiptsStore
         self.ocrService = ocrService ?? VisionReceiptOCRService()
         self.parsingService = parsingService ?? ReceiptParsingService()
     }
@@ -89,6 +95,8 @@ final class CaptureHomeViewModel {
     private func recognizeText(in image: UIImage) async {
         isRecognizingText = true
         ocrErrorMessage = nil
+        saveErrorMessage = nil
+        saveSuccessMessage = nil
 
         do {
             let result = try await ocrService.recognizeText(in: image)
@@ -101,6 +109,63 @@ final class CaptureHomeViewModel {
         }
 
         isRecognizingText = false
+    }
+
+    func saveImportedReceipt() async {
+        guard let currentImportedAsset = importedAsset else {
+            return
+        }
+
+        isSavingReceipt = true
+        saveErrorMessage = nil
+        saveSuccessMessage = nil
+
+        let now = Date()
+        let merchantName = resolvedMerchantName(from: currentImportedAsset)
+        let source = currentImportedAsset.source.receiptSource
+        let metadata = ReceiptMetadata(
+            merchantName: merchantName,
+            purchaseDate: parsedDetails?.purchaseDate,
+            totalAmount: parsedDetails?.totalAmount,
+            currencyCode: parsedDetails?.currencyCode,
+            source: source,
+            createdAt: now,
+            updatedAt: now
+        )
+        let receipt = Receipt(
+            metadata: metadata,
+            notes: "",
+            rawText: ocrResult?.rawText ?? ""
+        )
+
+        do {
+            try await receiptsStore.saveReceipt(receipt)
+            importedAsset = nil
+            ocrResult = nil
+            parsedDetails = nil
+            ocrErrorMessage = nil
+            saveSuccessMessage = "Saved \(merchantName) to Receipts."
+        } catch {
+            saveErrorMessage = error.localizedDescription
+        }
+
+        isSavingReceipt = false
+    }
+
+    private func resolvedMerchantName(from importedAsset: ImportedReceiptAsset) -> String {
+        if let merchantName = parsedDetails?.merchantName?.trimmingCharacters(in: .whitespacesAndNewlines),
+           !merchantName.isEmpty {
+            return merchantName
+        }
+
+        let baseName = importedAsset.fileName
+            .replacingOccurrences(of: ".jpeg", with: "", options: [.caseInsensitive])
+            .replacingOccurrences(of: ".jpg", with: "", options: [.caseInsensitive])
+            .replacingOccurrences(of: ".png", with: "", options: [.caseInsensitive])
+            .replacingOccurrences(of: ".heic", with: "", options: [.caseInsensitive])
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+
+        return baseName.isEmpty ? "Untitled Receipt" : baseName
     }
 }
 
@@ -146,6 +211,17 @@ enum ReceiptImportSource: String {
             "photo.on.rectangle.angled"
         case .files:
             "folder.fill"
+        }
+    }
+
+    var receiptSource: ReceiptSource {
+        switch self {
+        case .camera:
+            .camera
+        case .photoLibrary:
+            .photoLibrary
+        case .files:
+            .fileImport
         }
     }
 }

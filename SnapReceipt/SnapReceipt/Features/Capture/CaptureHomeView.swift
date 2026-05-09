@@ -10,13 +10,17 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct CaptureHomeView: View {
-    @State private var viewModel = CaptureHomeViewModel()
+    @State private var viewModel: CaptureHomeViewModel
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var isShowingSourceDialog = false
     @State private var isShowingCamera = false
     @State private var isShowingPhotoPicker = false
     @State private var isShowingFileImporter = false
     @State private var isShowingCameraUnavailableAlert = false
+
+    init(receiptsStore: ReceiptsStore) {
+        _viewModel = State(initialValue: CaptureHomeViewModel(receiptsStore: receiptsStore))
+    }
 
     var body: some View {
         NavigationStack {
@@ -27,6 +31,9 @@ struct CaptureHomeView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
                         heroCard
+                        if let saveSuccessMessage = viewModel.saveSuccessMessage {
+                            successBanner(message: saveSuccessMessage)
+                        }
                         if let importedAsset = viewModel.importedAsset {
                             importedPreviewCard(importedAsset)
                         }
@@ -181,9 +188,32 @@ struct CaptureHomeView: View {
                 }
                 .buttonStyle(.bordered)
 
-                Text("OCR runs immediately on imported images.")
+                Button {
+                    Task {
+                        await viewModel.saveImportedReceipt()
+                    }
+                } label: {
+                    if viewModel.isSavingReceipt {
+                        ProgressView()
+                            .tint(.white)
+                            .frame(maxWidth: .infinity)
+                    } else {
+                        Text("Save Receipt")
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(viewModel.isRecognizingText || viewModel.isSavingReceipt)
+
+                Text("OCR runs immediately. Nothing is persisted until you save.")
                     .font(.caption.weight(.medium))
                     .foregroundStyle(.secondary)
+            }
+
+            if let saveErrorMessage = viewModel.saveErrorMessage {
+                Label(saveErrorMessage, systemImage: "exclamationmark.triangle.fill")
+                    .font(.subheadline)
+                    .foregroundStyle(.orange)
             }
 
             parsedDetailsSection
@@ -228,16 +258,31 @@ struct CaptureHomeView: View {
 
     private var processPreview: some View {
         VStack(alignment: .leading, spacing: 14) {
-            sectionHeader(title: "What happens next", subtitle: "OCR is live now. Field parsing still lands in the next task.")
+            sectionHeader(title: "What happens next", subtitle: "Imported receipts can now be recognized, suggested, and saved locally for later review.")
 
             VStack(spacing: 12) {
                 processRow(step: "1", title: "Pick a receipt image", detail: "Use the camera, photo library, or Files to bring a receipt into the app.")
                 processRow(step: "2", title: "Extract raw text", detail: "Vision OCR reads the receipt image and returns line-by-line text.")
-                processRow(step: "3", title: "Parse key fields", detail: "SnapReceipt now suggests merchant, date, total, and currency from the OCR output.")
+                processRow(step: "3", title: "Save locally", detail: "Review the parsed suggestions, then save the receipt so it appears in the Receipts tab.")
             }
             .padding(20)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
         }
+    }
+
+    private func successBanner(message: String) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundStyle(Color(red: 0.13, green: 0.58, blue: 0.37))
+
+            Text(message)
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.primary)
+
+            Spacer(minLength: 0)
+        }
+        .padding(16)
+        .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
     }
 
     @ViewBuilder
@@ -433,5 +478,9 @@ struct CaptureHomeView: View {
 }
 
 #Preview {
-    CaptureHomeView()
+    CaptureHomeView(
+        receiptsStore: ReceiptsStore(
+            repository: DefaultReceiptRepository(receiptStore: JSONFileReceiptStore())
+        )
+    )
 }
