@@ -36,7 +36,11 @@ struct ReceiptsOverviewView: View {
                     List {
                         Section("Saved Receipts") {
                             ForEach(receiptsStore.receipts) { receipt in
-                                receiptRow(receipt)
+                                NavigationLink {
+                                    ReceiptDetailView(receipt: receipt)
+                                } label: {
+                                    receiptRow(receipt)
+                                }
                             }
                         }
 
