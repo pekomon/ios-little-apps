@@ -63,6 +63,14 @@ struct ReceiptsOverviewView: View {
     private func receiptRow(_ receipt: Receipt) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack(alignment: .top) {
+                if let imageFileName = receipt.imageFileName {
+                    StoredReceiptImageThumbnail(
+                        fileName: imageFileName,
+                        width: 64,
+                        height: 86
+                    )
+                }
+
                 VStack(alignment: .leading, spacing: 4) {
                     Text(receipt.metadata.merchantName)
                         .font(.headline)
@@ -131,7 +139,8 @@ struct ReceiptsOverviewView: View {
 #Preview {
     ReceiptsOverviewView(
         receiptsStore: ReceiptsStore(
-            repository: DefaultReceiptRepository(receiptStore: JSONFileReceiptStore())
+            repository: DefaultReceiptRepository(receiptStore: JSONFileReceiptStore()),
+            imageStore: ReceiptImageStore()
         )
     )
 }

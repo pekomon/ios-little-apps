@@ -480,7 +480,8 @@ struct CaptureHomeView: View {
 #Preview {
     CaptureHomeView(
         receiptsStore: ReceiptsStore(
-            repository: DefaultReceiptRepository(receiptStore: JSONFileReceiptStore())
+            repository: DefaultReceiptRepository(receiptStore: JSONFileReceiptStore()),
+            imageStore: ReceiptImageStore()
         )
     )
 }

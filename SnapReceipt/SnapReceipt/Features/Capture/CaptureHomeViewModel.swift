@@ -137,9 +137,11 @@ final class CaptureHomeViewModel {
             notes: "",
             rawText: ocrResult?.rawText ?? ""
         )
+        let imageData = currentImportedAsset.uiImage.jpegData(compressionQuality: 0.85)
+            ?? currentImportedAsset.uiImage.pngData()
 
         do {
-            try await receiptsStore.saveReceipt(receipt)
+            try await receiptsStore.saveReceipt(receipt, imageData: imageData)
             importedAsset = nil
             ocrResult = nil
             parsedDetails = nil

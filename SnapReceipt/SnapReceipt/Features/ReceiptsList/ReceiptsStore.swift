@@ -12,13 +12,18 @@ import Observation
 @Observable
 final class ReceiptsStore {
     private let repository: any ReceiptRepository
+    private let imageStore: any ReceiptImageStoring
 
     var receipts: [Receipt] = []
     var isLoading = false
     var errorMessage: String?
 
-    init(repository: any ReceiptRepository) {
+    init(
+        repository: any ReceiptRepository,
+        imageStore: any ReceiptImageStoring
+    ) {
         self.repository = repository
+        self.imageStore = imageStore
     }
 
     func loadReceipts() async {
@@ -34,8 +39,15 @@ final class ReceiptsStore {
         isLoading = false
     }
 
-    func saveReceipt(_ receipt: Receipt) async throws {
-        try await repository.saveReceipt(receipt)
+    func saveReceipt(_ receipt: Receipt, imageData: Data? = nil) async throws {
+        var receiptToSave = receipt
+
+        if let imageData {
+            let imageFileName = try imageStore.saveImageData(imageData, for: receipt.id)
+            receiptToSave = receipt.updating(imageFileName: imageFileName)
+        }
+
+        try await repository.saveReceipt(receiptToSave)
         receipts = try await repository.fetchReceipts()
         errorMessage = nil
     }

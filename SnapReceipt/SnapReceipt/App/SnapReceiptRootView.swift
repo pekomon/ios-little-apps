@@ -12,7 +12,8 @@ struct SnapReceiptRootView: View {
 
     init(receiptsStore: ReceiptsStore? = nil) {
         let liveStore = receiptsStore ?? ReceiptsStore(
-            repository: DefaultReceiptRepository(receiptStore: JSONFileReceiptStore())
+            repository: DefaultReceiptRepository(receiptStore: JSONFileReceiptStore()),
+            imageStore: ReceiptImageStore()
         )
         _receiptsStore = State(initialValue: liveStore)
     }
@@ -47,7 +48,8 @@ struct SnapReceiptRootView: View {
 #Preview {
     SnapReceiptRootView(
         receiptsStore: ReceiptsStore(
-            repository: DefaultReceiptRepository(receiptStore: JSONFileReceiptStore())
+            repository: DefaultReceiptRepository(receiptStore: JSONFileReceiptStore()),
+            imageStore: ReceiptImageStore()
         )
     )
 }

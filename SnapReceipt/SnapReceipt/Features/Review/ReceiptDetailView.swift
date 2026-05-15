@@ -14,6 +14,11 @@ struct ReceiptDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 18) {
                 summaryCard
+
+                if let imageFileName = receipt.imageFileName {
+                    receiptImageSection(fileName: imageFileName)
+                }
+
                 factsSection
 
                 if !receipt.notes.isEmpty {
@@ -84,6 +89,20 @@ struct ReceiptDetailView: View {
                 factRow(title: "Updated", value: Self.dateTimeFormatter.string(from: receipt.metadata.updatedAt))
             }
             .padding(20)
+            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+        }
+    }
+
+    private func receiptImageSection(fileName: String) -> some View {
+        VStack(alignment: .leading, spacing: 14) {
+            sectionHeader(title: "Saved Image", subtitle: "The original imported receipt image persisted on device.")
+
+            StoredReceiptImageThumbnail(
+                fileName: fileName,
+                width: UIScreen.main.bounds.width - 40,
+                height: 280
+            )
+            .frame(maxWidth: .infinity, alignment: .center)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
         }
     }

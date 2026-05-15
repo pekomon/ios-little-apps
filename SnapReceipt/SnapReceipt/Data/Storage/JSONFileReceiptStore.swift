@@ -15,6 +15,7 @@ protocol ReceiptStoring: Sendable {
 struct ReceiptPersistenceLocation: Sendable {
     let directoryURL: URL
     let receiptsFileURL: URL
+    let imagesDirectoryURL: URL
 
     init(fileManager: FileManager = .default) {
         let baseDirectory =
@@ -24,6 +25,7 @@ struct ReceiptPersistenceLocation: Sendable {
         let directoryURL = baseDirectory.appendingPathComponent("SnapReceipt", isDirectory: true)
         self.directoryURL = directoryURL
         self.receiptsFileURL = directoryURL.appendingPathComponent("receipts.json")
+        self.imagesDirectoryURL = directoryURL.appendingPathComponent("ReceiptImages", isDirectory: true)
     }
 }
 
