@@ -17,7 +17,7 @@ struct CaptureHomeView: View {
     @State private var isShowingPhotoPicker = false
     @State private var isShowingFileImporter = false
     @State private var isShowingCameraUnavailableAlert = false
-    @State private var reviewDraft: ReceiptReviewDraft?
+    @State private var reviewSession: ReceiptReviewSession?
 
     init(receiptsStore: ReceiptsStore) {
         _viewModel = State(initialValue: CaptureHomeViewModel(receiptsStore: receiptsStore))
@@ -79,20 +79,17 @@ struct CaptureHomeView: View {
                 }
             }
         }
-        .sheet(item: Binding(
-            get: { reviewDraft.map(ReviewDraftSheet.init) },
-            set: { reviewDraft = $0?.draft }
-        )) { wrappedDraft in
-            if let importedAsset = viewModel.importedAsset {
+        .sheet(item: $reviewSession, onDismiss: {
+            reviewSession = nil
+        }) { session in
                 ReceiptReviewView(
-                    asset: importedAsset,
-                    sourceDescription: importedAsset.source.description,
-                    initialDraft: wrappedDraft.draft
+                    asset: session.asset,
+                    sourceDescription: session.asset.source.description,
+                    initialDraft: session.draft
                 ) { updatedDraft in
-                    try await viewModel.saveReviewedReceipt(updatedDraft)
-                    reviewDraft = nil
+                    try await viewModel.saveReviewedReceipt(updatedDraft, asset: session.asset)
+                    reviewSession = nil
                 }
-            }
         }
         .photosPicker(
             isPresented: $isShowingPhotoPicker,
@@ -164,7 +161,7 @@ struct CaptureHomeView: View {
     private func importedPreviewCard(_ asset: ImportedReceiptAsset) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top, spacing: 14) {
-                asset.previewImage
+                Image(uiImage: asset.uiImage)
                     .resizable()
                     .scaledToFill()
                     .frame(width: 96, height: 128)
@@ -205,7 +202,10 @@ struct CaptureHomeView: View {
                 .buttonStyle(.bordered)
 
                 Button {
-                    reviewDraft = viewModel.makeReviewDraft()
+                    if let importedAsset = viewModel.importedAsset,
+                       let draft = viewModel.makeReviewDraft() {
+                        reviewSession = ReceiptReviewSession(asset: importedAsset, draft: draft)
+                    }
                 } label: {
                     Text("Review & Save")
                         .frame(maxWidth: .infinity)
@@ -491,8 +491,9 @@ struct CaptureHomeView: View {
     }()
 }
 
-private struct ReviewDraftSheet: Identifiable {
+private struct ReceiptReviewSession: Identifiable {
     let id = UUID()
+    let asset: ImportedReceiptAsset
     let draft: ReceiptReviewDraft
 }
 

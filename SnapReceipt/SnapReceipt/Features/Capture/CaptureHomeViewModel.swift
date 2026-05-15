@@ -40,7 +40,6 @@ final class CaptureHomeViewModel {
     func updateImportedAsset(image: UIImage, source: ReceiptImportSource, fileName: String) async {
         importedAsset = ImportedReceiptAsset(
             uiImage: image,
-            previewImage: Image(uiImage: image),
             pixelSize: image.size,
             fileName: fileName,
             source: source
@@ -128,11 +127,7 @@ final class CaptureHomeViewModel {
         )
     }
 
-    func saveReviewedReceipt(_ draft: ReceiptReviewDraft) async throws {
-        guard let currentImportedAsset = importedAsset else {
-            return
-        }
-
+    func saveReviewedReceipt(_ draft: ReceiptReviewDraft, asset: ImportedReceiptAsset) async throws {
         isSavingReceipt = true
         saveErrorMessage = nil
         saveSuccessMessage = nil
@@ -152,8 +147,8 @@ final class CaptureHomeViewModel {
             notes: draft.notes.trimmingCharacters(in: .whitespacesAndNewlines),
             rawText: draft.rawText
         )
-        let imageData = currentImportedAsset.uiImage.jpegData(compressionQuality: 0.85)
-            ?? currentImportedAsset.uiImage.pngData()
+        let imageData = asset.uiImage.jpegData(compressionQuality: 0.85)
+            ?? asset.uiImage.pngData()
 
         do {
             try await receiptsStore.saveReceipt(receipt, imageData: imageData)
@@ -197,7 +192,6 @@ final class CaptureHomeViewModel {
 
 struct ImportedReceiptAsset {
     let uiImage: UIImage
-    let previewImage: Image
     let pixelSize: CGSize
     let fileName: String
     let source: ReceiptImportSource

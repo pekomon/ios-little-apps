@@ -10,9 +10,16 @@ import SwiftUI
 struct ReceiptReviewView: View {
     let asset: ImportedReceiptAsset
     let sourceDescription: String
-    let onSave: @Sendable (ReceiptReviewDraft) async throws -> Void
+    let onSave: @MainActor (ReceiptReviewDraft) async throws -> Void
 
-    @State private var draft: ReceiptReviewDraft
+    @State private var merchantName: String
+    @State private var purchaseDate: Date
+    @State private var includesPurchaseDate: Bool
+    @State private var totalAmountText: String
+    @State private var currencyCode: String
+    @State private var notes: String
+    @State private var rawText: String
+    private let source: ReceiptSource
     @State private var isSaving = false
     @State private var errorMessage: String?
     @Environment(\.dismiss) private var dismiss
@@ -21,12 +28,19 @@ struct ReceiptReviewView: View {
         asset: ImportedReceiptAsset,
         sourceDescription: String,
         initialDraft: ReceiptReviewDraft,
-        onSave: @escaping @Sendable (ReceiptReviewDraft) async throws -> Void
+        onSave: @escaping @MainActor (ReceiptReviewDraft) async throws -> Void
     ) {
         self.asset = asset
         self.sourceDescription = sourceDescription
         self.onSave = onSave
-        _draft = State(initialValue: initialDraft)
+        self.source = initialDraft.source
+        _merchantName = State(initialValue: initialDraft.merchantName)
+        _purchaseDate = State(initialValue: initialDraft.purchaseDate)
+        _includesPurchaseDate = State(initialValue: initialDraft.includesPurchaseDate)
+        _totalAmountText = State(initialValue: initialDraft.totalAmountText)
+        _currencyCode = State(initialValue: initialDraft.currencyCode)
+        _notes = State(initialValue: initialDraft.notes)
+        _rawText = State(initialValue: initialDraft.rawText)
     }
 
     var body: some View {
@@ -52,8 +66,9 @@ struct ReceiptReviewView: View {
 
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
-                        Task {
-                            await saveReceipt()
+                        let draftToSave = makeDraft()
+                        Task { @MainActor in
+                            await saveReceipt(using: draftToSave)
                         }
                     } label: {
                         if isSaving {
@@ -62,7 +77,7 @@ struct ReceiptReviewView: View {
                             Text("Save")
                         }
                     }
-                    .disabled(draft.trimmedMerchantName.isEmpty || isSaving)
+                    .disabled(merchantName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSaving)
                 }
             }
         }
@@ -71,7 +86,7 @@ struct ReceiptReviewView: View {
     private var previewCard: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top, spacing: 16) {
-                asset.previewImage
+                Image(uiImage: asset.uiImage)
                     .resizable()
                     .scaledToFill()
                     .frame(width: 116, height: 148)
@@ -122,36 +137,36 @@ struct ReceiptReviewView: View {
 
             VStack(alignment: .leading, spacing: 14) {
                 labeledField(title: "Merchant") {
-                    TextField("Merchant name", text: $draft.merchantName)
+                    TextField("Merchant name", text: $merchantName)
                         .textInputAutocapitalization(.words)
                         .autocorrectionDisabled()
                 }
 
-                Toggle("Include purchase date", isOn: $draft.includesPurchaseDate)
+                Toggle("Include purchase date", isOn: $includesPurchaseDate)
                     .font(.subheadline.weight(.medium))
 
-                if draft.includesPurchaseDate {
+                if includesPurchaseDate {
                     DatePicker(
                         "Purchase Date",
-                        selection: $draft.purchaseDate,
+                        selection: $purchaseDate,
                         displayedComponents: .date
                     )
                     .datePickerStyle(.compact)
                 }
 
                 labeledField(title: "Total") {
-                    TextField("0.00", text: $draft.totalAmountText)
+                    TextField("0.00", text: $totalAmountText)
                         .keyboardType(.decimalPad)
                 }
 
                 labeledField(title: "Currency") {
-                    TextField("EUR", text: $draft.currencyCode)
+                    TextField("EUR", text: $currencyCode)
                         .textInputAutocapitalization(.characters)
                         .autocorrectionDisabled()
                 }
 
                 labeledField(title: "Notes") {
-                    TextField("Optional note", text: $draft.notes, axis: .vertical)
+                    TextField("Optional note", text: $notes, axis: .vertical)
                         .lineLimit(3...5)
                 }
             }
@@ -167,9 +182,9 @@ struct ReceiptReviewView: View {
                 subtitle: "Reference OCR output while you review the extracted receipt fields."
             )
 
-            Text(draft.rawText.isEmpty ? "No OCR text was detected for this receipt image." : draft.rawText)
+            Text(rawText.isEmpty ? "No OCR text was detected for this receipt image." : rawText)
                 .font(.system(.footnote, design: .monospaced))
-                .foregroundStyle(draft.rawText.isEmpty ? .secondary : .primary)
+                .foregroundStyle(rawText.isEmpty ? .secondary : .primary)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(20)
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
@@ -213,12 +228,25 @@ struct ReceiptReviewView: View {
         )
     }
 
-    private func saveReceipt() async {
+    private func makeDraft() -> ReceiptReviewDraft {
+        ReceiptReviewDraft(
+            merchantName: merchantName,
+            purchaseDate: purchaseDate,
+            includesPurchaseDate: includesPurchaseDate,
+            totalAmountText: totalAmountText,
+            currencyCode: currencyCode,
+            notes: notes,
+            rawText: rawText,
+            source: source
+        )
+    }
+
+    private func saveReceipt(using draftToSave: ReceiptReviewDraft) async {
         isSaving = true
         errorMessage = nil
 
         do {
-            try await onSave(draft)
+            try await onSave(draftToSave)
             dismiss()
         } catch {
             errorMessage = error.localizedDescription
@@ -232,7 +260,6 @@ struct ReceiptReviewView: View {
     ReceiptReviewView(
         asset: ImportedReceiptAsset(
             uiImage: UIImage(systemName: "doc.text.image") ?? UIImage(),
-            previewImage: Image(systemName: "doc.text.image"),
             pixelSize: CGSize(width: 1200, height: 1800),
             fileName: "LunchReceipt.jpg",
             source: .photoLibrary

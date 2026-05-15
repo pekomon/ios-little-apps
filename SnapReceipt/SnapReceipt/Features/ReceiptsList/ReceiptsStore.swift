@@ -31,7 +31,10 @@ final class ReceiptsStore {
         errorMessage = nil
 
         do {
-            receipts = try await repository.fetchReceipts()
+            let repository = self.repository
+            receipts = try await Task.detached(priority: .userInitiated) {
+                try await repository.fetchReceipts()
+            }.value
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -40,15 +43,22 @@ final class ReceiptsStore {
     }
 
     func saveReceipt(_ receipt: Receipt, imageData: Data? = nil) async throws {
-        var receiptToSave = receipt
+        let repository = self.repository
+        let imageStore = self.imageStore
 
-        if let imageData {
-            let imageFileName = try imageStore.saveImageData(imageData, for: receipt.id)
-            receiptToSave = receipt.updating(imageFileName: imageFileName)
-        }
+        let updatedReceipts = try await Task.detached(priority: .userInitiated) {
+            var receiptToSave = receipt
 
-        try await repository.saveReceipt(receiptToSave)
-        receipts = try await repository.fetchReceipts()
+            if let imageData {
+                let imageFileName = try imageStore.saveImageData(imageData, for: receipt.id)
+                receiptToSave = receipt.updating(imageFileName: imageFileName)
+            }
+
+            try await repository.saveReceipt(receiptToSave)
+            return try await repository.fetchReceipts()
+        }.value
+
+        receipts = updatedReceipts
         errorMessage = nil
     }
 }
