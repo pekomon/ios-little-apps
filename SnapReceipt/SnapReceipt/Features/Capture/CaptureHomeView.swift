@@ -17,6 +17,7 @@ struct CaptureHomeView: View {
     @State private var isShowingPhotoPicker = false
     @State private var isShowingFileImporter = false
     @State private var isShowingCameraUnavailableAlert = false
+    @State private var reviewDraft: ReceiptReviewDraft?
 
     init(receiptsStore: ReceiptsStore) {
         _viewModel = State(initialValue: CaptureHomeViewModel(receiptsStore: receiptsStore))
@@ -75,6 +76,21 @@ struct CaptureHomeView: View {
                         source: .camera,
                         fileName: "Live Capture"
                     )
+                }
+            }
+        }
+        .sheet(item: Binding(
+            get: { reviewDraft.map(ReviewDraftSheet.init) },
+            set: { reviewDraft = $0?.draft }
+        )) { wrappedDraft in
+            if let importedAsset = viewModel.importedAsset {
+                ReceiptReviewView(
+                    asset: importedAsset,
+                    sourceDescription: importedAsset.source.description,
+                    initialDraft: wrappedDraft.draft
+                ) { updatedDraft in
+                    try await viewModel.saveReviewedReceipt(updatedDraft)
+                    reviewDraft = nil
                 }
             }
         }
@@ -189,25 +205,23 @@ struct CaptureHomeView: View {
                 .buttonStyle(.bordered)
 
                 Button {
-                    Task {
-                        await viewModel.saveImportedReceipt()
-                    }
+                    reviewDraft = viewModel.makeReviewDraft()
                 } label: {
-                    if viewModel.isSavingReceipt {
-                        ProgressView()
-                            .tint(.white)
-                            .frame(maxWidth: .infinity)
-                    } else {
-                        Text("Save Receipt")
-                            .frame(maxWidth: .infinity)
-                    }
+                    Text("Review & Save")
+                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(viewModel.isRecognizingText || viewModel.isSavingReceipt)
 
-                Text("OCR runs immediately. Nothing is persisted until you save.")
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.secondary)
+                if viewModel.isSavingReceipt {
+                    ProgressView()
+                        .tint(.secondary)
+                        .frame(maxWidth: .infinity)
+                } else {
+                    Text("OCR runs immediately. Nothing is persisted until you save.")
+                        .font(.caption.weight(.medium))
+                        .foregroundStyle(.secondary)
+                }
             }
 
             if let saveErrorMessage = viewModel.saveErrorMessage {
@@ -258,12 +272,12 @@ struct CaptureHomeView: View {
 
     private var processPreview: some View {
         VStack(alignment: .leading, spacing: 14) {
-            sectionHeader(title: "What happens next", subtitle: "Imported receipts can now be recognized, suggested, and saved locally for later review.")
+            sectionHeader(title: "What happens next", subtitle: "Imported receipts can now be reviewed, corrected, and then saved locally.")
 
             VStack(spacing: 12) {
                 processRow(step: "1", title: "Pick a receipt image", detail: "Use the camera, photo library, or Files to bring a receipt into the app.")
                 processRow(step: "2", title: "Extract raw text", detail: "Vision OCR reads the receipt image and returns line-by-line text.")
-                processRow(step: "3", title: "Save locally", detail: "Review the parsed suggestions, then save the receipt so it appears in the Receipts tab.")
+                processRow(step: "3", title: "Review and save", detail: "Check merchant, amount, currency, date, and notes before the receipt is persisted.")
             }
             .padding(20)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
@@ -475,6 +489,11 @@ struct CaptureHomeView: View {
         formatter.maximumFractionDigits = 2
         return formatter
     }()
+}
+
+private struct ReviewDraftSheet: Identifiable {
+    let id = UUID()
+    let draft: ReceiptReviewDraft
 }
 
 #Preview {

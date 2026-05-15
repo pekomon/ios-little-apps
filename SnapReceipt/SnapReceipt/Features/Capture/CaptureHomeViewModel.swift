@@ -111,7 +111,24 @@ final class CaptureHomeViewModel {
         isRecognizingText = false
     }
 
-    func saveImportedReceipt() async {
+    func makeReviewDraft() -> ReceiptReviewDraft? {
+        guard let importedAsset else {
+            return nil
+        }
+
+        return ReceiptReviewDraft(
+            merchantName: resolvedMerchantName(from: importedAsset),
+            purchaseDate: parsedDetails?.purchaseDate ?? .now,
+            includesPurchaseDate: parsedDetails?.purchaseDate != nil,
+            totalAmountText: parsedDetails?.totalAmount.map { Self.amountFormatter.string(for: $0) ?? "\($0)" } ?? "",
+            currencyCode: parsedDetails?.currencyCode ?? "",
+            notes: "",
+            rawText: ocrResult?.rawText ?? "",
+            source: importedAsset.source.receiptSource
+        )
+    }
+
+    func saveReviewedReceipt(_ draft: ReceiptReviewDraft) async throws {
         guard let currentImportedAsset = importedAsset else {
             return
         }
@@ -121,21 +138,19 @@ final class CaptureHomeViewModel {
         saveSuccessMessage = nil
 
         let now = Date()
-        let merchantName = resolvedMerchantName(from: currentImportedAsset)
-        let source = currentImportedAsset.source.receiptSource
         let metadata = ReceiptMetadata(
-            merchantName: merchantName,
-            purchaseDate: parsedDetails?.purchaseDate,
-            totalAmount: parsedDetails?.totalAmount,
-            currencyCode: parsedDetails?.currencyCode,
-            source: source,
+            merchantName: draft.trimmedMerchantName,
+            purchaseDate: draft.resolvedPurchaseDate,
+            totalAmount: draft.parsedTotalAmount,
+            currencyCode: draft.normalizedCurrencyCode,
+            source: draft.source,
             createdAt: now,
             updatedAt: now
         )
         let receipt = Receipt(
             metadata: metadata,
-            notes: "",
-            rawText: ocrResult?.rawText ?? ""
+            notes: draft.notes.trimmingCharacters(in: .whitespacesAndNewlines),
+            rawText: draft.rawText
         )
         let imageData = currentImportedAsset.uiImage.jpegData(compressionQuality: 0.85)
             ?? currentImportedAsset.uiImage.pngData()
@@ -146,12 +161,13 @@ final class CaptureHomeViewModel {
             ocrResult = nil
             parsedDetails = nil
             ocrErrorMessage = nil
-            saveSuccessMessage = "Saved \(merchantName) to Receipts."
+            saveSuccessMessage = "Saved \(draft.trimmedMerchantName) to Receipts."
+            isSavingReceipt = false
         } catch {
             saveErrorMessage = error.localizedDescription
+            isSavingReceipt = false
+            throw error
         }
-
-        isSavingReceipt = false
     }
 
     private func resolvedMerchantName(from importedAsset: ImportedReceiptAsset) -> String {
@@ -169,6 +185,14 @@ final class CaptureHomeViewModel {
 
         return baseName.isEmpty ? "Untitled Receipt" : baseName
     }
+
+    private static let amountFormatter: NumberFormatter = {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.minimumFractionDigits = 2
+        formatter.maximumFractionDigits = 2
+        return formatter
+    }()
 }
 
 struct ImportedReceiptAsset {
