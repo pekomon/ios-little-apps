@@ -121,6 +121,8 @@ struct ReceiptDetailView: View {
         }
         .padding(24)
         .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(summaryAccessibilityLabel)
     }
 
     private var factsSection: some View {
@@ -137,6 +139,8 @@ struct ReceiptDetailView: View {
             }
             .padding(20)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel(factsAccessibilityLabel)
         }
     }
 
@@ -151,6 +155,7 @@ struct ReceiptDetailView: View {
             )
             .frame(maxWidth: .infinity, alignment: .center)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+            .accessibilityLabel("Saved receipt image")
         }
     }
 
@@ -164,6 +169,7 @@ struct ReceiptDetailView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(20)
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+                .accessibilityLabel("Notes. \(receipt.notes)")
         }
     }
 
@@ -178,6 +184,7 @@ struct ReceiptDetailView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(20)
                     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+                    .accessibilityLabel("No OCR text was saved for this receipt.")
             } else {
                 Text(receipt.rawText)
                     .font(.system(.footnote, design: .monospaced))
@@ -185,6 +192,7 @@ struct ReceiptDetailView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(20)
                     .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+                    .accessibilityLabel("Recognized text. \(receipt.rawText)")
             }
         }
     }
@@ -310,6 +318,30 @@ struct ReceiptDetailView: View {
         formatter.maximumFractionDigits = 2
         return formatter
     }()
+
+    private var summaryAccessibilityLabel: String {
+        var parts = [receipt.metadata.merchantName, receipt.metadata.source.displayName]
+
+        if let totalAmount = receipt.metadata.totalAmount {
+            parts.append("Total \(totalAmountText(totalAmount))")
+        }
+
+        parts.append("Purchase date \(receipt.metadata.purchaseDate.map(Self.dateFormatter.string) ?? "Not parsed")")
+        parts.append("Captured \(Self.dateTimeFormatter.string(from: receipt.metadata.createdAt))")
+
+        return parts.joined(separator: ". ")
+    }
+
+    private var factsAccessibilityLabel: String {
+        [
+            "Merchant \(receipt.metadata.merchantName)",
+            "Source \(receipt.metadata.source.displayName)",
+            "Total \(receipt.metadata.totalAmount.map(totalAmountText) ?? "Not parsed")",
+            "Currency \(receipt.metadata.currencyCode ?? "Not parsed")",
+            "Purchase date \(receipt.metadata.purchaseDate.map(Self.dateFormatter.string) ?? "Not parsed")",
+            "Updated \(Self.dateTimeFormatter.string(from: receipt.metadata.updatedAt))"
+        ].joined(separator: ". ")
+    }
 }
 
 #Preview {

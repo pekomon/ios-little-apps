@@ -153,9 +153,11 @@ struct CaptureHomeView: View {
             }
             .buttonStyle(.borderedProminent)
             .tint(Color(red: 0.97, green: 0.62, blue: 0.22))
+            .accessibilityHint("Choose whether to import a receipt from the camera, photo library, or Files.")
         }
         .padding(24)
         .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .accessibilityElement(children: .contain)
     }
 
     private func importedPreviewCard(_ asset: ImportedReceiptAsset) -> some View {
@@ -170,6 +172,7 @@ struct CaptureHomeView: View {
                         RoundedRectangle(cornerRadius: 18, style: .continuous)
                             .stroke(.white.opacity(0.10), lineWidth: 1)
                     }
+                    .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 10) {
                     Label("Imported Receipt", systemImage: asset.source.systemImage)
@@ -200,6 +203,7 @@ struct CaptureHomeView: View {
                     isShowingSourceDialog = true
                 }
                 .buttonStyle(.bordered)
+                .accessibilityHint("Replace this imported receipt with a different image.")
 
                 Button {
                     if let importedAsset = viewModel.importedAsset,
@@ -212,11 +216,13 @@ struct CaptureHomeView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(viewModel.isRecognizingText || viewModel.isSavingReceipt)
+                .accessibilityHint("Open the receipt review form before saving locally.")
 
                 if viewModel.isSavingReceipt {
                     ProgressView()
                         .tint(.secondary)
                         .frame(maxWidth: .infinity)
+                        .accessibilityLabel("Saving receipt")
                 } else {
                     Text("OCR runs immediately. Nothing is persisted until you save.")
                         .font(.caption.weight(.medium))
@@ -235,6 +241,8 @@ struct CaptureHomeView: View {
         }
         .padding(20)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(importedReceiptAccessibilityLabel(for: asset))
     }
 
     private var quickActions: some View {
@@ -340,10 +348,13 @@ struct CaptureHomeView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Scanning receipt text")
             } else if let ocrErrorMessage = viewModel.ocrErrorMessage {
                 Label(ocrErrorMessage, systemImage: "exclamationmark.triangle")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
+                    .accessibilityElement(children: .combine)
             } else if let ocrResult = viewModel.ocrResult, !ocrResult.rawText.isEmpty {
                 VStack(alignment: .leading, spacing: 8) {
                     Text("\(ocrResult.lines.count) lines found")
@@ -357,6 +368,8 @@ struct CaptureHomeView: View {
                         .padding(14)
                         .background(.black.opacity(0.06), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
                 }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel("Recognized text. \(ocrResult.lines.count) lines found. \(ocrResult.rawText)")
             } else {
                 Text("Import a clear receipt image to see the raw OCR output here.")
                     .font(.subheadline)
@@ -390,6 +403,7 @@ struct CaptureHomeView: View {
                 Image(systemName: systemImage)
                     .font(.title2.weight(.semibold))
                     .foregroundStyle(Color(red: 0.97, green: 0.62, blue: 0.22))
+                    .accessibilityHidden(true)
 
                 Text(title)
                     .font(.headline)
@@ -405,6 +419,9 @@ struct CaptureHomeView: View {
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 22, style: .continuous))
         }
         .buttonStyle(.plain)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(title)
+        .accessibilityHint(detail)
     }
 
     private func processRow(step: String, title: String, detail: String) -> some View {
@@ -489,6 +506,35 @@ struct CaptureHomeView: View {
         formatter.maximumFractionDigits = 2
         return formatter
     }()
+
+    private func importedReceiptAccessibilityLabel(for asset: ImportedReceiptAsset) -> String {
+        var parts = [
+            "Imported receipt",
+            asset.fileName,
+            asset.source.description
+        ]
+
+        if let size = asset.imageSizeDescription {
+            parts.append(size)
+        }
+
+        if viewModel.isRecognizingText {
+            parts.append("OCR is in progress")
+        } else if let parsedDetails = viewModel.parsedDetails {
+            if let merchantName = parsedDetails.merchantName, !merchantName.isEmpty {
+                parts.append("Merchant \(merchantName)")
+            }
+            if let currencyCode = parsedDetails.currencyCode {
+                parts.append("Currency \(currencyCode)")
+            }
+            if let totalAmount = parsedDetails.totalAmount {
+                let total = Self.amountFormatter.string(for: totalAmount) ?? "\(totalAmount)"
+                parts.append("Total \(total)")
+            }
+        }
+
+        return parts.joined(separator: ". ")
+    }
 }
 
 private struct ReceiptReviewSession: Identifiable {

@@ -26,6 +26,7 @@ struct StoredReceiptImageThumbnail: View {
                     RoundedRectangle(cornerRadius: 18, style: .continuous)
                         .stroke(.primary.opacity(0.08), lineWidth: 1)
                 }
+                .accessibilityLabel("Receipt image")
         } else {
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(.ultraThinMaterial)
@@ -34,6 +35,7 @@ struct StoredReceiptImageThumbnail: View {
                     Image(systemName: "photo")
                         .foregroundStyle(.secondary)
                 }
+                .accessibilityLabel("Receipt image unavailable")
         }
     }
 }

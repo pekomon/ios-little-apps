@@ -95,6 +95,7 @@ struct ReceiptReviewView: View {
                         RoundedRectangle(cornerRadius: 22, style: .continuous)
                             .stroke(.white.opacity(0.12), lineWidth: 1)
                     }
+                    .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 10) {
                     Text("Confirm fields before saving")
@@ -126,6 +127,8 @@ struct ReceiptReviewView: View {
         }
         .padding(24)
         .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 28, style: .continuous))
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("Receipt review preview. Source: \(sourceDescription). File name: \(asset.fileName).")
     }
 
     private var editorSection: some View {
@@ -144,6 +147,7 @@ struct ReceiptReviewView: View {
 
                 Toggle("Include purchase date", isOn: $includesPurchaseDate)
                     .font(.subheadline.weight(.medium))
+                    .accessibilityHint("Turn this off if the receipt date could not be identified.")
 
                 if includesPurchaseDate {
                     DatePicker(
@@ -172,6 +176,7 @@ struct ReceiptReviewView: View {
             }
             .padding(20)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+            .accessibilityElement(children: .contain)
         }
     }
 
@@ -188,6 +193,7 @@ struct ReceiptReviewView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(20)
                 .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+                .accessibilityLabel(rawText.isEmpty ? "No OCR text was detected for this receipt image." : "Recognized text. \(rawText)")
         }
     }
 

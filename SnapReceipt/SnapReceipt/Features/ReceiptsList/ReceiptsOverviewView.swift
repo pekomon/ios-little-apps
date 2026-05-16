@@ -164,6 +164,9 @@ struct ReceiptsOverviewView: View {
             }
         }
         .padding(.vertical, 4)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(accessibilitySummary(for: receipt))
+        .accessibilityHint("Opens receipt details. Swipe for delete actions.")
     }
 
     private func statusRow(title: String, subtitle: String) -> some View {
@@ -208,6 +211,29 @@ struct ReceiptsOverviewView: View {
         formatter.currencyCode = Locale.current.currency?.identifier ?? "EUR"
         return formatter
     }()
+
+    private func accessibilitySummary(for receipt: Receipt) -> String {
+        var parts = [receipt.metadata.merchantName, receipt.metadata.source.displayName]
+
+        if let purchaseDate = receipt.metadata.purchaseDate {
+            parts.append("Purchased \(Self.dateFormatter.string(from: purchaseDate))")
+        }
+
+        if let totalAmount = receipt.metadata.totalAmount {
+            let formatted = Self.currencyFormatter.string(from: totalAmount as NSDecimalNumber) ?? "\(totalAmount)"
+            parts.append("Total \(formatted)")
+        }
+
+        if let currencyCode = receipt.metadata.currencyCode {
+            parts.append("Currency \(currencyCode)")
+        }
+
+        if !receipt.rawText.isEmpty {
+            parts.append("Recognized text available")
+        }
+
+        return parts.joined(separator: ". ")
+    }
 }
 
 #Preview {
