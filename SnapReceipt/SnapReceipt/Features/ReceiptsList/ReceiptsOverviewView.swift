@@ -9,6 +9,9 @@ import SwiftUI
 
 struct ReceiptsOverviewView: View {
     @State private var receiptsStore: ReceiptsStore
+    @State private var receiptPendingDeletion: Receipt?
+    @State private var isDeletingReceipt = false
+    @State private var deletionErrorMessage: String?
 
     init(receiptsStore: ReceiptsStore) {
         _receiptsStore = State(initialValue: receiptsStore)
@@ -37,9 +40,16 @@ struct ReceiptsOverviewView: View {
                         Section("Saved Receipts") {
                             ForEach(receiptsStore.receipts) { receipt in
                                 NavigationLink {
-                                    ReceiptDetailView(receipt: receipt)
+                                    ReceiptDetailView(receipt: receipt, receiptsStore: receiptsStore)
                                 } label: {
                                     receiptRow(receipt)
+                                }
+                                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                                    Button(role: .destructive) {
+                                        receiptPendingDeletion = receipt
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
                                 }
                             }
                         }
@@ -51,13 +61,59 @@ struct ReceiptsOverviewView: View {
                             )
                         }
                     }
+                    .animation(.snappy(duration: 0.22), value: receiptsStore.receipts)
                 }
             }
             .navigationTitle("Receipts")
             .refreshable {
                 await receiptsStore.loadReceipts()
             }
+            .confirmationDialog(
+                "Delete Receipt?",
+                isPresented: deleteConfirmationIsPresented,
+                presenting: receiptPendingDeletion
+            ) { receipt in
+                Button("Delete Receipt", role: .destructive) {
+                    Task {
+                        await deleteReceipt(receipt)
+                    }
+                }
+                Button("Cancel", role: .cancel) {
+                    receiptPendingDeletion = nil
+                }
+            } message: { receipt in
+                Text("This removes \(receipt.metadata.merchantName) and any saved receipt image from local storage.")
+            }
+            .alert("Could Not Delete Receipt", isPresented: deletionErrorIsPresented) {
+                Button("OK") {
+                    deletionErrorMessage = nil
+                }
+            } message: {
+                Text(deletionErrorMessage ?? "")
+            }
         }
+    }
+
+    private var deleteConfirmationIsPresented: Binding<Bool> {
+        Binding(
+            get: { receiptPendingDeletion != nil },
+            set: { isPresented in
+                if !isPresented {
+                    receiptPendingDeletion = nil
+                }
+            }
+        )
+    }
+
+    private var deletionErrorIsPresented: Binding<Bool> {
+        Binding(
+            get: { deletionErrorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    deletionErrorMessage = nil
+                }
+            }
+        )
     }
 
     private func receiptRow(_ receipt: Receipt) -> some View {
@@ -119,6 +175,24 @@ struct ReceiptsOverviewView: View {
                 .foregroundStyle(.secondary)
         }
         .padding(.vertical, 4)
+    }
+
+    @MainActor
+    private func deleteReceipt(_ receipt: Receipt) async {
+        guard !isDeletingReceipt else {
+            return
+        }
+
+        isDeletingReceipt = true
+        receiptPendingDeletion = nil
+
+        do {
+            try await receiptsStore.deleteReceipt(receipt)
+        } catch {
+            deletionErrorMessage = error.localizedDescription
+        }
+
+        isDeletingReceipt = false
     }
 
     private static let dateFormatter: DateFormatter = {

@@ -61,4 +61,32 @@ final class ReceiptsStore {
         receipts = updatedReceipts
         errorMessage = nil
     }
+
+    func deleteReceipt(_ receipt: Receipt) async throws {
+        let previousReceipts = receipts
+        receipts.removeAll { $0.id == receipt.id }
+        errorMessage = nil
+
+        let repository = self.repository
+        let imageStore = self.imageStore
+
+        do {
+            let updatedReceipts = try await Task.detached(priority: .userInitiated) {
+                try await repository.deleteReceipt(id: receipt.id)
+
+                if let imageFileName = receipt.imageFileName {
+                    try imageStore.deleteImage(named: imageFileName)
+                }
+
+                return try await repository.fetchReceipts()
+            }.value
+
+            receipts = updatedReceipts
+            errorMessage = nil
+        } catch {
+            receipts = previousReceipts
+            errorMessage = error.localizedDescription
+            throw error
+        }
+    }
 }

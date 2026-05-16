@@ -18,7 +18,7 @@ struct Receipt: Identifiable, Hashable, Codable, Sendable {
         metadata.id
     }
 
-    init(
+    nonisolated init(
         metadata: ReceiptMetadata,
         imageFileName: String? = nil,
         lineItems: [ReceiptLineItem] = [],
@@ -32,7 +32,7 @@ struct Receipt: Identifiable, Hashable, Codable, Sendable {
         self.rawText = rawText
     }
 
-    func updating(
+    nonisolated func updating(
         metadata: ReceiptMetadata? = nil,
         imageFileName: String? = nil,
         lineItems: [ReceiptLineItem]? = nil,

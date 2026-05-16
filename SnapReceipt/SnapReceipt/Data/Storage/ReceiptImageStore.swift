@@ -8,15 +8,16 @@
 import Foundation
 
 protocol ReceiptImageStoring: Sendable {
-    func saveImageData(_ data: Data, for receiptID: UUID) throws -> String
-    func imageURL(for fileName: String) -> URL
+    nonisolated func saveImageData(_ data: Data, for receiptID: UUID) throws -> String
+    nonisolated func imageURL(for fileName: String) -> URL
+    nonisolated func deleteImage(named fileName: String) throws
 }
 
 struct ReceiptImageStore: ReceiptImageStoring {
-    private let fileManager: FileManager
-    private let persistenceLocation: ReceiptPersistenceLocation
+    nonisolated(unsafe) private let fileManager: FileManager
+    nonisolated(unsafe) private let persistenceLocation: ReceiptPersistenceLocation
 
-    init(
+    nonisolated init(
         fileManager: FileManager = .default,
         persistenceLocation: ReceiptPersistenceLocation = ReceiptPersistenceLocation()
     ) {
@@ -24,7 +25,7 @@ struct ReceiptImageStore: ReceiptImageStoring {
         self.persistenceLocation = persistenceLocation
     }
 
-    func saveImageData(_ data: Data, for receiptID: UUID) throws -> String {
+    nonisolated func saveImageData(_ data: Data, for receiptID: UUID) throws -> String {
         try fileManager.createDirectory(
             at: persistenceLocation.imagesDirectoryURL,
             withIntermediateDirectories: true
@@ -36,7 +37,17 @@ struct ReceiptImageStore: ReceiptImageStoring {
         return fileName
     }
 
-    func imageURL(for fileName: String) -> URL {
+    nonisolated func imageURL(for fileName: String) -> URL {
         persistenceLocation.imagesDirectoryURL.appendingPathComponent(fileName)
+    }
+
+    nonisolated func deleteImage(named fileName: String) throws {
+        let imageURL = imageURL(for: fileName)
+
+        guard fileManager.fileExists(atPath: imageURL.path) else {
+            return
+        }
+
+        try fileManager.removeItem(at: imageURL)
     }
 }

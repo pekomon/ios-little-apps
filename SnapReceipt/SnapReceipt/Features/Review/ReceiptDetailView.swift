@@ -9,6 +9,12 @@ import SwiftUI
 
 struct ReceiptDetailView: View {
     let receipt: Receipt
+    let receiptsStore: ReceiptsStore
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var isShowingDeleteConfirmation = false
+    @State private var isDeletingReceipt = false
+    @State private var deletionErrorMessage: String?
 
     var body: some View {
         ScrollView {
@@ -33,6 +39,47 @@ struct ReceiptDetailView: View {
         .background(backgroundGradient.ignoresSafeArea())
         .navigationTitle("Receipt")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(role: .destructive) {
+                    isShowingDeleteConfirmation = true
+                } label: {
+                    if isDeletingReceipt {
+                        ProgressView()
+                    } else {
+                        Image(systemName: "trash")
+                    }
+                }
+                .disabled(isDeletingReceipt)
+                .accessibilityLabel("Delete receipt")
+            }
+        }
+        .confirmationDialog("Delete Receipt?", isPresented: $isShowingDeleteConfirmation) {
+            Button("Delete Receipt", role: .destructive) {
+                deleteReceipt()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("This removes \(receipt.metadata.merchantName) and any saved receipt image from local storage.")
+        }
+        .alert("Could Not Delete Receipt", isPresented: deletionErrorIsPresented) {
+            Button("OK") {
+                deletionErrorMessage = nil
+            }
+        } message: {
+            Text(deletionErrorMessage ?? "")
+        }
+    }
+
+    private var deletionErrorIsPresented: Binding<Bool> {
+        Binding(
+            get: { deletionErrorMessage != nil },
+            set: { isPresented in
+                if !isPresented {
+                    deletionErrorMessage = nil
+                }
+            }
+        )
     }
 
     private var summaryCard: some View {
@@ -213,6 +260,29 @@ struct ReceiptDetailView: View {
         )
     }
 
+    private func deleteReceipt() {
+        guard !isDeletingReceipt else {
+            return
+        }
+
+        isDeletingReceipt = true
+        withAnimation(.easeInOut(duration: 0.2)) {
+            dismiss()
+        }
+
+        Task {
+            do {
+                try await receiptsStore.deleteReceipt(receipt)
+            } catch {
+                // The originating detail view has already been dismissed.
+            }
+
+            await MainActor.run {
+                isDeletingReceipt = false
+            }
+        }
+    }
+
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
@@ -260,6 +330,10 @@ struct ReceiptDetailView: View {
                 Total EUR 18.40
                 15.05.2026
                 """
+            ),
+            receiptsStore: ReceiptsStore(
+                repository: DefaultReceiptRepository(receiptStore: JSONFileReceiptStore()),
+                imageStore: ReceiptImageStore()
             )
         )
     }
