@@ -1,0 +1,41 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="138" y1="126" x2="910" y2="914" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#152235"/>
+      <stop offset="0.5" stop-color="#0C1627"/>
+      <stop offset="1" stop-color="#07101D"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="332" y1="228" x2="704" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F8FAFD"/>
+      <stop offset="1" stop-color="#DDE7F2"/>
+    </linearGradient>
+    <linearGradient id="scan" x1="344" y1="560" x2="680" y2="592" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#64E6FF" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#8DF4FF"/>
+      <stop offset="1" stop-color="#64E6FF" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="shadow" x="214" y="164" width="596" height="668" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="26" stdDeviation="28" flood-color="#000000" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  <circle cx="782" cy="222" r="132" fill="#1B3356"/>
+  <circle cx="240" cy="836" r="174" fill="#10243F"/>
+
+  <g filter="url(#shadow)">
+    <rect x="302" y="200" width="420" height="590" rx="82" fill="url(#paper)"/>
+    <path d="M612 200H642C686.183 200 722 235.817 722 280V310H692C647.817 310 612 274.183 612 230V200Z" fill="#BFD1E5"/>
+    <rect x="362" y="344" width="300" height="18" rx="9" fill="#1B3356"/>
+    <rect x="362" y="394" width="244" height="18" rx="9" fill="#4E688A"/>
+    <rect x="362" y="444" width="266" height="18" rx="9" fill="#4E688A"/>
+    <rect x="362" y="494" width="220" height="18" rx="9" fill="#4E688A"/>
+    <rect x="362" y="580" width="120" height="18" rx="9" fill="#1B3356"/>
+    <rect x="520" y="580" width="142" height="18" rx="9" fill="#1B3356"/>
+    <rect x="348" y="540" width="328" height="94" rx="28" stroke="#3FD6FF" stroke-width="12" stroke-dasharray="22 18"/>
+    <rect x="338" y="572" width="348" height="24" rx="12" fill="url(#scan)"/>
+  </g>
+
+  <path d="M772 652C772 722.693 714.693 780 644 780C573.307 780 516 722.693 516 652C516 581.307 573.307 524 644 524C714.693 524 772 581.307 772 652Z" fill="#53DFFF"/>
+  <path d="M614 652L639 677L687 626" stroke="#081221" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
