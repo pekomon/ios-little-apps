@@ -120,7 +120,7 @@ final class CaptureHomeViewModel {
             purchaseDate: parsedDetails?.purchaseDate ?? .now,
             includesPurchaseDate: parsedDetails?.purchaseDate != nil,
             totalAmountText: parsedDetails?.totalAmount.map { Self.amountFormatter.string(for: $0) ?? "\($0)" } ?? "",
-            currencyCode: parsedDetails?.currencyCode ?? "",
+            currencyCode: parsedDetails?.currencyCode ?? SnapReceiptSettings.defaultCurrency(),
             notes: "",
             rawText: ocrResult?.rawText ?? "",
             source: importedAsset.source.receiptSource
@@ -147,7 +147,8 @@ final class CaptureHomeViewModel {
             notes: draft.notes.trimmingCharacters(in: .whitespacesAndNewlines),
             rawText: draft.rawText
         )
-        let imageData = asset.uiImage.jpegData(compressionQuality: 0.85)
+        let compressionQuality = SnapReceiptSettings.imageQuality().compressionQuality
+        let imageData = asset.uiImage.jpegData(compressionQuality: compressionQuality)
             ?? asset.uiImage.pngData()
 
         do {

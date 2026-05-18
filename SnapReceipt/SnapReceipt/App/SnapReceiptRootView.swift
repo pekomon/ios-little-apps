@@ -30,7 +30,7 @@ struct SnapReceiptRootView: View {
                     Label("Receipts", systemImage: "list.bullet.rectangle")
                 }
 
-            SettingsPlaceholderView()
+            SettingsView()
                 .tabItem {
                     Label("Settings", systemImage: "slider.horizontal.3")
                 }
