@@ -139,8 +139,9 @@ struct CaptureHomeView: View {
             }
 
             HStack(spacing: 14) {
-                summaryPill(title: "Stage", value: "Capture")
-                summaryPill(title: "Focus", value: "Import Flow")
+                summaryPill(title: "Stage", value: viewModel.importedAsset == nil ? "Capture" : "Review")
+                summaryPill(title: "OCR", value: viewModel.isRecognizingText ? "Running" : (viewModel.ocrResult == nil ? "Waiting" : "Ready"))
+                summaryPill(title: "Ready", value: viewModel.importedAsset == nil ? "No" : "Yes")
             }
 
             Button {
@@ -193,6 +194,8 @@ struct CaptureHomeView: View {
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
+
+                    statusBadgeRow(for: asset)
                 }
 
                 Spacer(minLength: 0)
@@ -236,6 +239,7 @@ struct CaptureHomeView: View {
                     .foregroundStyle(.orange)
             }
 
+            reviewReadinessStrip
             parsedDetailsSection
             ocrStatusSection
         }
@@ -280,7 +284,7 @@ struct CaptureHomeView: View {
 
     private var processPreview: some View {
         VStack(alignment: .leading, spacing: 14) {
-            sectionHeader(title: "What happens next", subtitle: "Imported receipts can now be reviewed, corrected, and then saved locally.")
+            sectionHeader(title: "Processing Flow", subtitle: "A compact pipeline from image import to structured receipt record.")
 
             VStack(spacing: 12) {
                 processRow(step: "1", title: "Pick a receipt image", detail: "Use the camera, photo library, or Files to bring a receipt into the app.")
@@ -310,10 +314,29 @@ struct CaptureHomeView: View {
     @ViewBuilder
     private var parsedDetailsSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Parsed Suggestions")
-                .font(.headline)
+            HStack {
+                Text("Parsed Suggestions")
+                    .font(.headline)
+
+                Spacer(minLength: 12)
+
+                if viewModel.parsedDetails != nil {
+                    Text("\(parsedFieldCount) of 4 fields")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 6)
+                        .background(.white.opacity(0.58), in: Capsule())
+                }
+            }
 
             if let parsedDetails = viewModel.parsedDetails {
+                HStack(spacing: 10) {
+                    metricChip(title: "Merchant", value: parsedDetails.merchantName == nil ? "Missing" : "Found")
+                    metricChip(title: "Amount", value: parsedDetails.totalAmount == nil ? "Missing" : "Found")
+                    metricChip(title: "Date", value: parsedDetails.purchaseDate == nil ? "Missing" : "Found")
+                }
+
                 VStack(spacing: 10) {
                     parsedDetailRow(title: "Merchant", value: parsedDetails.merchantName ?? "No match")
                     parsedDetailRow(title: "Date", value: parsedDetails.purchaseDate.map(Self.captureDateFormatter.string) ?? "No match")
@@ -332,6 +355,29 @@ struct CaptureHomeView: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
+        }
+    }
+
+    @ViewBuilder
+    private var reviewReadinessStrip: some View {
+        HStack(spacing: 10) {
+            readinessCard(
+                title: "Structured Fields",
+                value: "\(parsedFieldCount)/4",
+                accent: Color(red: 0.88, green: 0.46, blue: 0.28)
+            )
+
+            readinessCard(
+                title: "OCR Lines",
+                value: viewModel.ocrResult.map { "\($0.lines.count)" } ?? "0",
+                accent: Color(red: 0.23, green: 0.44, blue: 0.70)
+            )
+
+            readinessCard(
+                title: "Save State",
+                value: viewModel.isRecognizingText ? "Busy" : "Ready",
+                accent: Color(red: 0.18, green: 0.60, blue: 0.42)
+            )
         }
     }
 
@@ -424,6 +470,41 @@ struct CaptureHomeView: View {
         .accessibilityHint(detail)
     }
 
+    private func readinessCard(title: String, value: String, accent: Color) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            RoundedRectangle(cornerRadius: 999, style: .continuous)
+                .fill(accent)
+                .frame(width: 26, height: 5)
+
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+
+            Text(value)
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(14)
+        .background(.white.opacity(0.62), in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    private func metricChip(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+
+            Text(value)
+                .font(.caption.weight(.bold))
+                .foregroundStyle(.primary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 10)
+        .background(.white.opacity(0.5), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
     private func processRow(step: String, title: String, detail: String) -> some View {
         HStack(alignment: .top, spacing: 14) {
             Text(step)
@@ -506,6 +587,41 @@ struct CaptureHomeView: View {
         formatter.maximumFractionDigits = 2
         return formatter
     }()
+
+    private var parsedFieldCount: Int {
+        guard let parsedDetails = viewModel.parsedDetails else {
+            return 0
+        }
+
+        return [
+            parsedDetails.merchantName?.isEmpty == false,
+            parsedDetails.purchaseDate != nil,
+            parsedDetails.totalAmount != nil,
+            parsedDetails.currencyCode?.isEmpty == false
+        ]
+        .filter { $0 }
+        .count
+    }
+
+    private func statusBadgeRow(for asset: ImportedReceiptAsset) -> some View {
+        HStack(spacing: 8) {
+            badgeLabel(text: asset.source == .camera ? "Live Capture" : "Imported")
+            badgeLabel(text: viewModel.isRecognizingText ? "OCR Running" : "OCR Snapshot")
+
+            if parsedFieldCount > 0 {
+                badgeLabel(text: "\(parsedFieldCount) Fields")
+            }
+        }
+    }
+
+    private func badgeLabel(text: String) -> some View {
+        Text(text)
+            .font(.caption2.weight(.bold))
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 6)
+            .background(.white.opacity(0.58), in: Capsule())
+    }
 
     private func importedReceiptAccessibilityLabel(for asset: ImportedReceiptAsset) -> String {
         var parts = [

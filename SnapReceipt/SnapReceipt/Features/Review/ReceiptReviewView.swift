@@ -48,8 +48,10 @@ struct ReceiptReviewView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     previewCard
+                    reviewSummaryCard
                     editorSection
                     rawTextSection
+                    saveGuidanceCard
                 }
                 .padding(20)
                 .padding(.bottom, 28)
@@ -74,7 +76,7 @@ struct ReceiptReviewView: View {
                         if isSaving {
                             ProgressView()
                         } else {
-                            Text("Save")
+                            Text("Save Receipt")
                         }
                     }
                     .disabled(merchantName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSaving)
@@ -129,6 +131,42 @@ struct ReceiptReviewView: View {
         .background(.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 28, style: .continuous))
         .accessibilityElement(children: .contain)
         .accessibilityLabel("Receipt review preview. Source: \(sourceDescription). File name: \(asset.fileName).")
+    }
+
+    private var reviewSummaryCard: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            HStack {
+                Text("Save Preview")
+                    .font(.headline)
+
+                Spacer(minLength: 12)
+
+                Text(validationStatusTitle)
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(validationIssues.isEmpty ? Color(red: 0.18, green: 0.60, blue: 0.42) : .orange)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(.white.opacity(0.58), in: Capsule())
+            }
+
+            HStack(spacing: 10) {
+                reviewMetricChip(title: "Merchant", value: trimmedMerchantNameForDisplay)
+                reviewMetricChip(title: "Amount", value: totalAmountForDisplay)
+                reviewMetricChip(title: "Currency", value: currencyForDisplay)
+            }
+
+            if !validationIssues.isEmpty {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(validationIssues, id: \.self) { issue in
+                        Label(issue, systemImage: "exclamationmark.circle.fill")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.orange)
+                    }
+                }
+            }
+        }
+        .padding(20)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
     }
 
     private var editorSection: some View {
@@ -197,6 +235,20 @@ struct ReceiptReviewView: View {
         }
     }
 
+    private var saveGuidanceCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Before saving")
+                .font(.headline)
+
+            Text("Use the OCR output as reference, fix any missing merchant or total fields, and confirm the purchase date only when it is clearly visible.")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(20)
+        .background(.white.opacity(0.58), in: RoundedRectangle(cornerRadius: 22, style: .continuous))
+    }
+
     private func labeledField<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
@@ -208,6 +260,24 @@ struct ReceiptReviewView: View {
                 .padding(.vertical, 12)
                 .background(.white.opacity(0.72), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
+    }
+
+    private func reviewMetricChip(title: String, value: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(.secondary)
+
+            Text(value)
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(.primary)
+                .lineLimit(2)
+                .minimumScaleFactor(0.85)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 12)
+        .background(.white.opacity(0.52), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
 
     private func sectionHeader(title: String, subtitle: String) -> some View {
@@ -259,6 +329,44 @@ struct ReceiptReviewView: View {
         }
 
         isSaving = false
+    }
+
+    private var validationIssues: [String] {
+        var issues: [String] = []
+
+        if trimmedMerchantNameForDisplay == "Missing" {
+            issues.append("Add a merchant name before saving.")
+        }
+
+        if !totalAmountText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, makeDraft().parsedTotalAmount == nil {
+            issues.append("Total amount format should use digits like 18.40.")
+        }
+
+        if !currencyCode.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+           currencyCode.trimmingCharacters(in: .whitespacesAndNewlines).count < 3 {
+            issues.append("Currency code should be a 3-letter code such as EUR.")
+        }
+
+        return issues
+    }
+
+    private var validationStatusTitle: String {
+        validationIssues.isEmpty ? "Ready to Save" : "Needs Review"
+    }
+
+    private var trimmedMerchantNameForDisplay: String {
+        let value = merchantName.trimmingCharacters(in: .whitespacesAndNewlines)
+        return value.isEmpty ? "Missing" : value
+    }
+
+    private var totalAmountForDisplay: String {
+        let value = totalAmountText.trimmingCharacters(in: .whitespacesAndNewlines)
+        return value.isEmpty ? "Optional" : value
+    }
+
+    private var currencyForDisplay: String {
+        let value = currencyCode.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+        return value.isEmpty ? "Optional" : value
     }
 }
 
