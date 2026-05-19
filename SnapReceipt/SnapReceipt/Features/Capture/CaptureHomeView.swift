@@ -18,8 +18,11 @@ struct CaptureHomeView: View {
     @State private var isShowingFileImporter = false
     @State private var isShowingCameraUnavailableAlert = false
     @State private var reviewSession: ReceiptReviewSession?
+    @State private var hasAppliedDemoState = false
+    private let demoScenario: SnapReceiptDemoScenario?
 
-    init(receiptsStore: ReceiptsStore) {
+    init(receiptsStore: ReceiptsStore, demoScenario: SnapReceiptDemoScenario? = nil) {
+        self.demoScenario = demoScenario
         _viewModel = State(initialValue: CaptureHomeViewModel(receiptsStore: receiptsStore))
     }
 
@@ -111,6 +114,31 @@ struct CaptureHomeView: View {
 
             await viewModel.importPhotoLibraryItem(selectedPhotoItem)
             self.selectedPhotoItem = nil
+        }
+        .task {
+            guard !hasAppliedDemoState, let demoScenario else {
+                return
+            }
+
+            switch demoScenario {
+            case .capture, .review:
+                viewModel.applyDemoState(
+                    importedAsset: SnapReceiptDemoSeeder.makeDemoImportedAsset(),
+                    ocrResult: SnapReceiptDemoSeeder.makeDemoOCRResult(),
+                    parsedDetails: SnapReceiptDemoSeeder.makeDemoParsedDetails()
+                )
+
+                if demoScenario == .review, let asset = viewModel.importedAsset {
+                    reviewSession = ReceiptReviewSession(
+                        asset: asset,
+                        draft: SnapReceiptDemoSeeder.makeDemoDraft()
+                    )
+                }
+            case .receipts, .settings:
+                break
+            }
+
+            hasAppliedDemoState = true
         }
     }
 

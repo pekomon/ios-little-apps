@@ -9,10 +9,13 @@ import SwiftUI
 
 @main
 struct SnapReceiptApp: App {
+    init() {
+        SnapReceiptDemoSeeder.seedIfNeeded(for: .current)
+    }
+
     var body: some Scene {
         WindowGroup {
             SnapReceiptRootView()
         }
     }
 }
-

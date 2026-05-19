@@ -127,6 +127,21 @@ final class CaptureHomeViewModel {
         )
     }
 
+    func applyDemoState(
+        importedAsset: ImportedReceiptAsset,
+        ocrResult: ReceiptOCRResult,
+        parsedDetails: ParsedReceiptDetails
+    ) {
+        self.importedAsset = importedAsset
+        self.ocrResult = ocrResult
+        self.parsedDetails = parsedDetails
+        isRecognizingText = false
+        isSavingReceipt = false
+        ocrErrorMessage = nil
+        saveErrorMessage = nil
+        saveSuccessMessage = nil
+    }
+
     func saveReviewedReceipt(_ draft: ReceiptReviewDraft, asset: ImportedReceiptAsset) async throws {
         isSavingReceipt = true
         saveErrorMessage = nil
