@@ -14,6 +14,11 @@ Privacy-first local vault with biometric unlock, Keychain-backed secrets, and po
 
 Status: polished app project
 
+### [SnapReceipt](./SnapReceipt/README.md)
+Local-first receipt scanner with on-device OCR, editable review flow, saved receipt history, and practical settings.
+
+Status: polished app project
+
 ### [Africa](./Africa/README.md)
 Safari-style SwiftUI app for browsing African animals, videos, locations, and galleries.
 
