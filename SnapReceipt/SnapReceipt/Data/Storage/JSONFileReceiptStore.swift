@@ -22,7 +22,11 @@ struct ReceiptPersistenceLocation: Sendable {
             fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first ??
             fileManager.temporaryDirectory
 
-        let directoryURL = baseDirectory.appendingPathComponent("SnapReceipt", isDirectory: true)
+        self.init(baseDirectoryURL: baseDirectory)
+    }
+
+    init(baseDirectoryURL: URL, appDirectoryName: String = "SnapReceipt") {
+        let directoryURL = baseDirectoryURL.appendingPathComponent(appDirectoryName, isDirectory: true)
         self.directoryURL = directoryURL
         self.receiptsFileURL = directoryURL.appendingPathComponent("receipts.json")
         self.imagesDirectoryURL = directoryURL.appendingPathComponent("ReceiptImages", isDirectory: true)
