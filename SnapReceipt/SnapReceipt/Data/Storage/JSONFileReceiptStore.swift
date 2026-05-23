@@ -8,8 +8,8 @@
 import Foundation
 
 protocol ReceiptStoring: Sendable {
-    func loadReceipts() throws -> [Receipt]
-    func saveReceipts(_ receipts: [Receipt]) throws
+    nonisolated func loadReceipts() throws -> [Receipt]
+    nonisolated func saveReceipts(_ receipts: [Receipt]) throws
 }
 
 struct ReceiptPersistenceLocation: Sendable {
@@ -17,7 +17,7 @@ struct ReceiptPersistenceLocation: Sendable {
     let receiptsFileURL: URL
     let imagesDirectoryURL: URL
 
-    init(fileManager: FileManager = .default) {
+    nonisolated init(fileManager: FileManager = .default) {
         let baseDirectory =
             fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first ??
             fileManager.temporaryDirectory
@@ -25,7 +25,7 @@ struct ReceiptPersistenceLocation: Sendable {
         self.init(baseDirectoryURL: baseDirectory)
     }
 
-    init(baseDirectoryURL: URL, appDirectoryName: String = "SnapReceipt") {
+    nonisolated init(baseDirectoryURL: URL, appDirectoryName: String = "SnapReceipt") {
         let directoryURL = baseDirectoryURL.appendingPathComponent(appDirectoryName, isDirectory: true)
         self.directoryURL = directoryURL
         self.receiptsFileURL = directoryURL.appendingPathComponent("receipts.json")
@@ -45,12 +45,12 @@ enum ReceiptPersistenceError: LocalizedError, Equatable {
 }
 
 struct JSONFileReceiptStore: ReceiptStoring {
-    private let fileManager: FileManager
+    nonisolated(unsafe) private let fileManager: FileManager
     private let persistenceLocation: ReceiptPersistenceLocation
     private let encoder = JSONEncoder()
     private let decoder = JSONDecoder()
 
-    init(
+    nonisolated init(
         fileManager: FileManager = .default,
         persistenceLocation: ReceiptPersistenceLocation = ReceiptPersistenceLocation()
     ) {
@@ -61,7 +61,7 @@ struct JSONFileReceiptStore: ReceiptStoring {
         self.decoder.dateDecodingStrategy = .iso8601
     }
 
-    func loadReceipts() throws -> [Receipt] {
+    nonisolated func loadReceipts() throws -> [Receipt] {
         let url = persistenceLocation.receiptsFileURL
 
         guard fileManager.fileExists(atPath: url.path) else {
@@ -77,7 +77,7 @@ struct JSONFileReceiptStore: ReceiptStoring {
         }
     }
 
-    func saveReceipts(_ receipts: [Receipt]) throws {
+    nonisolated func saveReceipts(_ receipts: [Receipt]) throws {
         try fileManager.createDirectory(
             at: persistenceLocation.directoryURL,
             withIntermediateDirectories: true

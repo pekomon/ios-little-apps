@@ -8,12 +8,12 @@
 import Foundation
 
 struct ReceiptLineItem: Identifiable, Hashable, Codable, Sendable {
-    let id: UUID
-    let title: String
-    let quantity: Decimal?
-    let amount: Decimal?
+    nonisolated let id: UUID
+    nonisolated let title: String
+    nonisolated let quantity: Decimal?
+    nonisolated let amount: Decimal?
 
-    init(
+    nonisolated init(
         id: UUID = UUID(),
         title: String,
         quantity: Decimal? = nil,

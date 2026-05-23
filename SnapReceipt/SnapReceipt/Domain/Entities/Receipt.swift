@@ -8,13 +8,13 @@
 import Foundation
 
 struct Receipt: Identifiable, Hashable, Codable, Sendable {
-    let metadata: ReceiptMetadata
-    let imageFileName: String?
-    let lineItems: [ReceiptLineItem]
-    let notes: String
-    let rawText: String
+    nonisolated let metadata: ReceiptMetadata
+    nonisolated let imageFileName: String?
+    nonisolated let lineItems: [ReceiptLineItem]
+    nonisolated let notes: String
+    nonisolated let rawText: String
 
-    var id: UUID {
+    nonisolated var id: UUID {
         metadata.id
     }
 

@@ -15,7 +15,7 @@ protocol ReceiptImageStoring: Sendable {
 
 struct ReceiptImageStore: ReceiptImageStoring {
     nonisolated(unsafe) private let fileManager: FileManager
-    nonisolated(unsafe) private let persistenceLocation: ReceiptPersistenceLocation
+    private let persistenceLocation: ReceiptPersistenceLocation
 
     nonisolated init(
         fileManager: FileManager = .default,

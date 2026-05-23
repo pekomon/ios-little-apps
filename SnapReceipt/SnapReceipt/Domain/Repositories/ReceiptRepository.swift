@@ -8,16 +8,16 @@
 import Foundation
 
 protocol ReceiptRepository: Sendable {
-    func fetchReceipts() async throws -> [Receipt]
-    func fetchReceipt(id: Receipt.ID) async throws -> Receipt
-    func saveReceipt(_ receipt: Receipt) async throws
-    func deleteReceipt(id: Receipt.ID) async throws
+    nonisolated func fetchReceipts() async throws -> [Receipt]
+    nonisolated func fetchReceipt(id: Receipt.ID) async throws -> Receipt
+    nonisolated func saveReceipt(_ receipt: Receipt) async throws
+    nonisolated func deleteReceipt(id: Receipt.ID) async throws
 }
 
 enum ReceiptRepositoryError: LocalizedError, Equatable, Sendable {
     case receiptNotFound(Receipt.ID)
 
-    var errorDescription: String? {
+    nonisolated var errorDescription: String? {
         switch self {
         case .receiptNotFound:
             "The requested receipt could not be found."

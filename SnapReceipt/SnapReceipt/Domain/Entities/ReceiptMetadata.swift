@@ -8,16 +8,16 @@
 import Foundation
 
 struct ReceiptMetadata: Identifiable, Hashable, Codable, Sendable {
-    let id: UUID
-    let merchantName: String
-    let purchaseDate: Date?
-    let totalAmount: Decimal?
-    let currencyCode: String?
-    let source: ReceiptSource
-    let createdAt: Date
-    let updatedAt: Date
+    nonisolated let id: UUID
+    nonisolated let merchantName: String
+    nonisolated let purchaseDate: Date?
+    nonisolated let totalAmount: Decimal?
+    nonisolated let currencyCode: String?
+    nonisolated let source: ReceiptSource
+    nonisolated let createdAt: Date
+    nonisolated let updatedAt: Date
 
-    init(
+    nonisolated init(
         id: UUID = UUID(),
         merchantName: String,
         purchaseDate: Date? = nil,
@@ -37,7 +37,7 @@ struct ReceiptMetadata: Identifiable, Hashable, Codable, Sendable {
         self.updatedAt = updatedAt
     }
 
-    func updatingTimestamp(_ date: Date = .now) -> ReceiptMetadata {
+    nonisolated func updatingTimestamp(_ date: Date = .now) -> ReceiptMetadata {
         ReceiptMetadata(
             id: id,
             merchantName: merchantName,
@@ -56,7 +56,7 @@ enum ReceiptSource: String, Hashable, Codable, CaseIterable, Sendable {
     case photoLibrary
     case fileImport
 
-    var displayName: String {
+    nonisolated var displayName: String {
         switch self {
         case .camera:
             "Camera Capture"
