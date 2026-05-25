@@ -148,12 +148,14 @@ struct ReceiptDetailView: View {
         VStack(alignment: .leading, spacing: 14) {
             sectionHeader(title: "Saved Image", subtitle: "The original imported receipt image persisted on device.")
 
-            StoredReceiptImageThumbnail(
-                fileName: fileName,
-                width: UIScreen.main.bounds.width - 40,
-                height: 280
-            )
-            .frame(maxWidth: .infinity, alignment: .center)
+            GeometryReader { proxy in
+                StoredReceiptImageThumbnail(
+                    fileName: fileName,
+                    width: proxy.size.width,
+                    height: 280
+                )
+            }
+            .frame(height: 280)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
             .accessibilityLabel("Saved receipt image")
         }
