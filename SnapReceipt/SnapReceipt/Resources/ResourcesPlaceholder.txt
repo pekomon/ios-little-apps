@@ -1,1 +1,0 @@
-SnapReceipt resource placeholders will be replaced by real assets as features land.
